@@ -40,7 +40,7 @@
 #include "driverlib/timer.h"
 
 int led3s, ledConv;
-int i;
+int i, tempIndex;
 bool conversionEnd;
 
 /*
@@ -63,8 +63,8 @@ void ISR_Timer1A() {
 }
 
 void ISR_ADC0() {
-	MAP_ADCIntClear(ADC0_BASE, 2);
-	MAP_ADCSequenceDataGet(ADC0_BASE, 2, bufferTemp);
+	MAP_ADCIntClear(ADC0_BASE, 3);
+	MAP_ADCSequenceDataGet(ADC0_BASE, 3, bufferCapture);
 
 	if (ledConv == 0) {
 		MAP_GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_1, GPIO_PIN_1);
@@ -77,14 +77,22 @@ void ISR_ADC0() {
 	}
 
 	if (indiceAmostra <= NUM_AMOSTRAS + DELAY_MAX - 1) {
-		bufferConversao[indiceAmostra] = (uint16_t)(bufferTemp[0] + bufferTemp[1] + bufferTemp[2] + bufferTemp[3])/4;
-		bufferDatabase[indiceAmostra] = (uint16_t)(bufferTemp[0] + bufferTemp[1] + bufferTemp[2] + bufferTemp[3])/4;
-		indiceAmostra++;
+		if (tempIndex <= N_MEDIAS - 1) {
+			bufferTemp[tempIndex] = bufferCapture[0];
+			tempIndex++;
+		}
+
+		if (tempIndex > N_MEDIAS - 1) {
+			bufferConversao[indiceAmostra] = (float)(bufferTemp[0] + bufferTemp[1] + bufferTemp[2] + bufferTemp[3] + bufferTemp[4] + bufferTemp[5])/N_MEDIAS;
+			bufferDatabase[indiceAmostra] = (float)(bufferTemp[0] + bufferTemp[1] + bufferTemp[2] + bufferTemp[3] + bufferTemp[4] + bufferTemp[5])/N_MEDIAS;
+			indiceAmostra++;
+			tempIndex = 0;
+		}
 	} else {
 		MAP_TimerDisable(TIMER0_BASE, TIMER_A);
-		MAP_ADCSequenceDisable(ADC0_BASE, 2);
-		MAP_ADCIntDisable(ADC0_BASE, 2);
-		MAP_IntDisable(INT_ADC0SS2);
+		MAP_ADCSequenceDisable(ADC0_BASE, 3);
+		MAP_ADCIntDisable(ADC0_BASE, 3);
+		MAP_IntDisable(INT_ADC0SS3);
 		indiceAmostra = DELAY_MAX;
 		conversionEnd = true;
 		MAP_GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_1, 0);
@@ -134,12 +142,12 @@ void GPIOInit() {
 }
 
 void interruptInit() {
-	MAP_ADCIntDisable(ADC0_BASE, 2);
-	MAP_IntDisable(INT_ADC0SS2);
-	MAP_ADCIntClear(ADC0_BASE, 2);
-	MAP_IntEnable(INT_ADC0SS2);
-	MAP_ADCIntEnable(ADC0_BASE, 2);
-	MAP_ADCIntEnableEx(ADC0_BASE, ADC_INT_SS2);
+	MAP_ADCIntDisable(ADC0_BASE, 3);
+	MAP_IntDisable(INT_ADC0SS3);
+	MAP_ADCIntClear(ADC0_BASE, 3);
+	MAP_IntEnable(INT_ADC0SS3);
+	MAP_ADCIntEnable(ADC0_BASE, 3);
+	MAP_ADCIntEnableEx(ADC0_BASE, ADC_INT_SS3);
 
 	TimerIntRegister(TIMER1_BASE, TIMER_A, ISR_Timer1A);
 	MAP_TimerIntEnable(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
@@ -157,7 +165,7 @@ void timerInit() {
 	MAP_TimerConfigure(TIMER0_BASE, TIMER_CFG_A_PERIODIC_UP);
 	TimerUpdateMode(TIMER0_BASE, TIMER_A, TIMER_UP_LOAD_IMMEDIATE);
 	MAP_TimerClockSourceSet(TIMER0_BASE, TIMER_CLOCK_PIOSC);
-	MAP_TimerLoadSet(TIMER0_BASE, TIMER_A, 165);
+	MAP_TimerLoadSet(TIMER0_BASE, TIMER_A, 332);
 	MAP_TimerADCEventSet(TIMER0_BASE, TIMER_ADC_TIMEOUT_A);
 	MAP_TimerControlTrigger(TIMER0_BASE, TIMER_A, true);
 
@@ -184,13 +192,13 @@ void ADCInit() {
 	ADCClockConfigSet(ADC0_BASE, (ADC_CLOCK_SRC_PIOSC | ADC_CLOCK_RATE_FULL), 1);
 	MAP_ADCPhaseDelaySet(ADC0_BASE, ADC_PHASE_0);
 	MAP_ADCReferenceSet(ADC0_BASE, ADC_REF_INT);
-	MAP_ADCSequenceDisable(ADC0_BASE, 2);
-	MAP_ADCSequenceConfigure(ADC0_BASE, 2, ADC_TRIGGER_TIMER, 0);
-	MAP_ADCSequenceStepConfigure(ADC0_BASE, 2, 0, (ADC_CTL_IE | ADC_CTL_SHOLD_8 | ADC_CTL_CH8));
+	MAP_ADCSequenceDisable(ADC0_BASE, 3);
+	MAP_ADCSequenceConfigure(ADC0_BASE, 3, ADC_TRIGGER_TIMER, 0);
+/*	MAP_ADCSequenceStepConfigure(ADC0_BASE, 2, 0, (ADC_CTL_IE | ADC_CTL_SHOLD_8 | ADC_CTL_CH8));
 	MAP_ADCSequenceStepConfigure(ADC0_BASE, 2, 1, (ADC_CTL_IE | ADC_CTL_SHOLD_8 | ADC_CTL_CH8));
-	MAP_ADCSequenceStepConfigure(ADC0_BASE, 2, 2, (ADC_CTL_IE | ADC_CTL_SHOLD_8 | ADC_CTL_CH8));
-	MAP_ADCSequenceStepConfigure(ADC0_BASE, 2, 3, (ADC_CTL_IE | ADC_CTL_END | ADC_CTL_SHOLD_8 | ADC_CTL_CH8));
-	MAP_ADCSequenceEnable(ADC0_BASE, 2);
+	MAP_ADCSequenceStepConfigure(ADC0_BASE, 2, 2, (ADC_CTL_IE | ADC_CTL_SHOLD_8 | ADC_CTL_CH8)); */
+	MAP_ADCSequenceStepConfigure(ADC0_BASE, 3, 0, (ADC_CTL_IE | ADC_CTL_SHOLD_8 | ADC_CTL_CH8 | ADC_CTL_END));
+	MAP_ADCSequenceEnable(ADC0_BASE, 3);
 }
 /*
 void LCDInit() {
@@ -205,6 +213,7 @@ void RFIDInit() {
  */
 
 int main(void) {
+	tempIndex = 0;
 	led3s = 0;
 	ledConv = 0;
 	indiceAmostra = DELAY_MAX;
@@ -221,10 +230,10 @@ int main(void) {
 	MAP_TimerEnable(TIMER1_BASE, TIMER_A);
 
 	while (1) {
-		/*if (conversionEnd) {
+		if (conversionEnd) {
 			validate();
 			conversionEnd = false;
-		} */
+		}
 	}
 	return 0;
 }

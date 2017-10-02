@@ -17,7 +17,8 @@
 #ifndef DRIVERLIB_ALGORITHM_H_
 #define DRIVERLIB_ALGORITHM_H_
 
-#define NUM_AMOSTRAS 144000/4
+#define N_MEDIAS 6
+#define NUM_AMOSTRAS 144000/N_MEDIAS
 #define DELAY_MAX 75
 #define MINIMO_VALIDACAO 0.9
 
@@ -26,11 +27,11 @@
 
 // Variáveis
 uint16_t indiceAmostra;
-uint32_t bufferTemp[4];
-uint16_t bufferConversao[NUM_AMOSTRAS + 2*DELAY_MAX];
-float bufferConversaoNorm[NUM_AMOSTRAS + 2*DELAY_MAX];
-uint16_t bufferDatabase[NUM_AMOSTRAS + 2*DELAY_MAX];
-float bufferDatabaseNorm[NUM_AMOSTRAS + 2*DELAY_MAX];
+uint32_t bufferCapture[1], bufferTemp[N_MEDIAS];
+float bufferConversao[NUM_AMOSTRAS + 2*DELAY_MAX];
+//float bufferConversaoNorm[NUM_AMOSTRAS + 2*DELAY_MAX];
+float bufferDatabase[NUM_AMOSTRAS + 2*DELAY_MAX];
+//float bufferDatabaseNorm[NUM_AMOSTRAS + 2*DELAY_MAX];
 
 float rAuto;
 float rCross[2*DELAY_MAX + 1];

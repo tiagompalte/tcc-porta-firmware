@@ -17,19 +17,6 @@
 #include <math.h>
 #include "driverlib/algorithm.h"
 
-uint32_t _maxInt(uint16_t vector[]) {
-	int i;
-	uint16_t maior = 0;
-
-	for (i=0; i<NUM_AMOSTRAS + 2*DELAY_MAX; i++) {
-		if (vector[i] > maior) {
-			maior = vector[i];
-		}
-	}
-
-	return maior;
-}
-
 float _maxFloat(float vector[]) {
 	int i;
 	float maior = 0;
@@ -47,16 +34,16 @@ void _normalizar() {
 	uint32_t maxValue = 0;
 	int i;
 
-	maxValue = _maxInt(bufferDatabase);
+	maxValue = _maxFloat(bufferDatabase);
 
 	for (i=0; i<NUM_AMOSTRAS + 2*DELAY_MAX; i++) {
-		bufferDatabaseNorm[i] = ((float)bufferDatabase[i])/((float)maxValue);
+		bufferDatabase[i] = (bufferDatabase[i])/(maxValue);
 	}
 
-	maxValue = _maxInt(bufferConversao);
+	maxValue = _maxFloat(bufferConversao);
 
 	for (i=0; i<NUM_AMOSTRAS + 2*DELAY_MAX; i++) {
-		bufferConversaoNorm[i] = ((float)(bufferConversao[i]))/((float)maxValue);
+		bufferConversao[i] = (bufferConversao[i])/(maxValue);
 	}
 
 	return;
@@ -91,9 +78,9 @@ bool validate() {
 
 	_normalizar();
 
-	auto1 = autoCorrelate(bufferDatabaseNorm);
-	auto2 = autoCorrelate(bufferConversaoNorm);
-	cross12 = crossCorrelate(bufferDatabaseNorm, bufferConversaoNorm);
+	auto1 = autoCorrelate(bufferDatabase);
+	auto2 = autoCorrelate(bufferConversao);
+	cross12 = crossCorrelate(bufferDatabase, bufferConversao);
 
 	coefCorrelacao = (cross12*cross12)/(auto1*auto2);
 

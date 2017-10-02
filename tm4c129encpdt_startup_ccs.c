@@ -101,12 +101,12 @@ void (* const g_pfnVectors[])(void) =
     IntDefaultHandler,                      // Quadrature Encoder 0
     IntDefaultHandler,                      // ADC Sequence 0
     IntDefaultHandler,                      // ADC Sequence 1
-		ISR_ADC0,                      // ADC Sequence 2
-	IntDefaultHandler,                      // ADC Sequence 3
+	IntDefaultHandler,                      // ADC Sequence 2
+		ISR_ADC0,                      // ADC Sequence 3
     IntDefaultHandler,                      // Watchdog timer
     IntDefaultHandler,                      // Timer 0 subtimer A
     IntDefaultHandler,                      // Timer 0 subtimer B
-		ISR_Timer1A,                      // Timer 1 subtimer A
+    	ISR_Timer1A,                      // Timer 1 subtimer A
     IntDefaultHandler,                      // Timer 1 subtimer B
     IntDefaultHandler,                      // Timer 2 subtimer A
     IntDefaultHandler,                      // Timer 2 subtimer B
