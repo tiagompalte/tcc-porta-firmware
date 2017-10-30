@@ -165,7 +165,7 @@ void timerInit() {
 	MAP_TimerConfigure(TIMER0_BASE, TIMER_CFG_A_PERIODIC_UP);
 	TimerUpdateMode(TIMER0_BASE, TIMER_A, TIMER_UP_LOAD_IMMEDIATE);
 	MAP_TimerClockSourceSet(TIMER0_BASE, TIMER_CLOCK_PIOSC);
-	MAP_TimerLoadSet(TIMER0_BASE, TIMER_A, 332);
+	MAP_TimerLoadSet(TIMER0_BASE, TIMER_A, 337);
 	MAP_TimerADCEventSet(TIMER0_BASE, TIMER_ADC_TIMEOUT_A);
 	MAP_TimerControlTrigger(TIMER0_BASE, TIMER_A, true);
 
@@ -178,7 +178,16 @@ void timerInit() {
 	MAP_TimerConfigure(TIMER1_BASE, TIMER_CFG_PERIODIC_UP);
 	TimerUpdateMode(TIMER1_BASE, TIMER_BOTH, TIMER_UP_LOAD_IMMEDIATE);
 	MAP_TimerClockSourceSet(TIMER1_BASE, TIMER_CLOCK_PIOSC);
-	MAP_TimerLoadSet(TIMER1_BASE, TIMER_A, 48484848);
+	MAP_TimerLoadSet(TIMER1_BASE, TIMER_A, 72727272);
+
+	while (!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER2)) {
+
+	}
+
+	MAP_TimerConfigure(TIMER2_BASE, TIMER_CFG_PERIODIC_UP);
+	TimerUpdateMode(TIMER2_BASE, TIMER_BOTH, TIMER_UP_LOAD_IMMEDIATE);
+	MAP_TimerClockSourceSet(TIMER2_BASE, TIMER_CLOCK_PIOSC);
+	MAP_TimerLoadSet(TIMER2_BASE, TIMER_A, 145454544);
 }
 
 void ADCInit() {
@@ -194,9 +203,6 @@ void ADCInit() {
 	MAP_ADCReferenceSet(ADC0_BASE, ADC_REF_INT);
 	MAP_ADCSequenceDisable(ADC0_BASE, 3);
 	MAP_ADCSequenceConfigure(ADC0_BASE, 3, ADC_TRIGGER_TIMER, 0);
-/*	MAP_ADCSequenceStepConfigure(ADC0_BASE, 2, 0, (ADC_CTL_IE | ADC_CTL_SHOLD_8 | ADC_CTL_CH8));
-	MAP_ADCSequenceStepConfigure(ADC0_BASE, 2, 1, (ADC_CTL_IE | ADC_CTL_SHOLD_8 | ADC_CTL_CH8));
-	MAP_ADCSequenceStepConfigure(ADC0_BASE, 2, 2, (ADC_CTL_IE | ADC_CTL_SHOLD_8 | ADC_CTL_CH8)); */
 	MAP_ADCSequenceStepConfigure(ADC0_BASE, 3, 0, (ADC_CTL_IE | ADC_CTL_SHOLD_8 | ADC_CTL_CH8 | ADC_CTL_END));
 	MAP_ADCSequenceEnable(ADC0_BASE, 3);
 }
@@ -219,19 +225,34 @@ int main(void) {
 	indiceAmostra = DELAY_MAX;
 	conversionEnd = false;
 
+	// Inicializar sistema
 	systemInit();
 	GPIOInit();
 
+	// Inicializar periféricos
 	ADCInit();
 	timerInit();
 	interruptInit();
 
-	MAP_TimerEnable(TIMER0_BASE, TIMER_A);
-	MAP_TimerEnable(TIMER1_BASE, TIMER_A);
+	MAP_TimerEnable(TIMER0_BASE, TIMER_A); // Timer ADC
+
 
 	while (1) {
-		if (conversionEnd) {
-			validate();
+		// AGUARDA VERIFICACAO DO RFID
+		//MAP_TimerEnable(TIMER2_BASE, TIMER_A); // Timer 10s
+		// tem 10 segundos pra enviar o código RFID e começar a receber os dados
+		// Se o RFID deu ok, liberar timer pra comecar a receber a voz, mostrar msgs etc...
+		// verificar se o usuario quer usar o teclado ao inves da voz...
+
+
+		if (conversionEnd) { // Quando terminar de fazer a conversão
+			if (validate()) { // Verificar a senha
+				// ABRIR A PORTA
+				MAP_TimerEnable(TIMER1_BASE, TIMER_A); // Timer 5s
+				// 5s pra abrir a porta, se passar o tempo tranca de novo...
+			} else {
+				// MENSAGEM DE ERRO
+			}
 			conversionEnd = false;
 		}
 	}
