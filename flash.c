@@ -2,25 +2,25 @@
 //
 // flash.c - Driver for programming the on-chip flash.
 //
-// Copyright (c) 2005-2016 Texas Instruments Incorporated.  All rights reserved.
+// Copyright (c) 2005-2017 Texas Instruments Incorporated.  All rights reserved.
 // Software License Agreement
-//
+// 
 //   Redistribution and use in source and binary forms, with or without
 //   modification, are permitted provided that the following conditions
 //   are met:
-//
+// 
 //   Redistributions of source code must retain the above copyright
 //   notice, this list of conditions and the following disclaimer.
-//
+// 
 //   Redistributions in binary form must reproduce the above copyright
 //   notice, this list of conditions and the following disclaimer in the
-//   documentation and/or other materials provided with the
+//   documentation and/or other materials provided with the  
 //   distribution.
-//
+// 
 //   Neither the name of Texas Instruments Incorporated nor the names of
 //   its contributors may be used to endorse or promote products derived
 //   from this software without specific prior written permission.
-//
+// 
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 // "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 // LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -32,8 +32,8 @@
 // THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
-// This is part of revision 2.1.3.156 of the Tiva Peripheral Driver Library.
+// 
+// This is part of revision 2.1.4.178 of the Tiva Peripheral Driver Library.
 //
 //*****************************************************************************
 
@@ -655,7 +655,7 @@ FlashAllUserRegisterSet(uint32_t ui32User0, uint32_t ui32User1,
 
 //*****************************************************************************
 //
-//! Saves the user registers.
+//! Saves the user registers 0 and 1.
 //!
 //! This function makes the currently programmed user register 0 and 1 settings
 //! permanent.  This operation is non-reversible; a chip reset or power cycle
@@ -694,6 +694,58 @@ FlashUserSave(void)
     //
     while(HWREG(FLASH_FMC) & FLASH_FMC_COMT)
     {
+    }
+
+    //
+    // Success.
+    //
+    return(0);
+}
+
+//*****************************************************************************
+//
+//! Saves the user registers.
+//!
+//! This function makes the currently programmed user register 0, 1, 2 and 3
+//! settings permanent.  This operation is non-reversible; a chip reset or
+//! power cycle does not change the flash protection.
+//!
+//! This function does not return until the protection has been saved.
+//!
+//! \note To ensure data integrity of the user registers, the commits should
+//! not be interrupted with a power loss.
+//!
+//! \return Returns 0 on success, or -1 if a hardware error is encountered.
+//
+//*****************************************************************************
+int32_t
+FlashAllUserRegisterSave(void)
+{
+    uint32_t ui32Index;
+
+    //
+    // Setting the MSB of FMA will trigger a permanent save of a USER Register.
+    // The 2 least signigicant bits, specify the exact User Register to save.
+    // The value of the least significant bits for
+    // USER Register 0 is 00,
+    // USER Register 1 is 01,
+    // USER Register 2 is 10 and
+    // USER Register 3 is 11.
+    //
+    for(ui32Index = 0; ui32Index < 4; ui32Index++)
+    {
+        //
+        // Tell the flash controller to commit a USER Register.
+        //
+        HWREG(FLASH_FMA) = (0x80000000 + ui32Index);
+        HWREG(FLASH_FMC) = FLASH_FMC_WRKEY | FLASH_FMC_COMT;
+
+        //
+        // Wait until the write has completed.
+        //
+        while(HWREG(FLASH_FMC) & FLASH_FMC_COMT)
+        {
+        }
     }
 
     //

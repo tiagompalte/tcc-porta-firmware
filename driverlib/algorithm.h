@@ -30,7 +30,7 @@ uint16_t indiceAmostra;
 uint32_t bufferCapture[1], bufferTemp[N_MEDIAS];
 float bufferConversao[NUM_AMOSTRAS + 2*DELAY_MAX];
 //float bufferConversaoNorm[NUM_AMOSTRAS + 2*DELAY_MAX];
-float bufferDatabase[NUM_AMOSTRAS + 2*DELAY_MAX];
+float bufferDatabase[NUM_AMOSTRAS];
 //float bufferDatabaseNorm[NUM_AMOSTRAS + 2*DELAY_MAX];
 
 float rAuto;

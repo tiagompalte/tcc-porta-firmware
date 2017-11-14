@@ -1,9 +1,9 @@
 /* ************************************************************** *
- * UTFPR - Universidade Tecnologica Federal do Paran�
- * Engenharia Eletr�nica
- * Trabalho de Conclus�o de Curso
+ * UTFPR - Universidade Tecnologica Federal do Paraná
+ * Engenharia Eletronica
+ * Trabalho de Conclusao de Curso
  * ************************************************************** *
- * Sistema de Seguran�a baseado em Reconhecimento de Senha Falada
+ * Sistema de Seguranca baseado em Reconhecimento de Senha Falada
  * ************************************************************** *
  * Equipe:
  * Luiz Felipe Kim Evaristo
@@ -11,15 +11,16 @@
  * Tiago Henrique Faxina
  * Tiago Mariani Palte
  * ************************************************************** *
- * Sketch do JSON
+ * json.c - File to handle JSON formatted data from webservers.
  * ************************************************************** */
+
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include "utils/ustdlib.h"
 #include "utils/lwiplib.h"
-//#include "eth_client.h"
+#include "eth_client.h"
 #include "json.h"
 
 //****************************************************************************
@@ -88,6 +89,7 @@ BufPtrInc(tBufPtr *psBufPtr, uint32_t ui32Inc)
     return(ui32Inc);
 }
 
+
 //*****************************************************************************
 //
 // Compare a string at the current location of a parsing pointer.
@@ -138,6 +140,8 @@ GetField(char *pcField, tBufPtr *psBufPtr)
     ui32Curly = 0;
     i32NewItem = 0;
     ui32Quote = 0;
+
+
 
     while(1)
     {
@@ -353,12 +357,140 @@ GetFieldValueString(tBufPtr *psBufPtr, char *pcDataDest, uint32_t ui32SizeDest)
 
 //*****************************************************************************
 //
-// Fill out the psUserReport structure from data returned from the JSON
-// query.
+// Fill out the psWeatherReport structure from data returned from the JSON
+// query for GET.
 //
 //*****************************************************************************
 int32_t
-JSONParse(uint32_t ui32Index, tUserReport *psUserReport,
+JSONParseGET(uint32_t ui32Index, tWeatherReport *psWeatherReport,
+                  struct pbuf *psBuf)
+{
+    tBufPtr sBufPtr, sBufList, sBufTemp;
+    char pcCode[4];
+    char pcBuffAudio[512];
+    char pcBuffNovo[512];
+    char pcBuffCodigoNovo[512];
+    int32_t i32Items,i32Code;
+
+
+    //
+    // Reset the pointers.
+    //
+    BufPtrInit(&sBufPtr, psBuf);
+
+    //
+    // Check and see if the request was valid.
+    //
+    if(GetField("cod", &sBufPtr) != 0)
+    {
+        //
+        // Check for a 404 not found error.
+        //
+        sBufTemp = sBufPtr;
+
+        //
+        // Check for a 404 not found error.
+        //
+        i32Code = GetFieldValueInt(&sBufTemp);
+
+        sBufTemp = sBufPtr;
+
+        if(i32Code != INVALID_INT)
+        {
+            if(i32Code == 404)
+            {
+                return(-1);
+            }
+        }
+        else if(GetFieldValueString(&sBufTemp, pcCode, sizeof(pcCode)) >= 0)
+        {
+            //
+            // Check for a 404 not found error.
+            //
+            if(ustrncmp(pcCode, "404", 3) == 0)
+            {
+                return(-1);
+            }
+        }
+    }
+
+    //
+    // Reset the pointers.
+    //
+    BufPtrInit(&sBufPtr, psBuf);
+
+    //
+    // Initialize the number of items found.
+    //
+    i32Items = 0;
+        //
+        // Save the list pointer.
+        //
+        sBufList = sBufPtr;
+
+        //
+        // Get the audio.
+        //
+        if(GetField("audio", &sBufPtr) != 0)
+        {
+            GetFieldValueString(&sBufPtr, pcBuffAudio,sizeof(pcBuffAudio));
+            psWeatherReport->audio = pcBuffAudio;
+            i32Items++;
+        }
+        else
+        {
+            psWeatherReport->audio = 0;
+        }
+
+        //
+        // Reset the pointer to the start of the list values.
+        //
+        sBufPtr = sBufList;
+
+        //
+        // Get the novo.
+        //
+        if(GetField("codigoNome", &sBufPtr) != 0)
+        {
+            GetFieldValueString(&sBufPtr, pcBuffNovo,sizeof(pcBuffNovo));
+            psWeatherReport->novo = pcBuffNovo;
+            //psWeatherReport->novo = GetFieldValueInt(&sBufPtr);
+            i32Items++;
+        }
+        else
+        {
+            psWeatherReport->novo = 0;
+        }
+
+        sBufPtr = sBufList;
+
+        //
+        // Get the codigoNome.
+        //
+        if(GetField("codigoNome", &sBufPtr) != 0)
+        {
+            GetFieldValueString(&sBufPtr, pcBuffCodigoNovo,sizeof(pcBuffCodigoNovo));
+            psWeatherReport->codigoNome = pcBuffCodigoNovo;
+            //psWeatherReport->novo = GetFieldValueInt(&sBufPtr);
+            i32Items++;
+        }
+        else
+        {
+            psWeatherReport->codigoNome = 0;
+        }
+
+
+    return(i32Items);
+}
+
+//*****************************************************************************
+//
+// Fill out the psWeatherReport structure from data returned from the JSON
+// query for GET.
+//
+//*****************************************************************************
+int32_t
+JSONParsePOST(uint32_t ui32Index, tWeatherReport *psWeatherReport,
                   struct pbuf *psBuf)
 {
     tBufPtr sBufPtr, sBufList, sBufTemp;
@@ -417,24 +549,281 @@ JSONParse(uint32_t ui32Index, tUserReport *psUserReport,
     //
     i32Items = 0;
 
-    if(GetField("user", &sBufPtr) != 0)
+    //
+    // Save the list pointer.
+    //
+    sBufList = sBufPtr;
+
+
+    if(GetField("data", &sBufPtr) != 0) {
+        if(GetField("token", &sBufPtr) != 0) {
+            GetFieldValueString(&sBufPtr, psWeatherReport->token,sizeof(psWeatherReport->token));
+            i32Items++;
+        } else {
+            psWeatherReport->token[0] = ' ';
+        }
+    }
+    sBufPtr = sBufList;
+
+    return(i32Items);
+}
+
+//*****************************************************************************
+//
+// Fill out the psWeatherReport structure from data returned from the JSON
+// query for GET.
+//
+//*****************************************************************************
+int32_t
+JSONParsePOSTKEY(uint32_t ui32Index, tWeatherReport *psWeatherReport,
+                  struct pbuf *psBuf)
+{
+    tBufPtr sBufPtr, sBufList, sBufTemp;
+    char pcCode[4];
+    int32_t i32Items,i32Code;
+
+
+    //
+    // Reset the pointers.
+    //
+    BufPtrInit(&sBufPtr, psBuf);
+
+    //
+    // Check and see if the request was valid.
+    //
+    if(GetField("cod", &sBufPtr) != 0)
     {
+        //
+        // Check for a 404 not found error.
+        //
+        sBufTemp = sBufPtr;
+
+        //
+        // Check for a 404 not found error.
+        //
+        i32Code = GetFieldValueInt(&sBufTemp);
+
+        sBufTemp = sBufPtr;
+
+        if(i32Code != INVALID_INT)
+        {
+            if(i32Code == 404)
+            {
+                return(-1);
+            }
+        }
+        else if(GetFieldValueString(&sBufTemp, pcCode, sizeof(pcCode)) >= 0)
+        {
+            //
+            // Check for a 404 not found error.
+            //
+            if(ustrncmp(pcCode, "404", 3) == 0)
+            {
+                return(-1);
+            }
+        }
+    }
+
+    //
+    // Reset the pointers.
+    //
+    BufPtrInit(&sBufPtr, psBuf);
+
+    //
+    // Initialize the number of items found.
+    //
+    i32Items = 0;
+
+    //
+    // Save the list pointer.
+    //
+    sBufList = sBufPtr;
+
+
+    if(GetField("data", &sBufPtr) != 0) {
+        if(GetField("token", &sBufPtr) != 0) {
+            GetFieldValueString(&sBufPtr, psWeatherReport->token,sizeof(psWeatherReport->token));
+            i32Items++;
+        } else {
+            psWeatherReport->token[0] = ' ';
+        }
+    }
+    sBufPtr = sBufList;
+
+    return(i32Items);
+}
+
+//*****************************************************************************
+//
+// Fill out the psWeatherReport structure from data returned from the JSON
+// query for GET.
+//
+//*****************************************************************************
+int32_t
+JSONParsePOSTACCESS(uint32_t ui32Index, tWeatherReport *psWeatherReport,
+                  struct pbuf *psBuf)
+{
+    tBufPtr sBufPtr, sBufList, sBufTemp;
+    char pcCode[4];
+    int32_t i32Items,i32Code;
+
+
+    //
+    // Reset the pointers.
+    //
+    BufPtrInit(&sBufPtr, psBuf);
+
+    //
+    // Check and see if the request was valid.
+    //
+    if(GetField("cod", &sBufPtr) != 0)
+    {
+        //
+        // Check for a 404 not found error.
+        //
+        sBufTemp = sBufPtr;
+
+        //
+        // Check for a 404 not found error.
+        //
+        i32Code = GetFieldValueInt(&sBufTemp);
+
+        sBufTemp = sBufPtr;
+
+        if(i32Code != INVALID_INT)
+        {
+            if(i32Code == 404)
+            {
+                return(-1);
+            }
+        }
+        else if(GetFieldValueString(&sBufTemp, pcCode, sizeof(pcCode)) >= 0)
+        {
+            //
+            // Check for a 404 not found error.
+            //
+            if(ustrncmp(pcCode, "404", 3) == 0)
+            {
+                return(-1);
+            }
+        }
+    }
+
+    //
+    // Reset the pointers.
+    //
+    BufPtrInit(&sBufPtr, psBuf);
+
+    //
+    // Initialize the number of items found.
+    //
+    i32Items = 0;
+
+    //
+    // Save the list pointer.
+    //
+    sBufList = sBufPtr;
+
+
+    if(GetField("data", &sBufPtr) != 0) {
+        if(GetField("token", &sBufPtr) != 0) {
+            GetFieldValueString(&sBufPtr, psWeatherReport->token,sizeof(psWeatherReport->token));
+            i32Items++;
+        } else {
+            psWeatherReport->token[0] = ' ';
+        }
+    }
+    sBufPtr = sBufList;
+
+    return(i32Items);
+}
+
+
+//*****************************************************************************
+//
+// Fill out the psWeatherReport structure from data returned from the JSON
+// query for GET.
+//
+//*****************************************************************************
+int32_t
+JSONParseGETteste(uint32_t ui32Index, tWeatherReport *psWeatherReport,
+                  struct pbuf *psBuf)
+{
+    tBufPtr sBufPtr, sBufList, sBufTemp;
+    char pcCode[4];
+    char pcBuffAudio[512];
+    char pcBuffNovo[512];
+    char pcBuffCodigoNovo[512];
+    int32_t i32Items,i32Code;
+
+
+    //
+    // Reset the pointers.
+    //
+    BufPtrInit(&sBufPtr, psBuf);
+
+    //
+    // Check and see if the request was valid.
+    //
+    if(GetField("cod", &sBufPtr) != 0)
+    {
+        //
+        // Check for a 404 not found error.
+        //
+        sBufTemp = sBufPtr;
+
+        //
+        // Check for a 404 not found error.
+        //
+        i32Code = GetFieldValueInt(&sBufTemp);
+
+        sBufTemp = sBufPtr;
+
+        if(i32Code != INVALID_INT)
+        {
+            if(i32Code == 404)
+            {
+                return(-1);
+            }
+        }
+        else if(GetFieldValueString(&sBufTemp, pcCode, sizeof(pcCode)) >= 0)
+        {
+            //
+            // Check for a 404 not found error.
+            //
+            if(ustrncmp(pcCode, "404", 3) == 0)
+            {
+                return(-1);
+            }
+        }
+    }
+
+    //
+    // Reset the pointers.
+    //
+    BufPtrInit(&sBufPtr, psBuf);
+
+    //
+    // Initialize the number of items found.
+    //
+    i32Items = 0;
         //
         // Save the list pointer.
         //
         sBufList = sBufPtr;
 
         //
-        // Get the id.
+        // Get the audio.
         //
-        if(GetField("id: ", &sBufPtr) != 0)
+        if(GetField("tag", &sBufPtr) != 0)
         {
-            psUserReport->i32id = GetFieldValueInt(&sBufPtr);
+            GetFieldValueString(&sBufPtr, pcBuffAudio,sizeof(pcBuffAudio));
+            psWeatherReport->audio = pcBuffAudio;
             i32Items++;
         }
         else
         {
-            psUserReport->i32id = INVALID_INT;
+            psWeatherReport->audio = 0;
         }
 
         //
@@ -443,96 +832,37 @@ JSONParse(uint32_t ui32Index, tUserReport *psUserReport,
         sBufPtr = sBufList;
 
         //
-        // Get birthday
+        // Get the novo.
         //
-        if(GetField("date", &sBufPtr) != 0)
+        if(GetField("codigoNome", &sBufPtr) != 0)
         {
-            psUserReport->i32date = GetFieldValueInt(&sBufPtr);
+            GetFieldValueString(&sBufPtr, pcBuffNovo,sizeof(pcBuffNovo));
+            psWeatherReport->novo = pcBuffNovo;
+            //psWeatherReport->novo = GetFieldValueInt(&sBufPtr);
             i32Items++;
         }
         else
         {
-            psUserReport->i32date = INVALID_INT;
+            psWeatherReport->novo = 0;
         }
 
-        //
-        // Reset the pointer to the start of the list values.
-        //
         sBufPtr = sBufList;
 
         //
-         // Get CPF
-         //
-         if(GetField("cpf", &sBufPtr) != 0)
-         {
-             psUserReport->i32cpf = GetFieldValueInt(&sBufPtr);
-             i32Items++;
-         }
-         else
-         {
-             psUserReport->i32cpf = INVALID_INT;
-         }
-
-         //
-         // Reset the pointer to the start of the list values.
-         //
-         sBufPtr = sBufList;
-
-         //
-          // Get the password
-          //
-          if(GetField("password", &sBufPtr) != 0)
-          {
-              psUserReport->i32password = GetFieldValueInt(&sBufPtr);
-              i32Items++;
-          }
-          else
-          {
-              psUserReport->i32password = INVALID_INT;
-          }
-
-          //
-          // Reset the pointer to the start of the list values.
-          //
-          sBufPtr = sBufList;
-
-
-        if(GetField("dt", &sBufPtr) != 0) {
-            psUserReport->ui32Time = GetFieldValueInt(&sBufPtr);
+        // Get the codigoNome.
+        //
+        if(GetField("codigoNome", &sBufPtr) != 0)
+        {
+            GetFieldValueString(&sBufPtr, pcBuffCodigoNovo,sizeof(pcBuffCodigoNovo));
+            psWeatherReport->codigoNome = pcBuffCodigoNovo;
+            //psWeatherReport->novo = GetFieldValueInt(&sBufPtr);
             i32Items++;
-        } else {
-            psUserReport->ui32Time = 0;
+        }
+        else
+        {
+            psWeatherReport->codigoNome = 0;
         }
 
-
-        //
-        // Reset the pointer to the start of the list values.
-        //
-        sBufPtr = sBufList;
-
-
-          if(GetField("name", &sBufPtr) != 0) {
-              //GetFieldValueString(psUserReport->name, &sBufPtr, sizeof(sBufPtr));
-              i32Items++;
-          } else {
-              psUserReport->name = "";
-          }
-
-          //
-          // Reset the pointer to the start of the list values.
-          //
-          sBufPtr = sBufList;
-
-
-          if(GetField("email", &sBufPtr) != 0) {
-              //GetFieldValueString(psUserReport->email, &sBufPtr, sizeof(sBufPtr));
-                i32Items++;
-          } else {
-                psUserReport->email = "";
-          }
-
-
-    }
 
     return(i32Items);
 }
