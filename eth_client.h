@@ -39,19 +39,6 @@ extern "C"
 #define ETH_EVENT_CLOSE         0x00000004
 #define ETH_EVENT_INVALID_REQ   0x00000005
 
-//*****************************************************************************
-//
-// The weather access methods.
-//
-//*****************************************************************************
-typedef enum
-{
-    //
-    // openweathermap.org.
-    //
-    iWSrcOpenWeatherMap
-}
-tWeatherSource;
 
 //*****************************************************************************
 //
@@ -67,14 +54,20 @@ typedef struct
 
     char *audio;
 
-    char *novo;
+    char *errors;
 
     char *codigoNome;
 
+    char *data;
+
+    char *keyBoard;
+
+    char *idBoard;
+
     char token[512];
 
+    char *rfid;
 
-    uint32_t senha;
     //
     // The last time these values were update (GMT Unix time).
     //
@@ -83,7 +76,7 @@ typedef struct
 
 
 }
-tWeatherReport;
+tUserReport;
 
 //*****************************************************************************
 //
@@ -112,29 +105,24 @@ void EthClientTCPDisconnect(void);
 // Exported weather related prototypes.
 //
 //*****************************************************************************
-extern void WeatherSourceSet(tWeatherSource eWeatherSource);
+extern void userSourceSet();
 
-extern int32_t requestGET(tWeatherSource eWeatherSource,
-                               const char *pcQuery,
-                               tWeatherReport *psWeather,
-                               tEventFunction pfnEvent,char* rfid);
-extern int32_t requestGETteste(tWeatherSource eWeatherSource,
-                               const char *pcQuery,
-                               tWeatherReport *psWeather,
+extern int32_t requestGET(     const char *pcQuery,
+                               tUserReport *psUser,
                                tEventFunction pfnEvent);
-extern int32_t requestPOST(tWeatherSource eWeatherSource,
-                               const char *pcQuery,
-                               tWeatherReport *psWeather,
-                               tEventFunction pfnEvent, char* size, char* code, char* key);
+extern int32_t requestGETteste(const char *pcQuery,
+                               tUserReport *psUser,
+                               tEventFunction pfnEvent);
+extern int32_t requestPOST(    const char *pcQuery,
+                               tUserReport *psUser,
+                               tEventFunction pfnEvent, char* size);
 
-extern int32_t requestPOSTKEY(tWeatherSource eWeatherSource,
-                               const char *pcQuery,
-                               tWeatherReport *psWeather,
-                               tEventFunction pfnEvent, char* size, char* code, char* key);
-extern int32_t requestPOSTACCESS(tWeatherSource eWeatherSource,
-                               const char *pcQuery,
-                               tWeatherReport *psWeather,
-                               tEventFunction pfnEvent, char* size, char* code, char* key,char* rfid);
+extern int32_t requestPOSTKEY( const char *pcQuery,
+                               tUserReport *psUser,
+                               tEventFunction pfnEvent, char* size);
+extern int32_t requestPOSTACCESS(const char *pcQuery,
+                               tUserReport *psUser,
+                               tEventFunction pfnEvent, char* size);
 
 #ifdef __cplusplus
 }

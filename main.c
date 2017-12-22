@@ -305,7 +305,7 @@ uint32_t g_ui32SysClock;
 
 //*****************************************************************************
 //
-// The state of each city panel.
+// The state.
 //
 //*****************************************************************************
 struct
@@ -318,10 +318,10 @@ struct
     //
     // The current weather report data for this city.
     //
-    tWeatherReport sReport;
+    tUserReport sReport;
 
     //
-    // The name of the current city.
+    // The name of the current.
     //
     const char *pcName;
 }
@@ -387,8 +387,8 @@ ResetUser(uint32_t ui32Idx)
 {
     g_psUserInfo.sReport.pcDescription = 0;
     g_psUserInfo.sReport.audio = 0;
-    g_psUserInfo.sReport.novo = 0;
-    g_psUserInfo.sReport.senha = 0;
+    g_psUserInfo.sReport.errors = 0;
+    g_psUserInfo.sReport.rfid = 0;
     g_psUserInfo.ui32LastUpdate = 0;
 }
 
@@ -520,7 +520,7 @@ EnetEvents(uint32_t ui32Event, void *pvData, uint32_t ui32Param)
 }
 
 
-int Communication (int request, char* size, char* code, char* key, char *rfid){
+int Communication (int request, char* size){
     enum
     {
         eRequestIdle,
@@ -561,8 +561,6 @@ int Communication (int request, char* size, char* code, char* key, char *rfid){
             }
             else if(iRequest == eRequestGETteste)
             {
-
-
                             g_iState = STATE_WAIT_DATA;
 
                             //
@@ -570,9 +568,7 @@ int Communication (int request, char* size, char* code, char* key, char *rfid){
                             //
                             g_ui32Delay = 1000;
 
-
-
-                           requestGETteste(iWSrcOpenWeatherMap,
+                           requestGETteste(
                                     g_psUserInfo.pcName,
                                     &g_psUserInfo.sReport,
                                     WeatherEvent);
@@ -581,8 +577,6 @@ int Communication (int request, char* size, char* code, char* key, char *rfid){
             }
             else if(iRequest == eRequestGET)
             {
-
-
                 g_iState = STATE_WAIT_DATA;
 
                 //
@@ -590,12 +584,10 @@ int Communication (int request, char* size, char* code, char* key, char *rfid){
                 //
                 g_ui32Delay = 1000;
 
-
-
-               requestGET(iWSrcOpenWeatherMap,
+               requestGET(
                         g_psUserInfo.pcName,
                         &g_psUserInfo.sReport,
-                        WeatherEvent, rfid);
+                        WeatherEvent);
 
                 iRequest = eRequestUpdate;
             }
@@ -608,10 +600,10 @@ int Communication (int request, char* size, char* code, char* key, char *rfid){
                 //
                 g_ui32Delay = 1000;
 
-                requestPOST(iWSrcOpenWeatherMap,
+                requestPOST(
                         g_psUserInfo.pcName,
                         &g_psUserInfo.sReport,
-                        WeatherEvent, size, code, key);
+                        WeatherEvent, size);
 
                 iRequest = eRequestUpdate;
             }
@@ -624,10 +616,10 @@ int Communication (int request, char* size, char* code, char* key, char *rfid){
                             //
                             g_ui32Delay = 1000;
 
-                            requestPOSTKEY(iWSrcOpenWeatherMap,
+                            requestPOSTKEY(
                                     g_psUserInfo.pcName,
                                     &g_psUserInfo.sReport,
-                                    WeatherEvent, size, code, key);
+                                    WeatherEvent, size);
 
                             iRequest = eRequestUpdate;
                         }
@@ -640,10 +632,10 @@ int Communication (int request, char* size, char* code, char* key, char *rfid){
                             //
                             g_ui32Delay = 1000;
 
-                            requestPOSTACCESS(iWSrcOpenWeatherMap,
+                            requestPOSTACCESS(
                                     g_psUserInfo.pcName,
                                     &g_psUserInfo.sReport,
-                                    WeatherEvent, size, code, key, rfid);
+                                    WeatherEvent, size);
 
                             iRequest = eRequestUpdate;
                         }
@@ -782,7 +774,7 @@ main(void)
     g_ui32IPaddr = EthClientAddrGet();
 
     HardwareInit();
-   // Communication(GETteste, "38", "2","TZgJS", "1111");
+   Communication(GETteste, "38");
     //loginServer();
 
 }
