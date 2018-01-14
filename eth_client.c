@@ -1343,8 +1343,6 @@ requestGET(const char *pcQuery,
     i32Idx = MergeRequest(0, getRequest,
                           sizeof(getRequest), false);
 
-    psUserReport->rfid = "1111";
-
     //
     // Append the rfid string
     //
@@ -1452,13 +1450,11 @@ requestPOST(const char *pcQuery,
     //
     g_sEnet.eState = iEthTCPConnectWait;
 
-    psUserReport->idBoard = "Board1";
-    psUserReport->keyBoard = "key1";
-
     //
     // Copy the base forecast request to the buffer. This buffer is the buffer sent
     //
-    i32Idx = MergeRequest(0, postRequest, sizeof(postRequest), false);
+    i32Idx = MergeRequest(0, postRequest,
+                          sizeof(postRequest), false);
 
     //
     // Append the "HTTP:/1.1" string.
@@ -1610,7 +1606,6 @@ requestPOST(const char *pcQuery,
     // Save the size of the request.
     //
     g_sUser.ui32RequestSize = i32Idx;
-    //g_sUser é o buffer que será enviado
 
     return(0);
 }
@@ -1762,9 +1757,6 @@ requestPOSTKEY(const char *pcQuery,
     i32Idx = MergeRequest(i32Idx, g_rfid,
                                       sizeof(g_Code1), false);
 
-
-    psUserReport->rfid = "1111";
-
     //
     // Append the "User" string.
     //
@@ -1859,7 +1851,6 @@ requestPOSTACCESS(const char *pcQuery,
     i32Idx = MergeRequest(0, postRequestAcess,
                           sizeof(postRequestAcess), false);
 
-    psUserReport->rfid = "1111";
 
     //
     // Append the rfid string
