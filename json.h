@@ -23,19 +23,19 @@
 #define INVALID_INT             ((int32_t)(0x80000000))
 
 extern int32_t JSONParseGET(uint32_t ui32Index,
-                                 tUserReport *psUserReport,
+                                 tWeatherReport *psWeatherReport,
                                  struct pbuf *psBuf);
 extern int32_t JSONParseGETteste(uint32_t ui32Index,
-                                 tUserReport *psUserReport,
+                                 tWeatherReport *psWeatherReport,
                                  struct pbuf *psBuf);
 extern int32_t JSONParsePOST(uint32_t ui32Index,
-                                 tUserReport *psUserReport,
+                                 tWeatherReport *psWeatherReport,
                                  struct pbuf *psBuf);
 extern int32_t JSONParsePOSTKEY(uint32_t ui32Index,
-                                 tUserReport *psUserReport,
+                                 tWeatherReport *psWeatherReport,
                                  struct pbuf *psBuf);
 extern int32_t JSONParsePOSTACCESS(uint32_t ui32Index,
-                                 tUserReport *psUserReport,
+                                 tWeatherReport *psWeatherReport,
                                  struct pbuf *psBuf);
 #endif
 

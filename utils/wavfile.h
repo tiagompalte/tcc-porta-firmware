@@ -23,6 +23,8 @@
 //
 //*****************************************************************************
 
+#include "../third_party/fatfs/src/ff.h"
+
 #ifndef WAVEFILE_H_
 #define WAVEFILE_H_
 

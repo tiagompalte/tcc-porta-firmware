@@ -33,10 +33,10 @@
 // Port number and Host name
 //
 //*****************************************************************************
-#define n_Port                  80
-#define hostName                "50.16.205.156"
-//#define n_Port                  3000
-//#define hostName                "192.168.100.2"
+//#define n_Port                  80
+//#define hostName                "50.16.205.156"
+#define n_Port                  3000
+#define hostName                "192.168.100.2"
 
 
 //*****************************************************************************
@@ -121,7 +121,7 @@ g_sEnet;
 // Maximum size of an weather request.
 //
 //*****************************************************************************
-#define MAX_REQUEST             2048
+#define MAX_REQUEST             2024
 
 extern uint32_t g_ui32SysClock;
 
@@ -150,14 +150,12 @@ static const char postRequestKey[] =
 static char g_cHTTP11[] = " HTTP/1.1\r\n";
 
 static const char g_ControlCache[] = "Cache-Control: no-cache\r\n";
-
 static const char g_ControlCacheTeste[] = "cache-control: no-cache\r\n";
 
 static const char g_Zone[] = "zone: UTC-3\r\n";
 
 //static const char g_Authorization[] = "Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwicm9sZSI6IlJPTEVfVkFMSURBQ0FPIiwiY3JlYXRlZCI6MTUwOTU5MjE3ODE2OCwiZXhwIjoxNTEwMTk2OTc4fQ._qa6qgADYfvikm00mVosmO0EwVkMb3q3-ley4oqHHU79NCdrR4aeJoeXEJMHdbtnz1XtSzCKHONdZ-FFDH5CYA\r\n";
-static const char g_Authorization[] = "Authorization: Bearer ";
-
+static const char g_Authorization[] = "Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwicm9sZSI6IlJPTEVfVkFMSURBQ0FPIiwiY3JlYXRlZCI6MTUwOTU5MjE3ODE2OCwiZXhwIjoxNTEwMTk2OTc4fQ._qa6qgADYfvikm00mVosmO0EwVkMb3q3-ley4oqHHU79NCdrR4aeJoeXEJMHdbtnz1XtSzCKHONdZ-FFDH5CYA\r\n";
 static const char g_ContentType[] = "Content-Type: application/json\r\n";
 
 static const char g_UserAgent[] = "User-Agent: Placa1 Version/1.0\r\n";
@@ -182,8 +180,6 @@ static const char g_Open[] = "{\r\n";
 
 static const char g_Code1[] = "\"codigo\": \"";
 
-static const char g_rfid[] = "\"rfid\": \"";
-
 static const char g_Code2[] = "\",\r\n";
 
 static const char g_Key1[] = "\"senha\": \"";
@@ -200,7 +196,12 @@ static const char g_Close[] = "}\r\n";
 struct
 {
     //
-    // The format expected
+    // The current weather source.
+    //
+    tWeatherSource eWeatherSource;
+
+    //
+    // The format expected from the weather source.
     //
     enum
     {
@@ -214,21 +215,22 @@ struct
     tEventFunction pfnEvent;
 
     //
-    // The application provided user information structure.
+    // The application provided weather information structure.
     //
-    tUserReport *psUserReport;
+    tWeatherReport *psWeatherReport;
 
     //
-    // The local buffer used to store the current user request.
+    // The local buffer used to store the current weather request.
     //
     char pcRequest[MAX_REQUEST];
+    //dados a serem enviado
 
     //
     // The number of valid bytes in the request.
     //
     uint32_t ui32RequestSize;
 }
-g_sUser;
+g_sWeather;
 
 //*****************************************************************************
 //
@@ -319,10 +321,10 @@ TCPReceive(void *pvArg, struct tcp_pcb *psPcb, struct pbuf *psBuf, err_t iErr)
         //
         // Tell the application that the connection was closed.
         //
-        if(g_sUser.pfnEvent)
+        if(g_sWeather.pfnEvent)
         {
-            g_sUser.pfnEvent(ETH_EVENT_CLOSE, 0, 0);
-            g_sUser.pfnEvent = 0;
+            g_sWeather.pfnEvent(ETH_EVENT_CLOSE, 0, 0);
+            g_sWeather.pfnEvent = 0;
         }
 
         //
@@ -347,17 +349,17 @@ TCPReceive(void *pvArg, struct tcp_pcb *psPcb, struct pbuf *psBuf, err_t iErr)
             //
             // Read items from the buffer.
             //
-            i32Items = JSONParsePOST(0, g_sUser.psUserReport, psBuf);
+            i32Items = JSONParsePOST(0, g_sWeather.psWeatherReport, psBuf);
 
             //
             // Make sure some items were found.
             //
             if(i32Items > 0)
             {
-                if(g_sUser.pfnEvent)
+                if(g_sWeather.pfnEvent)
                 {
-                    g_sUser.pfnEvent(ETH_EVENT_RECEIVE,
-                                        (void *)g_sUser.psUserReport, 0);
+                    g_sWeather.pfnEvent(ETH_EVENT_RECEIVE,
+                                        (void *)g_sWeather.psWeatherReport, 0);
 
                     //
                     // Clear the event function and return to the idle state.
@@ -367,12 +369,12 @@ TCPReceive(void *pvArg, struct tcp_pcb *psPcb, struct pbuf *psBuf, err_t iErr)
             }
             else if(i32Items < 0)
             {
-                if(g_sUser.pfnEvent)
+                if(g_sWeather.pfnEvent)
                 {
                     //
                     // This was not a valid request.
                     //
-                    g_sUser.pfnEvent(ETH_EVENT_INVALID_REQ, 0, 0);
+                    g_sWeather.pfnEvent(ETH_EVENT_INVALID_REQ, 0, 0);
 
                     //
                     // Clear the event function and return to the idle state.
@@ -386,14 +388,14 @@ TCPReceive(void *pvArg, struct tcp_pcb *psPcb, struct pbuf *psBuf, err_t iErr)
             //
             // Read items from the buffer.
             //
-            i32Items = JSONParsePOSTKEY(0, g_sUser.psUserReport, psBuf);
+            i32Items = JSONParsePOSTKEY(0, g_sWeather.psWeatherReport, psBuf);
 
             if(i32Items > 0)
             {
-                if(g_sUser.pfnEvent)
+                if(g_sWeather.pfnEvent)
                 {
-                    g_sUser.pfnEvent(ETH_EVENT_RECEIVE,
-                                        (void *)g_sUser.psUserReport, 0);
+                    g_sWeather.pfnEvent(ETH_EVENT_RECEIVE,
+                                        (void *)g_sWeather.psWeatherReport, 0);
 
                     //
                     // Clear the event function and return to the idle state.
@@ -403,12 +405,12 @@ TCPReceive(void *pvArg, struct tcp_pcb *psPcb, struct pbuf *psBuf, err_t iErr)
             }
             else if(i32Items < 0)
             {
-                if(g_sUser.pfnEvent)
+                if(g_sWeather.pfnEvent)
                 {
                     //
                     // This was not a valid request.
                     //
-                    g_sUser.pfnEvent(ETH_EVENT_INVALID_REQ, 0, 0);
+                    g_sWeather.pfnEvent(ETH_EVENT_INVALID_REQ, 0, 0);
 
                     //
                     // Clear the event function and return to the idle state.
@@ -422,14 +424,14 @@ TCPReceive(void *pvArg, struct tcp_pcb *psPcb, struct pbuf *psBuf, err_t iErr)
             //
             // Read items from the buffer.
             //
-            i32Items = JSONParsePOSTACCESS(0, g_sUser.psUserReport, psBuf);
+            i32Items = JSONParsePOSTACCESS(0, g_sWeather.psWeatherReport, psBuf);
 
             if(i32Items > 0)
             {
-                if(g_sUser.pfnEvent)
+                if(g_sWeather.pfnEvent)
                 {
-                    g_sUser.pfnEvent(ETH_EVENT_RECEIVE,
-                                        (void *)g_sUser.psUserReport, 0);
+                    g_sWeather.pfnEvent(ETH_EVENT_RECEIVE,
+                                        (void *)g_sWeather.psWeatherReport, 0);
 
                     //
                     // Clear the event function and return to the idle state.
@@ -439,12 +441,12 @@ TCPReceive(void *pvArg, struct tcp_pcb *psPcb, struct pbuf *psBuf, err_t iErr)
             }
             else if(i32Items < 0)
             {
-                if(g_sUser.pfnEvent)
+                if(g_sWeather.pfnEvent)
                 {
                     //
                     // This was not a valid request.
                     //
-                    g_sUser.pfnEvent(ETH_EVENT_INVALID_REQ, 0, 0);
+                    g_sWeather.pfnEvent(ETH_EVENT_INVALID_REQ, 0, 0);
 
                     //
                     // Clear the event function and return to the idle state.
@@ -458,14 +460,14 @@ TCPReceive(void *pvArg, struct tcp_pcb *psPcb, struct pbuf *psBuf, err_t iErr)
             //
             // Read items from the buffer.
             //
-            i32Items = JSONParseGET(0, g_sUser.psUserReport, psBuf);
+            i32Items = JSONParseGET(0, g_sWeather.psWeatherReport, psBuf);
 
             if(i32Items > 0)
             {
-                if(g_sUser.pfnEvent)
+                if(g_sWeather.pfnEvent)
                 {
-                    g_sUser.pfnEvent(ETH_EVENT_RECEIVE,
-                                        (void *)g_sUser.psUserReport, 0);
+                    g_sWeather.pfnEvent(ETH_EVENT_RECEIVE,
+                                        (void *)g_sWeather.psWeatherReport, 0);
 
                     //
                     // Clear the event function and return to the idle state.
@@ -475,12 +477,12 @@ TCPReceive(void *pvArg, struct tcp_pcb *psPcb, struct pbuf *psBuf, err_t iErr)
             }
             else if(i32Items < 0)
             {
-                if(g_sUser.pfnEvent)
+                if(g_sWeather.pfnEvent)
                 {
                     //
                     // This was not a valid request.
                     //
-                    g_sUser.pfnEvent(ETH_EVENT_INVALID_REQ, 0, 0);
+                    g_sWeather.pfnEvent(ETH_EVENT_INVALID_REQ, 0, 0);
 
                     //
                     // Clear the event function and return to the idle state.
@@ -493,14 +495,14 @@ TCPReceive(void *pvArg, struct tcp_pcb *psPcb, struct pbuf *psBuf, err_t iErr)
             //
             // Read items from the buffer.
             //
-            i32Items = JSONParseGETteste(0, g_sUser.psUserReport, psBuf);
+            i32Items = JSONParseGETteste(0, g_sWeather.psWeatherReport, psBuf);
 
             if(i32Items > 0)
             {
-                if(g_sUser.pfnEvent)
+                if(g_sWeather.pfnEvent)
                 {
-                    g_sUser.pfnEvent(ETH_EVENT_RECEIVE,
-                                        (void *)g_sUser.psUserReport, 0);
+                    g_sWeather.pfnEvent(ETH_EVENT_RECEIVE,
+                                        (void *)g_sWeather.psWeatherReport, 0);
 
                     //
                     // Clear the event function and return to the idle state.
@@ -510,12 +512,12 @@ TCPReceive(void *pvArg, struct tcp_pcb *psPcb, struct pbuf *psBuf, err_t iErr)
             }
             else if(i32Items < 0)
             {
-                if(g_sUser.pfnEvent)
+                if(g_sWeather.pfnEvent)
                 {
                     //
                     // This was not a valid request.
                     //
-                    g_sUser.pfnEvent(ETH_EVENT_INVALID_REQ, 0, 0);
+                    g_sWeather.pfnEvent(ETH_EVENT_INVALID_REQ, 0, 0);
 
                     //
                     // Clear the event function and return to the idle state.
@@ -1237,8 +1239,8 @@ EthClientTick(uint32_t ui32TickMS)
 
         g_sEnet.eState = iEthTCPOpen;
 
-        eError = EthClientSend(g_sUser.pcRequest,
-                               g_sUser.ui32RequestSize);
+        eError = EthClientSend(g_sWeather.pcRequest,
+                               g_sWeather.ui32RequestSize);
 
         if(eError == ERR_OK)
         {
@@ -1260,10 +1262,13 @@ EthClientTick(uint32_t ui32TickMS)
 //
 //*****************************************************************************
 void
-userSourceSet()
+WeatherSourceSet(tWeatherSource eWeatherSource)
 {
-
-    g_sUser.eFormat = iFormatJSON;
+    //
+    // Save the source.
+    //
+    g_sWeather.eWeatherSource = eWeatherSource;
+    g_sWeather.eFormat = iFormatJSON;
 }
 
 //*****************************************************************************
@@ -1284,20 +1289,20 @@ MergeRequest(int32_t i32Offset, const char *pcSrc, int32_t i32Size,
     {
         if((pcSrc[i32Idx] == ' ') && (bReplaceSpace))
         {
-            if((i32Offset + 3) >= sizeof(g_sUser.pcRequest))
+            if((i32Offset + 3) >= sizeof(g_sWeather.pcRequest))
             {
                 break;
             }
-            g_sUser.pcRequest[i32Offset++] = '%';
-            g_sUser.pcRequest[i32Offset++] = '2';
-            g_sUser.pcRequest[i32Offset] = '0';
+            g_sWeather.pcRequest[i32Offset++] = '%';
+            g_sWeather.pcRequest[i32Offset++] = '2';
+            g_sWeather.pcRequest[i32Offset] = '0';
         }
         else
         {
-            g_sUser.pcRequest[i32Offset] = pcSrc[i32Idx];
+            g_sWeather.pcRequest[i32Offset] = pcSrc[i32Idx];
         }
 
-        if((i32Offset >= sizeof(g_sUser.pcRequest)) ||
+        if((i32Offset >= sizeof(g_sWeather.pcRequest)) ||
            (pcSrc[i32Idx] == 0))
         {
             break;
@@ -1315,8 +1320,8 @@ MergeRequest(int32_t i32Offset, const char *pcSrc, int32_t i32Size,
 //
 //*****************************************************************************
 int32_t
-requestGET(const char *pcQuery,
-                tUserReport *psUserReport, tEventFunction pfnEvent)
+requestGET(tWeatherSource eWeatherSource, const char *pcQuery,
+                tWeatherReport *psWeatherReport, tEventFunction pfnEvent, char* rfid)
 {
     int32_t i32Idx;
 
@@ -1324,13 +1329,13 @@ requestGET(const char *pcQuery,
     // If the requested source is not valid or there is no call back then
     // just fail.
     //
-    if(g_sUser.pfnEvent)
+    if((eWeatherSource != iWSrcOpenWeatherMap) || (g_sWeather.pfnEvent))
     {
         return (-1);
     }
 
-    g_sUser.pfnEvent = pfnEvent;
-    g_sUser.psUserReport = psUserReport;
+    g_sWeather.pfnEvent = pfnEvent;
+    g_sWeather.psWeatherReport = psWeatherReport;
 
     //
     // Connect or reconnect to port 80.
@@ -1346,8 +1351,8 @@ requestGET(const char *pcQuery,
     //
     // Append the rfid string
     //
-    i32Idx = MergeRequest(i32Idx, psUserReport->rfid,
-                         sizeof(psUserReport->rfid), false);
+    i32Idx = MergeRequest(i32Idx, rfid,
+                         sizeof(rfid), false);
 
     //
     // Append the "HTTP:/1.1" string.
@@ -1370,17 +1375,6 @@ requestGET(const char *pcQuery,
     i32Idx = MergeRequest(i32Idx, g_Authorization, sizeof(g_Authorization), false);
 
     //
-    // Append the token
-    //
-    i32Idx = MergeRequest(i32Idx, psUserReport->token, sizeof(psUserReport->token), false);
-
-    //
-    // Break line
-    //
-    i32Idx = MergeRequest(i32Idx, g_AfterLength, sizeof(g_AfterLength), false);
-
-
-    //
     // Append the "UserAgent: Placa1 Version 1.0" string.
     //
     i32Idx = MergeRequest(i32Idx, g_UserAgent, sizeof(g_UserAgent), false);
@@ -1392,7 +1386,7 @@ requestGET(const char *pcQuery,
     i32Idx = MergeRequest(i32Idx, g_Accept, sizeof(g_Accept), false);
 
     //
-    // Append the "Host: portaeletronica-api.herokuapp.com" string.
+    // Append the "Host: localhost:8090" string.
     //
     i32Idx = MergeRequest(i32Idx, g_host, sizeof(g_host), false);
 
@@ -1417,7 +1411,7 @@ requestGET(const char *pcQuery,
     //
     // Save the size of the request.
     //
-    g_sUser.ui32RequestSize = i32Idx;
+    g_sWeather.ui32RequestSize = i32Idx;
 
     return(0);
 }
@@ -1428,8 +1422,8 @@ requestGET(const char *pcQuery,
 //
 //*****************************************************************************
 int32_t
-requestPOST(const char *pcQuery,
-                tUserReport *psUserReport, tEventFunction pfnEvent, char* size)
+requestPOST(tWeatherSource eWeatherSource, const char *pcQuery,
+                tWeatherReport *psWeatherReport, tEventFunction pfnEvent, char* size, char* code, char* key)
 {
     int32_t i32Idx;
 
@@ -1437,13 +1431,13 @@ requestPOST(const char *pcQuery,
     // If the requested source is not valid or there is no call back then
     // just fail.
     //
-    if(g_sUser.pfnEvent)
+    if((eWeatherSource != iWSrcOpenWeatherMap) || (g_sWeather.pfnEvent))
     {
         return (-1);
     }
 
-    g_sUser.pfnEvent = pfnEvent;
-    g_sUser.psUserReport = psUserReport;
+    g_sWeather.pfnEvent = pfnEvent;
+    g_sWeather.psWeatherReport = psWeatherReport;
 
     //
     // Connect or reconnect to port 80.
@@ -1552,8 +1546,8 @@ requestPOST(const char *pcQuery,
     // Append the "User" string.
     //
 
-    i32Idx = MergeRequest(i32Idx,psUserReport->idBoard ,
-                                      sizeof(psUserReport->idBoard), false);
+    i32Idx = MergeRequest(i32Idx, code,
+                                      sizeof(code), false);
 
     //
     // Append the "User" string.
@@ -1574,8 +1568,8 @@ requestPOST(const char *pcQuery,
     // Append the "User" string.
     //
 
-    i32Idx = MergeRequest(i32Idx, psUserReport->keyBoard,
-                                      sizeof(psUserReport->keyBoard)+1, false);
+    i32Idx = MergeRequest(i32Idx, key,
+                                      sizeof(key)+1, false);
 
 
     //
@@ -1605,7 +1599,8 @@ requestPOST(const char *pcQuery,
     //
     // Save the size of the request.
     //
-    g_sUser.ui32RequestSize = i32Idx;
+    g_sWeather.ui32RequestSize = i32Idx;
+    //g_sWeather é o buffer que será enviado
 
     return(0);
 }
@@ -1616,23 +1611,22 @@ requestPOST(const char *pcQuery,
 //
 //*****************************************************************************
 int32_t
-requestPOSTKEY(const char *pcQuery,
-                tUserReport *psUserReport, tEventFunction pfnEvent, char* size)
+requestPOSTKEY(tWeatherSource eWeatherSource, const char *pcQuery,
+                tWeatherReport *psWeatherReport, tEventFunction pfnEvent, char* size, char* code, char* key)
 {
     int32_t i32Idx;
-
 
     //
     // If the requested source is not valid or there is no call back then
     // just fail.
     //
-    if(g_sUser.pfnEvent)
+    if((eWeatherSource != iWSrcOpenWeatherMap) || (g_sWeather.pfnEvent))
     {
         return (-1);
     }
 
-    g_sUser.pfnEvent = pfnEvent;
-    g_sUser.psUserReport = psUserReport;
+    g_sWeather.pfnEvent = pfnEvent;
+    g_sWeather.psWeatherReport = psWeatherReport;
 
     //
     // Connect or reconnect to port 3000.
@@ -1665,16 +1659,6 @@ requestPOSTKEY(const char *pcQuery,
     // Append the "Authorization: Bearer token" string.
     //
     i32Idx = MergeRequest(i32Idx, g_Authorization, sizeof(g_Authorization), false);
-
-    //
-     // Append the token
-     //
-     i32Idx = MergeRequest(i32Idx, psUserReport->token, sizeof(psUserReport->token), false);
-
-     //
-     // Break line
-     //
-     i32Idx = MergeRequest(i32Idx, g_AfterLength, sizeof(g_AfterLength), false);
 
     //
     // Append the "Content-Type: application/json" string.
@@ -1754,15 +1738,16 @@ requestPOSTKEY(const char *pcQuery,
     // Append the "User" string.
     //
 
-    i32Idx = MergeRequest(i32Idx, g_rfid,
+    i32Idx = MergeRequest(i32Idx, g_Code1,
                                       sizeof(g_Code1), false);
+
 
     //
     // Append the "User" string.
     //
 
-    i32Idx = MergeRequest(i32Idx, psUserReport->rfid,
-                                      sizeof(psUserReport->rfid), false);
+    i32Idx = MergeRequest(i32Idx, code,
+                                      sizeof(code), false);
 
     //
     // Append the "User" string.
@@ -1783,8 +1768,8 @@ requestPOSTKEY(const char *pcQuery,
     // Append the "User" string.
     //
 
-    i32Idx = MergeRequest(i32Idx, psUserReport->keyBoard,
-                                      sizeof(psUserReport->keyBoard)+1, false);
+    i32Idx = MergeRequest(i32Idx, key,
+                                      sizeof(key)+1, false);
 
 
     //
@@ -1801,7 +1786,9 @@ requestPOSTKEY(const char *pcQuery,
     i32Idx = MergeRequest(i32Idx, g_Close,
                                       sizeof(g_Close), false);
 
-
+    //
+    // Forcast weather report request.
+    //
     g_sEnet.ulRequest = POSTKEY;
 
     if(EthClientTCPConnect(n_Port) != ERR_OK)
@@ -1812,7 +1799,8 @@ requestPOSTKEY(const char *pcQuery,
     //
     // Save the size of the request.
     //
-    g_sUser.ui32RequestSize = i32Idx;
+    g_sWeather.ui32RequestSize = i32Idx;
+    //g_sWeather é o buffer que será enviado
 
     return(0);
 }
@@ -1823,8 +1811,8 @@ requestPOSTKEY(const char *pcQuery,
 //
 //*****************************************************************************
 int32_t
-requestPOSTACCESS(const char *pcQuery,
-                tUserReport *psUserReport, tEventFunction pfnEvent, char* size)
+requestPOSTACCESS(tWeatherSource eWeatherSource, const char *pcQuery,
+                tWeatherReport *psWeatherReport, tEventFunction pfnEvent, char* size, char* code, char* key,char* rfid)
 {
     int32_t i32Idx;
 
@@ -1832,13 +1820,13 @@ requestPOSTACCESS(const char *pcQuery,
     // If the requested source is not valid or there is no call back then
     // just fail.
     //
-    if(g_sUser.pfnEvent)
+    if((eWeatherSource != iWSrcOpenWeatherMap) || (g_sWeather.pfnEvent))
     {
         return (-1);
     }
 
-    g_sUser.pfnEvent = pfnEvent;
-    g_sUser.psUserReport = psUserReport;
+    g_sWeather.pfnEvent = pfnEvent;
+    g_sWeather.psWeatherReport = psWeatherReport;
 
     //
     // Connect or reconnect to port 3000.
@@ -1846,17 +1834,16 @@ requestPOSTACCESS(const char *pcQuery,
     g_sEnet.eState = iEthTCPConnectWait;
 
     //
-    // "POST /api/usuarios/confirmacaoAcesso/";
+    //
     //
     i32Idx = MergeRequest(0, postRequestAcess,
                           sizeof(postRequestAcess), false);
 
-
     //
     // Append the rfid string
     //
-    i32Idx = MergeRequest(i32Idx, psUserReport->rfid,
-                         sizeof(psUserReport->rfid), false);
+    i32Idx = MergeRequest(i32Idx, rfid,
+                         sizeof(rfid), false);
 
     //
     // Append the "HTTP:/1.1" string.
@@ -1877,16 +1864,6 @@ requestPOSTACCESS(const char *pcQuery,
     // Append the "Authorization: Bearer token" string.
     //
     i32Idx = MergeRequest(i32Idx, g_Authorization, sizeof(g_Authorization), false);
-
-    //
-     // Append the token
-     //
-     i32Idx = MergeRequest(i32Idx, psUserReport->token, sizeof(psUserReport->token), false);
-
-     //
-     // Break line
-     //
-     i32Idx = MergeRequest(i32Idx, g_AfterLength, sizeof(g_AfterLength), false);
 
     //
     // Append the "Content-Type: application/json" string.
@@ -1954,6 +1931,65 @@ requestPOSTACCESS(const char *pcQuery,
     i32Idx = MergeRequest(i32Idx, g_Conncection,
                               sizeof(g_Conncection), false);
 
+    //
+    // Append the "User" string.
+    //
+
+    i32Idx = MergeRequest(i32Idx, g_Open,
+                                  sizeof(g_Open), false);
+
+
+    //
+    // Append the "User" string.
+    //
+
+    i32Idx = MergeRequest(i32Idx, g_Code1,
+                                      sizeof(g_Code1), false);
+
+
+    //
+    // Append the "User" string.
+    //
+
+    i32Idx = MergeRequest(i32Idx, code,
+                                      sizeof(code), false);
+
+    //
+    // Append the "User" string.
+    //
+
+    i32Idx = MergeRequest(i32Idx, g_Code2,
+                                      sizeof(g_Code2), false);
+
+    //
+    // Append the "User" string.
+    //
+
+    i32Idx = MergeRequest(i32Idx, g_Key1,
+                                      sizeof(g_Key1), false);
+
+
+    //
+    // Append the "User" string.
+    //
+
+    i32Idx = MergeRequest(i32Idx, key,
+                                      sizeof(key)+1, false);
+
+
+    //
+    // Append the "User" string.
+    //
+
+    i32Idx = MergeRequest(i32Idx, g_Key2,
+                                      sizeof(g_Key2), false);
+
+    //
+    // Append the "User" string.
+    //
+
+    i32Idx = MergeRequest(i32Idx, g_Close,
+                                      sizeof(g_Close), false);
 
     g_sEnet.ulRequest = POSTACCESS;
 
@@ -1965,14 +2001,14 @@ requestPOSTACCESS(const char *pcQuery,
     //
     // Save the size of the request.
     //
-    g_sUser.ui32RequestSize = i32Idx;
+    g_sWeather.ui32RequestSize = i32Idx;
 
     return(0);
 }
 
 int32_t
-requestGETteste(const char *pcQuery,
-                tUserReport *psUserReport, tEventFunction pfnEvent)
+requestGETteste(tWeatherSource eWeatherSource, const char *pcQuery,
+                tWeatherReport *psWeatherReport, tEventFunction pfnEvent)
 {
     int32_t i32Idx;
 
@@ -1980,13 +2016,13 @@ requestGETteste(const char *pcQuery,
     // If the requested source is not valid or there is no call back then
     // just fail.
     //
-    if(g_sUser.pfnEvent)
+    if((eWeatherSource != iWSrcOpenWeatherMap) || (g_sWeather.pfnEvent))
     {
         return (-1);
     }
 
-    g_sUser.pfnEvent = pfnEvent;
-    g_sUser.psUserReport = psUserReport;
+    g_sWeather.pfnEvent = pfnEvent;
+    g_sWeather.psWeatherReport = psWeatherReport;
 
     //
     // Connect or reconnect to port 80.
@@ -2047,7 +2083,7 @@ requestGETteste(const char *pcQuery,
     //
     // Save the size of the request.
     //
-    g_sUser.ui32RequestSize = i32Idx;
+    g_sWeather.ui32RequestSize = i32Idx;
 
     return(0);
 }

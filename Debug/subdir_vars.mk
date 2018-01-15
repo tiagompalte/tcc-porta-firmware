@@ -30,30 +30,6 @@ C_SRCS += \
 ../trava_eletrica.c \
 ../uart.c 
 
-C_DEPS += \
-./Hardware.d \
-./MyString.d \
-./adc.d \
-./buzzer.d \
-./cpu.d \
-./criptografy.d \
-./eth_client.d \
-./flash.d \
-./gpio.d \
-./interrupt.d \
-./json.d \
-./keyboard.d \
-./lcd.d \
-./main.d \
-./rfid.d \
-./spi.d \
-./ssi.d \
-./startup_ccs.d \
-./sysctl.d \
-./timer.d \
-./trava_eletrica.d \
-./uart.d 
-
 OBJS += \
 ./Hardware.obj \
 ./MyString.obj \
@@ -78,29 +54,29 @@ OBJS += \
 ./trava_eletrica.obj \
 ./uart.obj 
 
-OBJS__QUOTED += \
-"Hardware.obj" \
-"MyString.obj" \
-"adc.obj" \
-"buzzer.obj" \
-"cpu.obj" \
-"criptografy.obj" \
-"eth_client.obj" \
-"flash.obj" \
-"gpio.obj" \
-"interrupt.obj" \
-"json.obj" \
-"keyboard.obj" \
-"lcd.obj" \
-"main.obj" \
-"rfid.obj" \
-"spi.obj" \
-"ssi.obj" \
-"startup_ccs.obj" \
-"sysctl.obj" \
-"timer.obj" \
-"trava_eletrica.obj" \
-"uart.obj" 
+C_DEPS += \
+./Hardware.d \
+./MyString.d \
+./adc.d \
+./buzzer.d \
+./cpu.d \
+./criptografy.d \
+./eth_client.d \
+./flash.d \
+./gpio.d \
+./interrupt.d \
+./json.d \
+./keyboard.d \
+./lcd.d \
+./main.d \
+./rfid.d \
+./spi.d \
+./ssi.d \
+./startup_ccs.d \
+./sysctl.d \
+./timer.d \
+./trava_eletrica.d \
+./uart.d 
 
 C_DEPS__QUOTED += \
 "Hardware.d" \
@@ -125,6 +101,30 @@ C_DEPS__QUOTED += \
 "timer.d" \
 "trava_eletrica.d" \
 "uart.d" 
+
+OBJS__QUOTED += \
+"Hardware.obj" \
+"MyString.obj" \
+"adc.obj" \
+"buzzer.obj" \
+"cpu.obj" \
+"criptografy.obj" \
+"eth_client.obj" \
+"flash.obj" \
+"gpio.obj" \
+"interrupt.obj" \
+"json.obj" \
+"keyboard.obj" \
+"lcd.obj" \
+"main.obj" \
+"rfid.obj" \
+"spi.obj" \
+"ssi.obj" \
+"startup_ccs.obj" \
+"sysctl.obj" \
+"timer.obj" \
+"trava_eletrica.obj" \
+"uart.obj" 
 
 C_SRCS__QUOTED += \
 "../Hardware.c" \

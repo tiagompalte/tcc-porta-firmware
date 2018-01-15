@@ -7,21 +7,21 @@ C_SRCS += \
 ../drivers/http.c \
 ../drivers/pinout.c 
 
-C_DEPS += \
-./drivers/http.d \
-./drivers/pinout.d 
-
 OBJS += \
 ./drivers/http.obj \
 ./drivers/pinout.obj 
 
-OBJS__QUOTED += \
-"drivers/http.obj" \
-"drivers/pinout.obj" 
+C_DEPS += \
+./drivers/http.d \
+./drivers/pinout.d 
 
 C_DEPS__QUOTED += \
-"drivers/http.d" \
-"drivers/pinout.d" 
+"drivers\http.d" \
+"drivers\pinout.d" 
+
+OBJS__QUOTED += \
+"drivers\http.obj" \
+"drivers\pinout.obj" 
 
 C_SRCS__QUOTED += \
 "../drivers/http.c" \

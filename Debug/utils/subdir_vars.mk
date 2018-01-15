@@ -9,15 +9,8 @@ C_SRCS += \
 ../utils/locator.c \
 ../utils/lwiplib.c \
 ../utils/uartstdio.c \
-../utils/ustdlib.c 
-
-C_DEPS += \
-./utils/cmdline.d \
-./utils/flash_pb.d \
-./utils/locator.d \
-./utils/lwiplib.d \
-./utils/uartstdio.d \
-./utils/ustdlib.d 
+../utils/ustdlib.c \
+../utils/wavfile.c 
 
 OBJS += \
 ./utils/cmdline.obj \
@@ -25,23 +18,35 @@ OBJS += \
 ./utils/locator.obj \
 ./utils/lwiplib.obj \
 ./utils/uartstdio.obj \
-./utils/ustdlib.obj 
+./utils/ustdlib.obj \
+./utils/wavfile.obj 
 
-OBJS__QUOTED += \
-"utils/cmdline.obj" \
-"utils/flash_pb.obj" \
-"utils/locator.obj" \
-"utils/lwiplib.obj" \
-"utils/uartstdio.obj" \
-"utils/ustdlib.obj" 
+C_DEPS += \
+./utils/cmdline.d \
+./utils/flash_pb.d \
+./utils/locator.d \
+./utils/lwiplib.d \
+./utils/uartstdio.d \
+./utils/ustdlib.d \
+./utils/wavfile.d 
 
 C_DEPS__QUOTED += \
-"utils/cmdline.d" \
-"utils/flash_pb.d" \
-"utils/locator.d" \
-"utils/lwiplib.d" \
-"utils/uartstdio.d" \
-"utils/ustdlib.d" 
+"utils\cmdline.d" \
+"utils\flash_pb.d" \
+"utils\locator.d" \
+"utils\lwiplib.d" \
+"utils\uartstdio.d" \
+"utils\ustdlib.d" \
+"utils\wavfile.d" 
+
+OBJS__QUOTED += \
+"utils\cmdline.obj" \
+"utils\flash_pb.obj" \
+"utils\locator.obj" \
+"utils\lwiplib.obj" \
+"utils\uartstdio.obj" \
+"utils\ustdlib.obj" \
+"utils\wavfile.obj" 
 
 C_SRCS__QUOTED += \
 "../utils/cmdline.c" \
@@ -49,6 +54,7 @@ C_SRCS__QUOTED += \
 "../utils/locator.c" \
 "../utils/lwiplib.c" \
 "../utils/uartstdio.c" \
-"../utils/ustdlib.c" 
+"../utils/ustdlib.c" \
+"../utils/wavfile.c" 
 
 
