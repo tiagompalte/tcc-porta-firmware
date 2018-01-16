@@ -357,12 +357,12 @@ GetFieldValueString(tBufPtr *psBufPtr, char *pcDataDest, uint32_t ui32SizeDest)
 
 //*****************************************************************************
 //
-// Fill out the psWeatherReport structure from data returned from the JSON
+// Fill out the psUserReport structure from data returned from the JSON
 // query for GET.
 //
 //*****************************************************************************
 int32_t
-JSONParseGET(uint32_t ui32Index, tWeatherReport *psWeatherReport,
+JSONParseGET(uint32_t ui32Index, tUserReport *psUserReport,
                   struct pbuf *psBuf)
 {
     tBufPtr sBufPtr, sBufList, sBufTemp;
@@ -434,12 +434,12 @@ JSONParseGET(uint32_t ui32Index, tWeatherReport *psWeatherReport,
         if(GetField("audio", &sBufPtr) != 0)
         {
             GetFieldValueString(&sBufPtr, pcBuffAudio,sizeof(pcBuffAudio));
-            psWeatherReport->audio = pcBuffAudio;
+            psUserReport->audio = pcBuffAudio;
             i32Items++;
         }
         else
         {
-            psWeatherReport->audio = 0;
+            psUserReport->audio = 0;
         }
 
         //
@@ -448,35 +448,53 @@ JSONParseGET(uint32_t ui32Index, tWeatherReport *psWeatherReport,
         sBufPtr = sBufList;
 
         //
-        // Get the novo.
-        //
-        if(GetField("codigoNome", &sBufPtr) != 0)
-        {
-            GetFieldValueString(&sBufPtr, pcBuffNovo,sizeof(pcBuffNovo));
-            psWeatherReport->novo = pcBuffNovo;
-            //psWeatherReport->novo = GetFieldValueInt(&sBufPtr);
-            i32Items++;
-        }
-        else
-        {
-            psWeatherReport->novo = 0;
-        }
-
-        sBufPtr = sBufList;
-
-        //
         // Get the codigoNome.
         //
         if(GetField("codigoNome", &sBufPtr) != 0)
         {
             GetFieldValueString(&sBufPtr, pcBuffCodigoNovo,sizeof(pcBuffCodigoNovo));
-            psWeatherReport->codigoNome = pcBuffCodigoNovo;
-            //psWeatherReport->novo = GetFieldValueInt(&sBufPtr);
+             psUserReport->codigoNome = pcBuffCodigoNovo;
+            //psUserReport->errors = GetFieldValueInt(&sBufPtr);
             i32Items++;
         }
         else
         {
-            psWeatherReport->codigoNome = 0;
+            psUserReport->codigoNome = 0;
+        }
+
+        sBufPtr = sBufList;
+
+        //
+        // Get the data.
+        //
+        if(GetField("data", &sBufPtr) != 0)
+        {
+            GetFieldValueString(&sBufPtr, pcBuffCodigoNovo,sizeof(pcBuffCodigoNovo));
+            psUserReport->data = pcBuffCodigoNovo;
+            //psUserReport->errors = GetFieldValueInt(&sBufPtr);
+            i32Items++;
+        }
+        else
+        {
+            psUserReport->data = 0;
+        }
+
+        sBufPtr = sBufList;
+
+        //
+        // Get the errors.
+        //
+        if (GetField("errors", &sBufPtr) != 0)
+        {
+            GetFieldValueString(&sBufPtr, pcBuffCodigoNovo,
+                                sizeof(pcBuffCodigoNovo));
+            psUserReport->errors = pcBuffCodigoNovo;
+            //psUserReport->errors = GetFieldValueInt(&sBufPtr);
+            i32Items++;
+        }
+        else
+        {
+            psUserReport->errors = 0;
         }
 
 
@@ -485,12 +503,12 @@ JSONParseGET(uint32_t ui32Index, tWeatherReport *psWeatherReport,
 
 //*****************************************************************************
 //
-// Fill out the psWeatherReport structure from data returned from the JSON
+// Fill out the psUserReport structure from data returned from the JSON
 // query for GET.
 //
 //*****************************************************************************
 int32_t
-JSONParsePOST(uint32_t ui32Index, tWeatherReport *psWeatherReport,
+JSONParsePOST(uint32_t ui32Index, tUserReport *psUserReport,
                   struct pbuf *psBuf)
 {
     tBufPtr sBufPtr, sBufList, sBufTemp;
@@ -557,10 +575,10 @@ JSONParsePOST(uint32_t ui32Index, tWeatherReport *psWeatherReport,
 
     if(GetField("data", &sBufPtr) != 0) {
         if(GetField("token", &sBufPtr) != 0) {
-            GetFieldValueString(&sBufPtr, psWeatherReport->token,sizeof(psWeatherReport->token));
+            GetFieldValueString(&sBufPtr, psUserReport->token,sizeof(psUserReport->token));
             i32Items++;
         } else {
-            psWeatherReport->token[0] = ' ';
+            psUserReport->token[0] = ' ';
         }
     }
     sBufPtr = sBufList;
@@ -570,12 +588,12 @@ JSONParsePOST(uint32_t ui32Index, tWeatherReport *psWeatherReport,
 
 //*****************************************************************************
 //
-// Fill out the psWeatherReport structure from data returned from the JSON
+// Fill out the psUserReport structure from data returned from the JSON
 // query for GET.
 //
 //*****************************************************************************
 int32_t
-JSONParsePOSTKEY(uint32_t ui32Index, tWeatherReport *psWeatherReport,
+JSONParsePOSTKEY(uint32_t ui32Index, tUserReport *psUserReport,
                   struct pbuf *psBuf)
 {
     tBufPtr sBufPtr, sBufList, sBufTemp;
@@ -642,10 +660,10 @@ JSONParsePOSTKEY(uint32_t ui32Index, tWeatherReport *psWeatherReport,
 
     if(GetField("data", &sBufPtr) != 0) {
         if(GetField("token", &sBufPtr) != 0) {
-            GetFieldValueString(&sBufPtr, psWeatherReport->token,sizeof(psWeatherReport->token));
+            GetFieldValueString(&sBufPtr, psUserReport->token,sizeof(psUserReport->token));
             i32Items++;
         } else {
-            psWeatherReport->token[0] = ' ';
+            psUserReport->token[0] = ' ';
         }
     }
     sBufPtr = sBufList;
@@ -655,12 +673,12 @@ JSONParsePOSTKEY(uint32_t ui32Index, tWeatherReport *psWeatherReport,
 
 //*****************************************************************************
 //
-// Fill out the psWeatherReport structure from data returned from the JSON
+// Fill out the psUserReport structure from data returned from the JSON
 // query for GET.
 //
 //*****************************************************************************
 int32_t
-JSONParsePOSTACCESS(uint32_t ui32Index, tWeatherReport *psWeatherReport,
+JSONParsePOSTACCESS(uint32_t ui32Index, tUserReport *psUserReport,
                   struct pbuf *psBuf)
 {
     tBufPtr sBufPtr, sBufList, sBufTemp;
@@ -727,10 +745,10 @@ JSONParsePOSTACCESS(uint32_t ui32Index, tWeatherReport *psWeatherReport,
 
     if(GetField("data", &sBufPtr) != 0) {
         if(GetField("token", &sBufPtr) != 0) {
-            GetFieldValueString(&sBufPtr, psWeatherReport->token,sizeof(psWeatherReport->token));
+            GetFieldValueString(&sBufPtr, psUserReport->token,sizeof(psUserReport->token));
             i32Items++;
         } else {
-            psWeatherReport->token[0] = ' ';
+            psUserReport->token[0] = ' ';
         }
     }
     sBufPtr = sBufList;
@@ -741,12 +759,12 @@ JSONParsePOSTACCESS(uint32_t ui32Index, tWeatherReport *psWeatherReport,
 
 //*****************************************************************************
 //
-// Fill out the psWeatherReport structure from data returned from the JSON
+// Fill out the psUserReport structure from data returned from the JSON
 // query for GET.
 //
 //*****************************************************************************
 int32_t
-JSONParseGETteste(uint32_t ui32Index, tWeatherReport *psWeatherReport,
+JSONParseGETteste(uint32_t ui32Index, tUserReport *psUserReport,
                   struct pbuf *psBuf)
 {
     tBufPtr sBufPtr, sBufList, sBufTemp;
@@ -818,12 +836,12 @@ JSONParseGETteste(uint32_t ui32Index, tWeatherReport *psWeatherReport,
         if(GetField("tag", &sBufPtr) != 0)
         {
             GetFieldValueString(&sBufPtr, pcBuffAudio,sizeof(pcBuffAudio));
-            psWeatherReport->audio = pcBuffAudio;
+            psUserReport->audio = pcBuffAudio;
             i32Items++;
         }
         else
         {
-            psWeatherReport->audio = 0;
+            psUserReport->audio = 0;
         }
 
         //
@@ -832,18 +850,18 @@ JSONParseGETteste(uint32_t ui32Index, tWeatherReport *psWeatherReport,
         sBufPtr = sBufList;
 
         //
-        // Get the novo.
+        // Get the errors.
         //
         if(GetField("codigoNome", &sBufPtr) != 0)
         {
             GetFieldValueString(&sBufPtr, pcBuffNovo,sizeof(pcBuffNovo));
-            psWeatherReport->novo = pcBuffNovo;
-            //psWeatherReport->novo = GetFieldValueInt(&sBufPtr);
+            psUserReport->errors = pcBuffNovo;
+            //psUserReport->errors = GetFieldValueInt(&sBufPtr);
             i32Items++;
         }
         else
         {
-            psWeatherReport->novo = 0;
+            psUserReport->errors = 0;
         }
 
         sBufPtr = sBufList;
@@ -854,13 +872,13 @@ JSONParseGETteste(uint32_t ui32Index, tWeatherReport *psWeatherReport,
         if(GetField("codigoNome", &sBufPtr) != 0)
         {
             GetFieldValueString(&sBufPtr, pcBuffCodigoNovo,sizeof(pcBuffCodigoNovo));
-            psWeatherReport->codigoNome = pcBuffCodigoNovo;
-            //psWeatherReport->novo = GetFieldValueInt(&sBufPtr);
+            psUserReport->codigoNome = pcBuffCodigoNovo;
+            //psUserReport->errors = GetFieldValueInt(&sBufPtr);
             i32Items++;
         }
         else
         {
-            psWeatherReport->codigoNome = 0;
+            psUserReport->codigoNome = 0;
         }
 
 

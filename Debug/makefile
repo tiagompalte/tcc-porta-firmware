@@ -13,11 +13,13 @@ ORDERED_OBJS += \
 "./Hardware.obj" \
 "./MyString.obj" \
 "./adc.obj" \
+"./algorithm.obj" \
 "./buzzer.obj" \
 "./cpu.obj" \
 "./criptografy.obj" \
 "./eth_client.obj" \
 "./flash.obj" \
+"./g711.obj" \
 "./gpio.obj" \
 "./interrupt.obj" \
 "./json.obj" \
@@ -192,8 +194,8 @@ trabalhoJunto.bin: $(EXE_OUTPUTS)
 # Other Targets
 clean:
 	-$(RM) $(EXE_OUTPUTS__QUOTED)$(BIN_OUTPUTS__QUOTED)
-	-$(RM) "Hardware.d" "MyString.d" "adc.d" "buzzer.d" "cpu.d" "criptografy.d" "eth_client.d" "flash.d" "gpio.d" "interrupt.d" "json.d" "keyboard.d" "lcd.d" "main.d" "rfid.d" "spi.d" "ssi.d" "startup_ccs.d" "sysctl.d" "timer.d" "trava_eletrica.d" "uart.d" "drivers\http.d" "drivers\pinout.d" "third_party\fatfs\src\ff.d" "utils\cmdline.d" "utils\flash_pb.d" "utils\locator.d" "utils\lwiplib.d" "utils\uartstdio.d" "utils\ustdlib.d" "utils\wavfile.d" 
-	-$(RM) "Hardware.obj" "MyString.obj" "adc.obj" "buzzer.obj" "cpu.obj" "criptografy.obj" "eth_client.obj" "flash.obj" "gpio.obj" "interrupt.obj" "json.obj" "keyboard.obj" "lcd.obj" "main.obj" "rfid.obj" "spi.obj" "ssi.obj" "startup_ccs.obj" "sysctl.obj" "timer.obj" "trava_eletrica.obj" "uart.obj" "drivers\http.obj" "drivers\pinout.obj" "third_party\fatfs\src\ff.obj" "utils\cmdline.obj" "utils\flash_pb.obj" "utils\locator.obj" "utils\lwiplib.obj" "utils\uartstdio.obj" "utils\ustdlib.obj" "utils\wavfile.obj" 
+	-$(RM) "Hardware.d" "MyString.d" "adc.d" "algorithm.d" "buzzer.d" "cpu.d" "criptografy.d" "eth_client.d" "flash.d" "g711.d" "gpio.d" "interrupt.d" "json.d" "keyboard.d" "lcd.d" "main.d" "rfid.d" "spi.d" "ssi.d" "startup_ccs.d" "sysctl.d" "timer.d" "trava_eletrica.d" "uart.d" "drivers\http.d" "drivers\pinout.d" "third_party\fatfs\src\ff.d" "utils\cmdline.d" "utils\flash_pb.d" "utils\locator.d" "utils\lwiplib.d" "utils\uartstdio.d" "utils\ustdlib.d" "utils\wavfile.d" 
+	-$(RM) "Hardware.obj" "MyString.obj" "adc.obj" "algorithm.obj" "buzzer.obj" "cpu.obj" "criptografy.obj" "eth_client.obj" "flash.obj" "g711.obj" "gpio.obj" "interrupt.obj" "json.obj" "keyboard.obj" "lcd.obj" "main.obj" "rfid.obj" "spi.obj" "ssi.obj" "startup_ccs.obj" "sysctl.obj" "timer.obj" "trava_eletrica.obj" "uart.obj" "drivers\http.obj" "drivers\pinout.obj" "third_party\fatfs\src\ff.obj" "utils\cmdline.obj" "utils\flash_pb.obj" "utils\locator.obj" "utils\lwiplib.obj" "utils\uartstdio.obj" "utils\ustdlib.obj" "utils\wavfile.obj" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

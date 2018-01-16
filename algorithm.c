@@ -18,7 +18,7 @@
 #include "driverlib/algorithm.h"
 
 // Retornar o maior valor positivo de um vetor
-int _max(int n, int vector[]) {
+int _max(int n, uint8_t vector[]) {
 	int i;
 	int maior = 0;
 
@@ -67,7 +67,7 @@ void _normalizar() {
 } */
 
 // Retorna o valor central da autocorrelação de um vetor (Rxx[0])
-int autoCorrelate(int signal[]) {
+int autoCorrelate(uint8_t signal[]) {
 	int n;
 	rAuto = 0;
 
@@ -79,7 +79,7 @@ int autoCorrelate(int signal[]) {
 }
 
 // Retorna o maior valor de crosscorrelação entre dois vetores (max(Rxy[k]))
-int crossCorrelate(int signal1[], int signal2[]) {
+int crossCorrelate(uint8_t signal1[], uint8_t signal2[]) {
 	int n, k;
 
 	for (k = -DELAY_MAX; k <= DELAY_MAX; k++) {						// Para os atrasos relevantes

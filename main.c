@@ -1,5 +1,5 @@
 /* ************************************************************** *
- * UTFPR - Universidade Tecnologica Federal do Paraná
+ * UTFPR - Universidade Tecnologica Federal do ParanÃ¡
  * Engenharia Eletronica
  * Trabalho de Conclusao de Curso
  * ************************************************************** *
@@ -17,6 +17,9 @@
 #include <enet.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <math.h>
+
+
 #include "inc/hw_types.h"
 #include "inc/hw_ints.h"
 #include "inc/hw_memmap.h"
@@ -58,6 +61,7 @@
 #include "driverlib/adc.h"
 #include "driverlib/algorithm.h"
 #include "driverlib/pin_map.h"
+#include "driverlib/g711.h"
 #include "driverlib/gpio.h"
 #include "driverlib/Hardware.h"
 #include "driverlib/interrupt.h"
@@ -76,6 +80,8 @@
 #define POSTKEY     2
 #define POSTACCESS  3
 #define GETteste    4
+#define CodeBoard   "2"
+#define KeyBoard   "TZgJS"
 
 int led3s, ledConv;
 int i, tempIndex;
@@ -115,33 +121,33 @@ void ISR_ADC0() {
     }
 
     if (indiceAmostra <= NUM_AMOSTRAS + DELAY_MAX - 1) {
-        if (tempIndex <= N_MEDIAS - 1) {
-            bufferTemp[tempIndex] = bufferCapture[0];
-            tempIndex++;
-        }
+      /*if (tempIndex <= N_MEDIAS - 1) {
+        bufferTemp[tempIndex] = ALaw_Encode(bufferCapture[0]);
+        tempIndex++;
+      }*/
 
-        if (tempIndex > N_MEDIAS - 1) {
-            bufferConversao[indiceAmostra] = (float)(bufferTemp[0] + bufferTemp[1] + bufferTemp[2] + bufferTemp[3] + bufferTemp[4] + bufferTemp[5])/N_MEDIAS;
-            bufferDatabase[indiceAmostra] = (float)(bufferTemp[0] + bufferTemp[1] + bufferTemp[2] + bufferTemp[3] + bufferTemp[4] + bufferTemp[5])/N_MEDIAS;
-            indiceAmostra++;
-            tempIndex = 0;
-        }
+      //if (tempIndex > N_MEDIAS - 1) {
+        bufferConversao[indiceAmostra] = ALaw_Encode(bufferCapture[0]);
+        bufferDatabase[indiceAmostra] = ALaw_Encode(bufferCapture[0]);
+        indiceAmostra++;
+        //tempIndex = 0;
+      //}
     } else {
-        MAP_TimerDisable(TIMER0_BASE, TIMER_A);
-        MAP_ADCSequenceDisable(ADC0_BASE, 3);
-        MAP_ADCIntDisable(ADC0_BASE, 3);
-        MAP_IntDisable(INT_ADC0SS3);
-        indiceAmostra = DELAY_MAX;
-        conversionEnd = true;
-        MAP_GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_1, 0);
-        MAP_GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_3, 0);
+      MAP_TimerDisable(TIMER0_BASE, TIMER_A);
+      MAP_ADCSequenceDisable(ADC0_BASE, 3);
+      MAP_ADCIntDisable(ADC0_BASE, 3);
+      MAP_IntDisable(INT_ADC0SS3);
+      indiceAmostra = DELAY_MAX;
+      conversionEnd = true;
+      MAP_GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_1, 0);
+      MAP_GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_3, 0);
     }
 
     return;
 }
 
 /*
- * Fun��es Auxiliares
+ * Funï¿½ï¿½es Auxiliares
  */
 void systemInit() {
     MAP_SysCtlClockFreqSet((SYSCTL_XTAL_25MHZ | SYSCTL_OSC_MAIN | SYSCTL_USE_PLL | SYSCTL_CFG_VCO_480), 120000000);
@@ -307,7 +313,7 @@ uint32_t g_ui32SysClock;
 
 //*****************************************************************************
 //
-// The state of each city panel.
+// The state of each user panel.
 //
 //*****************************************************************************
 struct
@@ -320,10 +326,10 @@ struct
     //
     // The current weather report data for this city.
     //
-    tWeatherReport sReport;
+    tUserReport sReport;
 
     //
-    // The name of the current city.
+    // The name of the current.
     //
     const char *pcName;
 }
@@ -336,7 +342,7 @@ g_psUserInfo;
 // Constant strings for status messages.
 //
 //*****************************************************************************
-const char g_pcNotFound[] = "City Not Found";
+const char g_pcNotFound[] = "User Not Found";
 const char g_pcServerBusy[] = "Server Busy";
 const char g_pcWaitData[] = "Waiting for Data";
 
@@ -389,8 +395,8 @@ ResetUser(uint32_t ui32Idx)
 {
     g_psUserInfo.sReport.pcDescription = 0;
     g_psUserInfo.sReport.audio = 0;
-    g_psUserInfo.sReport.novo = 0;
-    g_psUserInfo.sReport.senha = 0;
+    g_psUserInfo.sReport.errors = 0;
+    g_psUserInfo.sReport.rfid = 0;
     g_psUserInfo.ui32LastUpdate = 0;
 }
 
@@ -522,7 +528,7 @@ EnetEvents(uint32_t ui32Event, void *pvData, uint32_t ui32Param)
 }
 
 
-int Communication (int request, char* size, char* code, char* key, char *rfid){
+int Communication (int request, char* size){
     enum
     {
         eRequestIdle,
@@ -563,8 +569,6 @@ int Communication (int request, char* size, char* code, char* key, char *rfid){
             }
             else if(iRequest == eRequestGETteste)
             {
-
-
                             g_iState = STATE_WAIT_DATA;
 
                             //
@@ -572,9 +576,7 @@ int Communication (int request, char* size, char* code, char* key, char *rfid){
                             //
                             g_ui32Delay = 1000;
 
-
-
-                           requestGETteste(iWSrcOpenWeatherMap,
+                           requestGETteste(
                                     g_psUserInfo.pcName,
                                     &g_psUserInfo.sReport,
                                     WeatherEvent);
@@ -583,8 +585,6 @@ int Communication (int request, char* size, char* code, char* key, char *rfid){
             }
             else if(iRequest == eRequestGET)
             {
-
-
                 g_iState = STATE_WAIT_DATA;
 
                 //
@@ -592,12 +592,10 @@ int Communication (int request, char* size, char* code, char* key, char *rfid){
                 //
                 g_ui32Delay = 1000;
 
-
-
-               requestGET(iWSrcOpenWeatherMap,
+               requestGET(
                         g_psUserInfo.pcName,
                         &g_psUserInfo.sReport,
-                        WeatherEvent, rfid);
+                        WeatherEvent);
 
                 iRequest = eRequestUpdate;
             }
@@ -610,10 +608,10 @@ int Communication (int request, char* size, char* code, char* key, char *rfid){
                 //
                 g_ui32Delay = 1000;
 
-                requestPOST(iWSrcOpenWeatherMap,
+                requestPOST(
                         g_psUserInfo.pcName,
                         &g_psUserInfo.sReport,
-                        WeatherEvent, size, code, key);
+                        WeatherEvent, size);
 
                 iRequest = eRequestUpdate;
             }
@@ -626,10 +624,10 @@ int Communication (int request, char* size, char* code, char* key, char *rfid){
                             //
                             g_ui32Delay = 1000;
 
-                            requestPOSTKEY(iWSrcOpenWeatherMap,
+                            requestPOSTKEY(
                                     g_psUserInfo.pcName,
                                     &g_psUserInfo.sReport,
-                                    WeatherEvent, size, code, key);
+                                    WeatherEvent, size);
 
                             iRequest = eRequestUpdate;
                         }
@@ -642,10 +640,10 @@ int Communication (int request, char* size, char* code, char* key, char *rfid){
                             //
                             g_ui32Delay = 1000;
 
-                            requestPOSTACCESS(iWSrcOpenWeatherMap,
+                            requestPOSTACCESS(
                                     g_psUserInfo.pcName,
                                     &g_psUserInfo.sReport,
-                                    WeatherEvent, size, code, key, rfid);
+                                    WeatherEvent, size);
 
                             iRequest = eRequestUpdate;
                         }
@@ -713,6 +711,54 @@ int loginServer(){
 int
 main(void)
 {
+    //tempIndex = 0;
+    led3s = 0;
+    ledConv = 0;
+    indiceAmostra = DELAY_MAX;
+    conversionEnd = false;
+
+    // Inicializar sistema
+    systemInit();
+    GPIOInit();
+
+    // Inicializar perifÃˆricos
+    ADCInit();
+    timerInit();
+    interruptInit();
+
+    MAP_TimerEnable(TIMER0_BASE, TIMER_A); // Timer ADC
+
+    //// TESTES
+    //tWavFile wavTeste;
+
+    //WavOpen("Default.wav", &wavTeste);
+    //WavRead(&wavTeste, bufferDatabase, 144000/6);
+    //WavClose(&wavTeste);
+
+    ////
+
+    //  HardwareInit();
+
+    /*while (1) {
+            // AGUARDA VERIFICACAO DO RFID
+            //MAP_TimerEnable(TIMER2_BASE, TIMER_A); // Timer 10s
+            // tem 10 segundos pra enviar o cÃ›digo RFID e comeÃ�ar a receber os dados
+            // Se o RFID deu ok, liberar timer pra comecar a receber a voz, mostrar msgs etc...
+            // verificar se o usuario quer usar o teclado ao inves da voz...
+
+
+          if (conversionEnd) { // Quando terminar de fazer a conversâ€žo
+                if (validate()) { // Verificar a senha
+                    // ABRIR A PORTA
+                    MAP_TimerEnable(TIMER1_BASE, TIMER_A); // Timer 5s
+                    // 5s pra abrir a porta, se passar o tempo tranca de novo...
+                } else {
+                    // MENSAGEM DE ERRO
+                }
+                conversionEnd = false;
+            }
+      }*/
+
 
 
     //
@@ -782,6 +828,16 @@ main(void)
     // Get the IP address.
     //
     g_ui32IPaddr = EthClientAddrGet();
+
+    g_psUserInfo.sReport.idBoard = "11";
+    g_psUserInfo.sReport.keyBoard = "1234";
+    g_psUserInfo.sReport.rfid = "12345678";
+
+    //Communication(POST, "38");
+
+    //Communication(POSTACCESS, "38");
+
+    //Communication(GET, "38");
 
     HardwareInit();
    // Communication(GETteste, "38", "2","TZgJS", "1111");
