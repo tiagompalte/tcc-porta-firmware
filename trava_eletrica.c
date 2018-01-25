@@ -9,28 +9,27 @@
 #include "inc/hw_memmap.h"
 #include "driverlib/debug.h"
 #include "driverlib/sysctl.h"
+#include"driverlib/pin_map.h"
+#include "driverlib/rom_map.h"
 #include "driverlib/gpio.h"
-#include "driverlib/trava_eletrica.h"
+#include "trava_eletrica.h"
 
 bool trava_acionada = 0;
 
 void TravaInit()
 {
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOG);
-
-    // Configura GPIO como input
-    GPIOPinTypeGPIOOutput(GPIO_PORTG_BASE, GPIO_PIN_1);
+    MAP_GPIOPinWrite(GPIO_PORTC_BASE, GPIO_PIN_4, 0x00);
 }
 
 void AcionarTrava()
 {
-    GPIOPinWrite(GPIO_PORTG_BASE, GPIO_PIN_1, 0x02);
+    MAP_GPIOPinWrite(GPIO_PORTC_BASE, GPIO_PIN_4, 0x10);
     trava_acionada = 1;
 }
 
 void DesacionarTrava()
 {
-    GPIOPinWrite(GPIO_PORTG_BASE, GPIO_PIN_1, 0x00);
+    MAP_GPIOPinWrite(GPIO_PORTC_BASE, GPIO_PIN_4, 0x00);
     trava_acionada = 0;
 }
 
