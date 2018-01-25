@@ -16,33 +16,12 @@
 #include "driverlib/debug.h"
 #include "driverlib/gpio.h"
 //#include "delay.h"
-void BuzzerInit()
+void BuzzerActivate()
 {
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOG);
-
-    GPIOPinTypeGPIOOutput(GPIO_PORTG_BASE, GPIO_PIN_0);
+    MAP_GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_3, 0x00);
 }
 
-void BuzzerEnable()
+void BuzzerDeactivate()
 {
-    GPIOPinWrite(GPIO_PORTG_BASE, GPIO_PIN_0, 0x01);
-}
-
-void BuzzerDisable()
-{
-    GPIOPinWrite(GPIO_PORTG_BASE, GPIO_PIN_0, 0x00);
-}
-
-void BuzzerEntradaPermitida()
-{
-    BuzzerEnable();
-    //DelayMS(200);
-    BuzzerDisable();
-}
-
-void BuzzerNaoPermitida()
-{
-    BuzzerEnable();
-    //DelayMS(2000);
-    BuzzerDisable();
+    MAP_GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_3, 0x08);
 }
