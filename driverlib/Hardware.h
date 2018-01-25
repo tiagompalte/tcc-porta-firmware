@@ -25,8 +25,13 @@ typedef enum UserStatus
 uint32_t ui32SysClock;
 uint32_t ulDelayms;
 extern void HardwareInit();
-extern void TesteRFID();
+extern void HardwareLoop();
+extern void HardwareRFID();
 extern void buscaCadastro();
-extern void LCDControl();
+extern void HardwareControl();
+extern void InitConsole();
+extern void InitTimer();
+void LCDIntHandler(void);
+void BuzzerIntHandler(void);
 extern void InitConsole();
 #endif /* HARDWARE_H_ */
