@@ -224,14 +224,14 @@ void timerInit() {
     MAP_TimerClockSourceSet(TIMER1_BASE, TIMER_CLOCK_PIOSC);
     MAP_TimerLoadSet(TIMER1_BASE, TIMER_A, 72727272);
 
-    while (!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER2)) {
+/*    while (!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER2)) {
 
     }
 
     MAP_TimerConfigure(TIMER2_BASE, TIMER_CFG_PERIODIC_UP);
     TimerUpdateMode(TIMER2_BASE, TIMER_BOTH, TIMER_UP_LOAD_IMMEDIATE);
     MAP_TimerClockSourceSet(TIMER2_BASE, TIMER_CLOCK_PIOSC);
-    MAP_TimerLoadSet(TIMER2_BASE, TIMER_A, 145454544);
+    MAP_TimerLoadSet(TIMER2_BASE, TIMER_A, 145454544);*/
 }
 
 void ADCInit() {
@@ -739,7 +739,7 @@ main(void)
 
     //  HardwareInit();
 
-    /*while (1) {
+    while (1) {
             // AGUARDA VERIFICACAO DO RFID
             //MAP_TimerEnable(TIMER2_BASE, TIMER_A); // Timer 10s
             // tem 10 segundos pra enviar o cÃ›digo RFID e comeÃ�ar a receber os dados
@@ -757,9 +757,9 @@ main(void)
                 }
                 conversionEnd = false;
             }
-      }*/
+      }
 
-
+ /*
 
     //
     // Make sure the main oscillator is enabled because this is required by
@@ -841,7 +841,7 @@ main(void)
 
     HardwareInit();
    // Communication(GETteste, "38", "2","TZgJS", "1111");
-    //loginServer();
+    //loginServer(); */
 
 }
 
