@@ -116,11 +116,7 @@ struct
 }
 g_sEnet;
 
-//*****************************************************************************
-//
-// Maximum size of an weather request.
-//
-//*****************************************************************************
+
 #define MAX_REQUEST             2048
 
 extern uint32_t g_ui32SysClock;
@@ -1638,7 +1634,7 @@ requestPOSTKEY(const char *pcQuery,
     g_sUser.psUserReport = psUserReport;
 
     //
-    // Connect or reconnect to port 3000.
+    // Connect or reconnect to port 80.
     //
     g_sEnet.eState = iEthTCPConnectWait;
 
@@ -1847,7 +1843,7 @@ requestPOSTACCESS(const char *pcQuery,
     g_sUser.psUserReport = psUserReport;
 
     //
-    // Connect or reconnect to port 3000.
+    // Connect or reconnect to port 80.
     //
     g_sEnet.eState = iEthTCPConnectWait;
 
@@ -1918,7 +1914,7 @@ requestPOSTACCESS(const char *pcQuery,
 
 
     //
-    // Append the " Host: localhost:8090" string.
+    // Append the " Host: localhost:80" string.
     //
 
     i32Idx = MergeRequest(i32Idx, g_host,
@@ -1996,7 +1992,7 @@ requestGETteste(const char *pcQuery,
     g_sUser.psUserReport = psUserReport;
 
     //
-    // Connect or reconnect to port 80.
+    // Connect or reconnect to port 3000.
     //
     g_sEnet.eState = iEthTCPConnectWait;
 
@@ -2030,7 +2026,7 @@ requestGETteste(const char *pcQuery,
     i32Idx = MergeRequest(i32Idx, g_Accept, sizeof(g_Accept), false);
 
     //
-    // Append the "Host: localhost:8090" string.
+    // Append the "Host: localhost:3000" string.
     //
     i32Idx = MergeRequest(i32Idx, g_hostTeste, sizeof(g_hostTeste), false);
 
