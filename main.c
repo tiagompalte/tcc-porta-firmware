@@ -85,7 +85,7 @@
 
 int led3s, ledConv;
 int i, tempIndex;
-bool conversionEnd;
+int conversionEnd;
 
 /*
  * ISRs
@@ -121,24 +121,16 @@ void ISR_ADC0() {
     }
 
     if (indiceAmostra <= NUM_AMOSTRAS + DELAY_MAX - 1) {
-      /*if (tempIndex <= N_MEDIAS - 1) {
-        bufferTemp[tempIndex] = ALaw_Encode(bufferCapture[0]);
-        tempIndex++;
-      }*/
-
-      //if (tempIndex > N_MEDIAS - 1) {
-        bufferConversao[indiceAmostra] = ALaw_Encode(bufferCapture[0]);
-        bufferDatabase[indiceAmostra] = ALaw_Encode(bufferCapture[0]);
-        indiceAmostra++;
-        //tempIndex = 0;
-      //}
+      bufferConversao[indiceAmostra] = (uint8_t)ALaw_Encode(bufferCapture[0]);
+      bufferDatabase[indiceAmostra] = (uint8_t)ALaw_Encode(bufferCapture[0]);
+      indiceAmostra++;
     } else {
       MAP_TimerDisable(TIMER0_BASE, TIMER_A);
       MAP_ADCSequenceDisable(ADC0_BASE, 3);
       MAP_ADCIntDisable(ADC0_BASE, 3);
       MAP_IntDisable(INT_ADC0SS3);
       indiceAmostra = DELAY_MAX;
-      conversionEnd = true;
+      conversionEnd = 1;
       MAP_GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_1, 0);
       MAP_GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_3, 0);
     }
@@ -251,13 +243,8 @@ void ADCInit() {
     MAP_ADCSequenceEnable(ADC0_BASE, 3);
 }
 
-//*****************************************************************************
-//
-// Connection states for weather application.
-//
-//*****************************************************************************
-volatile enum
-{
+/*****************************/
+volatile enum {
     STATE_NOT_CONNECTED,
         STATE_NEW_CONNECTION,
         STATE_CONNECTED_IDLE,
@@ -267,99 +254,25 @@ volatile enum
 }
 g_iState = STATE_NOT_CONNECTED;
 
-//*****************************************************************************
-//
-// Global for IP address.
-//
-//*****************************************************************************
 uint32_t g_ui32IPaddr;
-
-//*****************************************************************************
-//
-// Global to track whether we are processing commands or not.
-//
-//*****************************************************************************
 uint32_t g_ui32ProcessingCmds;
-
-//*****************************************************************************
-//
-// The delay count to reduce traffic to the weather server.
-//
-//*****************************************************************************
 volatile uint32_t g_ui32Delay;
-
-//*****************************************************************************
-//
-// Global to track number of times the app has cycled through the list of
-// cities.
-//
-//*****************************************************************************
 volatile uint32_t g_ui32Cycles;
-
-
-
-//*****************************************************************************
-//
-// System Clock rate in Hertz.
-//
-//*****************************************************************************
 uint32_t g_ui32SysClock;
-
-//*****************************************************************************
-//
-
-
-
-
-//*****************************************************************************
-//
-// The state of each user panel.
-//
-//*****************************************************************************
-struct
-{
-    //
-    // The last update time for this city.
-    //
+struct {
     uint32_t ui32LastUpdate;
-
-    //
-    // The current weather report data for this city.
-    //
     tUserReport sReport;
-
-    //
-    // The name of the current.
-    //
     const char *pcName;
 }
 g_psUserInfo;
 
-
-
-//*****************************************************************************
-//
-// Constant strings for status messages.
-//
-//*****************************************************************************
 const char g_pcNotFound[] = "User Not Found";
 const char g_pcServerBusy[] = "Server Busy";
 const char g_pcWaitData[] = "Waiting for Data";
 
-//*****************************************************************************
-//
-// Interrupt priority definitions.  The top 3 bits of these values are
-// significant with lower values indicating higher priority interrupts.
-//
-//*****************************************************************************
 #define SYSTICK_INT_PRIORITY    0x80
 #define ETHERNET_INT_PRIORITY   0xC0
 
-//*****************************************************************************
-//
-// The error routine that is called if the driver library encounters an error.
-//
-//*****************************************************************************
 #ifdef DEBUG
 void
 __error__(char *pcFilename, uint32_t ui32Line)
@@ -367,32 +280,10 @@ __error__(char *pcFilename, uint32_t ui32Line)
 }
 #endif
 
-
-
-//*****************************************************************************
-//
-// MAC address.
-//
-//*****************************************************************************
 char g_pcMACAddr[40];
-
-//*****************************************************************************
-//
-// IP address.
-//
-//*****************************************************************************
 char g_pcIPAddr[20];
 
-
-
-//*****************************************************************************
-//
-// Reset a user information so that it can be properly updated.
-//
-//*****************************************************************************
-void
-ResetUser(uint32_t ui32Idx)
-{
+void ResetUser(uint32_t ui32Idx) {
     g_psUserInfo.sReport.pcDescription = 0;
     g_psUserInfo.sReport.audio = 0;
     g_psUserInfo.sReport.errors = 0;
@@ -400,55 +291,32 @@ ResetUser(uint32_t ui32Idx)
     g_psUserInfo.ui32LastUpdate = 0;
 }
 
-//*****************************************************************************
-//
-// Update the IP address string.
-//
-//*****************************************************************************
-void
-UpdateIPAddress(char *pcAddr, uint32_t ipAddr)
-{
+void UpdateIPAddress(char *pcAddr, uint32_t ipAddr) {
     uint8_t *pui8Temp = (uint8_t *)&ipAddr;
 
-    if(ipAddr == 0)
-    {
+    if(ipAddr == 0)     {
         ustrncpy(pcAddr, "IP: ---.---.---.---", sizeof(g_pcIPAddr));
     }
-    else
-    {
+    else     {
         usprintf(pcAddr,"IP: %d.%d.%d.%d", pui8Temp[0], pui8Temp[1],
                 pui8Temp[2], pui8Temp[3]);
     }
 }
 
-//*****************************************************************************
-//
-// The weather event handler.
-//
-//*****************************************************************************
-void
-WeatherEvent(uint32_t ui32Event, void* pvData, uint32_t ui32Param)
-{
+void WeatherEvent(uint32_t ui32Event, void* pvData, uint32_t ui32Param) {
 
-    if(ui32Event == ETH_EVENT_RECEIVE)
-    {
-        //
-        // Let the main loop update the city.
-        //
+    if(ui32Event == ETH_EVENT_RECEIVE)    {
         g_iState = STATE_UPDATE_USER;
 
         g_psUserInfo.ui32LastUpdate =
             g_psUserInfo.sReport.ui32Time;
     }
-    else if(ui32Event == ETH_EVENT_INVALID_REQ)
-    {
+    else if(ui32Event == ETH_EVENT_INVALID_REQ)   {
         g_psUserInfo.sReport.pcDescription = g_pcNotFound;
         g_iState = STATE_UPDATE_USER;
     }
-    else if(ui32Event == ETH_EVENT_CLOSE)
-    {
-        if(g_iState == STATE_WAIT_DATA)
-        {
+    else if(ui32Event == ETH_EVENT_CLOSE)  {
+        if(g_iState == STATE_WAIT_DATA)        {
             g_psUserInfo.sReport.pcDescription =
                 g_pcServerBusy;
 
@@ -456,81 +324,37 @@ WeatherEvent(uint32_t ui32Event, void* pvData, uint32_t ui32Param)
         }
     }
 
-    //
-    // If the update indicated no time, then just set the time to a value
-    // to indicate that at least the update occurred.
-    //
-    if(g_psUserInfo.ui32LastUpdate == 0)
-    {
-        //
-        // Failed to update for some reason.
-        //
+    if(g_psUserInfo.ui32LastUpdate == 0)   {
         g_psUserInfo.ui32LastUpdate = 1;
     }
 }
 
-//*****************************************************************************
-//
-// The interrupt handler for the SysTick interrupt.
-//
-//*****************************************************************************
-void
-SysTickIntHandler(void)
-{
-    //
-    // Call the lwIP timer handler.
-    //
+void SysTickIntHandler(void) {
     EthClientTick(SYSTEM_TICK_MS);
-
-    //
-    // Handle the delay between accesses to the weather server.
-    //
-    if(g_ui32Delay != 0)
-    {
+    if(g_ui32Delay != 0) {
         g_ui32Delay--;
     }
 }
 
-//*****************************************************************************
-//
-// Network events handler.
-//
-//*****************************************************************************
-void
-EnetEvents(uint32_t ui32Event, void *pvData, uint32_t ui32Param)
-{
-    if(ui32Event == ETH_EVENT_CONNECT)
-    {
+void EnetEvents(uint32_t ui32Event, void *pvData, uint32_t ui32Param) {
+    if(ui32Event == ETH_EVENT_CONNECT)   {
         g_iState = STATE_NEW_CONNECTION;
 
-        //
-        // Update the string version of the address.
-        //
         UpdateIPAddress(g_pcIPAddr, EthClientAddrGet());
     }
-    else if(ui32Event == ETH_EVENT_DISCONNECT)
-    {
-        //
-        // If a city was waiting to be updated then reset its data.
-        //
-        if(g_iState != STATE_CONNECTED_IDLE)
-        {
+    else if(ui32Event == ETH_EVENT_DISCONNECT)   {
+        if(g_iState != STATE_CONNECTED_IDLE)      {
             ResetUser(0);
         }
 
         g_iState = STATE_NOT_CONNECTED;
-
-        //
-        // Update the address to 0.0.0.0.
-        //
         UpdateIPAddress(g_pcIPAddr, 0);
     }
 }
 
 
-int Communication (int request, char* size){
-    enum
-    {
+int Communication (int request, char* size) {
+    enum    {
         eRequestIdle,
         eRequestUpdate,
         eRequestGET,
@@ -570,10 +394,6 @@ int Communication (int request, char* size){
             else if(iRequest == eRequestGETteste)
             {
                             g_iState = STATE_WAIT_DATA;
-
-                            //
-                            // Timeout at 10 seconds.
-                            //
                             g_ui32Delay = 1000;
 
                            requestGETteste(
@@ -586,10 +406,6 @@ int Communication (int request, char* size){
             else if(iRequest == eRequestGET)
             {
                 g_iState = STATE_WAIT_DATA;
-
-                //
-                // Timeout at 10 seconds.
-                //
                 g_ui32Delay = 1000;
 
                requestGET(
@@ -603,9 +419,6 @@ int Communication (int request, char* size){
             {
                 g_iState = STATE_WAIT_DATA;
 
-                //
-                // Timeout at 10 seconds.
-                //
                 g_ui32Delay = 1000;
 
                 requestPOST(
@@ -619,9 +432,6 @@ int Communication (int request, char* size){
                         {
                             g_iState = STATE_WAIT_DATA;
 
-                            //
-                            // Timeout at 10 seconds.
-                            //
                             g_ui32Delay = 1000;
 
                             requestPOSTKEY(
@@ -635,9 +445,6 @@ int Communication (int request, char* size){
                         {
                             g_iState = STATE_WAIT_DATA;
 
-                            //
-                            // Timeout at 10 seconds.
-                            //
                             g_ui32Delay = 1000;
 
                             requestPOSTACCESS(
@@ -649,9 +456,6 @@ int Communication (int request, char* size){
                         }
             else if(iRequest == eRequestUpdate)
             {
-                //
-                // Return to the idle request state.
-                //
                 iRequest = eRequestIdle;
 
 
@@ -660,21 +464,11 @@ int Communication (int request, char* size){
         else if(g_iState == STATE_UPDATE_USER)
         {
 
-            //
-            // Go to the wait nice state.
-            //
             g_iState = STATE_WAIT_NICE;
-
-            //
-            // 10ms * 10 is a 1 second delay between updates.
-            //
             g_ui32Delay = SYSTEM_TICK_MS * 10;
         }
         else if(g_iState == STATE_WAIT_NICE)
         {
-            //
-            // Wait for the "nice" delay to not hit the server too often.
-            //
             if(g_ui32Delay == 0)
             {
                 g_iState = STATE_CONNECTED_IDLE;
@@ -682,15 +476,8 @@ int Communication (int request, char* size){
         }
         else if(g_iState == STATE_WAIT_DATA)
         {
-            //
-            // If no data has been received by the timeout then close the
-            // connection.
-            //
             if(g_ui32Delay == 0)
             {
-                //
-                // Close out the current connection.
-                //
                 EthClientTCPDisconnect();
                 return 0;
             }
@@ -699,7 +486,7 @@ int Communication (int request, char* size){
     }
 }
 
-int loginServer(){
+int loginServer() {
     //Communication(GETteste);
     //g_iState == STATE_NEW_CONNECTION;
     //g_ui32Delay = 500;
@@ -715,7 +502,7 @@ main(void)
     led3s = 0;
     ledConv = 0;
     indiceAmostra = DELAY_MAX;
-    conversionEnd = false;
+    conversionEnd = 0;
 
     // Inicializar sistema
     systemInit();
@@ -729,13 +516,12 @@ main(void)
     MAP_TimerEnable(TIMER0_BASE, TIMER_A); // Timer ADC
 
     //// TESTES
-    //tWavFile wavTeste;
+    /*tWavFile wavTeste;
 
-    //WavOpen("Default.wav", &wavTeste);
-    //WavRead(&wavTeste, bufferDatabase, 144000/6);
-    //WavClose(&wavTeste);
-
-    ////
+    WavOpen("Default.wav", &wavTeste);
+    WavRead(&wavTeste, bufferDatabase, 144000/6);
+    WavClose(&wavTeste);
+     */
 
     //  HardwareInit();
 
@@ -747,16 +533,17 @@ main(void)
             // verificar se o usuario quer usar o teclado ao inves da voz...
 
 
-          if (conversionEnd) { // Quando terminar de fazer a conversâ€žo
-                if (validate()) { // Verificar a senha
+          if (conversionEnd == 1) { // Quando terminar de fazer a conversâ€žo
+                validate();
+        	    /*if (validate()) { // Verificar a senha
                     // ABRIR A PORTA
-                    MAP_TimerEnable(TIMER1_BASE, TIMER_A); // Timer 5s
+                    //MAP_TimerEnable(TIMER1_BASE, TIMER_A); // Timer 5s
                     // 5s pra abrir a porta, se passar o tempo tranca de novo...
                 } else {
                     // MENSAGEM DE ERRO
-                }
-                conversionEnd = false;
-            }
+                } */
+                conversionEnd = 0;
+          }
       }
 
  /*

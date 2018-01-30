@@ -104,7 +104,7 @@ bool validate() {
 	auto2 = autoCorrelate(bufferConversao);							// Calcula Autocorrelação do sinal AQ
 	cross12 = crossCorrelate(bufferDatabase, bufferConversao);		// Calcula Crosscorrelação DB/AQ
 
-	coefCorrelacao = (cross12*cross12)/sqrt(auto1*auto2);			// Calcula o coeficiente de correlação (rho)
+	coefCorrelacao = cross12/sqrt(auto1*auto2);						// Calcula o coeficiente de correlação (rho)
 
 	return (coefCorrelacao >= MINIMO_VALIDACAO ? true : false);		// Retorna true se o coeficiente é maior que o mínimo tolerado
 }
