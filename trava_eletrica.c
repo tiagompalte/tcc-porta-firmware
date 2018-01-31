@@ -1,9 +1,21 @@
-/*
- * trava_eletrica.c
- *
- *  Created on: 1 de set de 2017
- *      Author: thfax
- */
+/* ************************************************************** *
+ * UTFPR - Universidade Tecnologica Federal do Paraná
+ * Engenharia Eletrônica
+ * Trabalho de Conclusão de Curso
+ * ************************************************************** *
+ * Sistema de Segurança baseado em Reconhecimento de Senha Falada
+ * ************************************************************** *
+ * Equipe:
+ * Luiz Felipe Kim Evaristo
+ * Tauan Marinho
+ * Tiago Henrique Faxina
+ * Tiago Mariani Palte
+ * ************************************************************** *
+ * Controlador da Trava Elétrica
+ * v1.0
+ * 2017
+ * ************************************************************** */
+
 #include <stdint.h>
 #include <stdbool.h>
 #include "inc/hw_memmap.h"
