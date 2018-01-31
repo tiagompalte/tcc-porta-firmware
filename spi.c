@@ -1,9 +1,21 @@
-/*
- * spi_library.c
- *
- *  Created on: 30 de ago de 2017
- *      Author: HOME
- */
+/* ************************************************************** *
+ * UTFPR - Universidade Tecnologica Federal do Paraná
+ * Engenharia Eletrônica
+ * Trabalho de Conclusão de Curso
+ * ************************************************************** *
+ * Sistema de Segurança baseado em Reconhecimento de Senha Falada
+ * ************************************************************** *
+ * Equipe:
+ * Luiz Felipe Kim Evaristo
+ * Tauan Marinho
+ * Tiago Henrique Faxina
+ * Tiago Mariani Palte
+ * ************************************************************** *
+ * Controlador do SPI
+ * v1.0
+ * 2017
+ * ************************************************************** */
+
 
 #include "driverlib/spi.h"
 #include <stdint.h>
