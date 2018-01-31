@@ -1,9 +1,21 @@
-/*
- * Hardware.c
- *
- *  Created on: 31 de ago de 2017
- *      Author: thfax
- */
+/* ************************************************************** *
+ * UTFPR - Universidade Tecnologica Federal do Paraná
+ * Engenharia Eletrônica
+ * Trabalho de Conclusão de Curso
+ * ************************************************************** *
+ * Sistema de Segurança baseado em Reconhecimento de Senha Falada
+ * ************************************************************** *
+ * Equipe:
+ * Luiz Felipe Kim Evaristo
+ * Tauan Marinho
+ * Tiago Henrique Faxina
+ * Tiago Mariani Palte
+ * ************************************************************** *
+ * Controlador Geral do Hardware
+ * v1.0
+ * 2017
+ * ************************************************************** */
+
 #include "driverlib/Hardware.h"
 #include "string.h"
 #include "inc/hw_memmap.h"
