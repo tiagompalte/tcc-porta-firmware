@@ -12,6 +12,8 @@
 #include "driverlib/sysctl.h"
 #include"driverlib/pin_map.h"
 #include "driverlib/rom_map.h"
+#include "driverlib/interrupt.h"
+#include "driverlib/timer.h"
 #include "driverlib/uart.h"
 #include "utils/uartstdio.h"
 #include "inc/hw_ssi.h"
@@ -22,15 +24,22 @@
 #include "driverlib/buzzer.h"
 #include "driverlib/MyString.h"
 #include "driverlib/trava_eletrica.h"
+#include "driverlib/keyboard.h"
 
 unsigned char RFIDCardPassWord[5];
 unsigned char RFIDCardPassWord1[] = {3, 67, 147, 229, 54};
 unsigned char RFIDCardPassWord2[] = {117, 224, 6, 136, 27};
 unsigned char RFIDCardPassWord3[] = {201, 66, 106, 123, 54};
+unsigned char PassWord[] = {0,0,0,0,0,'\0'};
+unsigned char PassWord1[] = {1,1,1,1,1,'\0'};
+uint8_t PassWordCount = 0;
 CardStatus cardStatus = CardNotDetected;
 UserStatus userStatus = EntryNotAllowed;
 static volatile bool g_bIntFlag = true;
 static volatile bool TestFlag = false;
+static volatile bool ExternIntFlag = false;
+static volatile bool CardVerifFlag = false;
+
 void HardwareInit()
 {
 
@@ -47,10 +56,18 @@ void HardwareInit()
     while(!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOC));
     MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);
     while(!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOD));
+    MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);
+    while(!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOE));
+    MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
+    while(!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOF));
     MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOG);
     while(!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOG));
+    MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOJ);
+    while(!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOJ));
     MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOK);
     while(!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOK));
+    MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOL);
+    while(!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOL));
     MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOM);
     while(!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOM));
     MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPION);
@@ -68,6 +85,15 @@ void HardwareInit()
     MAP_GPIOPinTypeGPIOOutput(GPIO_PORTD_BASE,GPIO_PIN_7|GPIO_PIN_2);
     MAP_GPIOPinTypeGPIOOutput(LCD_CMD, LCD_RS|LCD_RW|LCD_ENABLE);
     MAP_GPIOPinTypeGPIOOutput(LCD_DATA, DATA7|DATA6|DATA5|DATA4|DATA3|DATA2|DATA1|DATA0);
+
+    MAP_GPIOPinTypeGPIOInput(GPIO_PORTE_BASE, GPIO_PIN_3|GPIO_PIN_2|GPIO_PIN_1|GPIO_PIN_0);
+    MAP_GPIOPinTypeGPIOInput(GPIO_PORTL_BASE, GPIO_PIN_3|GPIO_PIN_2|GPIO_PIN_1|GPIO_PIN_0);
+    MAP_GPIOPinTypeGPIOInput(GPIO_PORTJ_BASE, GPIO_PIN_1|GPIO_PIN_0);
+
+    //MAP_GPIOPadConfigSet(GPIO_PORTE_BASE, GPIO_PIN_3|GPIO_PIN_2|GPIO_PIN_1|GPIO_PIN_0,
+       // GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);  // Enable weak pullup resistor for PF4
+   // MAP_GPIOPadConfigSet(GPIO_PORTL_BASE, GPIO_PIN_3|GPIO_PIN_2|GPIO_PIN_1|GPIO_PIN_0,
+        //GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);  // Enable weak pullup resistor for PF4
 
     MAP_SSIIntClear(SSI2_BASE,SSI_TXEOT);
     MAP_SSIClockSourceSet(SSI2_BASE, SSI_CLOCK_SYSTEM);
@@ -88,6 +114,7 @@ void HardwareInit()
     LCDInit();
     MFRC522Init();
     InitTimer();
+    //InitInterrupt();
     DesacionarTrava();
     BuzzerDeactivate();
 }
@@ -136,6 +163,16 @@ void InitTimer()
     MAP_TimerEnable(TIMER3_BASE, TIMER_A);
 }
 
+void InitInterrupt(void)
+{
+
+    MAP_GPIOIntDisable(GPIO_PORTL_BASE, GPIO_PIN_3|GPIO_PIN_2|GPIO_PIN_1|GPIO_PIN_0);
+    MAP_GPIOIntClear(GPIO_PORTL_BASE, GPIO_PIN_3|GPIO_PIN_2|GPIO_PIN_1|GPIO_PIN_0);
+    GPIOIntRegister(GPIO_PORTL_BASE, &KeyBoardIntHandler);
+    MAP_GPIOIntTypeSet(GPIO_PORTL_BASE, GPIO_PIN_3|GPIO_PIN_2|GPIO_PIN_1|GPIO_PIN_0, GPIO_FALLING_EDGE);
+    MAP_GPIOIntEnable(GPIO_PORTL_BASE, GPIO_PIN_3|GPIO_PIN_2|GPIO_PIN_1|GPIO_PIN_0);
+
+}
 
 void LCDIntHandler(void)
 {
@@ -164,13 +201,38 @@ void BuzzerIntHandler(void)
   BuzzerDeactivate();
 
 }
+uint8_t teste = 0x04;
+void KeyBoardIntHandler(void)
+{
+    //if (MAP_GPIOIntStatus(GPIO_PORTL_BASE, false) & (GPIO_PIN_3|GPIO_PIN_2|GPIO_PIN_1|GPIO_PIN_0)) {
+        MAP_GPIOIntClear(GPIO_PORTL_BASE, GPIO_PIN_0);
+
+        teste = ~teste;
+        MAP_GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_2, teste);
+        if(ExternIntFlag == false)
+        {
+            PassWordCount = 0;
+            LCDKeyPassword();
+        }
+        ExternIntFlag = true;
+        LCDWriteData('*');
+        MAP_SysCtlDelay(500*ulDelayms);
+
+        PassWord[PassWordCount] = KeyboardGetKey();
+
+    //MAP_IntEnable(INT_GPIOJ);
+        PassWordCount++;
+   // }
+}
 
 void HardwareLoop()
 {
     HardwareInit();
+
     while(1)
     {
         HardwareRFID();
+        HardwarePassWordControl();
         HardwareControl();
     }
 
@@ -196,10 +258,44 @@ void HardwareRFID()
 
     MFRC522Halt();
 }
+uint8_t keyPass = 0x00;
+void HardwarePassWordControl()
+{
+    if(userOptionsStatus == KeyPassWord && cardStatus == CardDetected)
+    {
+        PassWordCount = 0;
+        LCDClear();
+        LCDKeyPassword();
+
+        while(PassWordCount < 5)
+        {
+            keyPass = KeyboardGetKey();
+            if(keyPass != 0xFF)
+            {
+                PassWord[PassWordCount] = (unsigned char)keyPass;
+                PassWordCount++;
+                LCDWriteData('*');
+                UARTprintf(" %d ", keyPass);
+                MAP_SysCtlDelay(500*ulDelayms);
+            }
+        }
+        PasswordValidate();
+        keyPass = 0x00;
+        CardVerifFlag = true;
+    }
+    else if(userStatus == VoicePassWord && cardStatus == CardDetected)
+    {
+        LCDRecordingSound();
+        MAP_SysCtlDelay(5000*ulDelayms);
+        userStatus = EntryAllowed;
+        CardVerifFlag = true;
+    }
+
+}
 
 void HardwareControl()
 {
-    if(userStatus == EntryAllowed && cardStatus == CardDetected && g_bIntFlag == true)
+    if(userStatus == EntryAllowed && CardVerifFlag == true && g_bIntFlag == true)
     {
         g_bIntFlag = false;
         LCDAllowed();
@@ -209,8 +305,9 @@ void HardwareControl()
         MAP_TimerLoadSet(TIMER0_BASE, TIMER_A, 0.5 * ui32SysClock);
         MAP_TimerEnable(TIMER0_BASE, TIMER_A);
         MAP_TimerEnable(TIMER3_BASE, TIMER_A);
+        CardVerifFlag = false;
     }
-    else if(userStatus == EntryNotAllowed && cardStatus == CardDetected && g_bIntFlag == true)
+    else if(userStatus == EntryNotAllowed && CardVerifFlag == true && g_bIntFlag == true)
     {
         g_bIntFlag = false;
         LCDNotAllowed();
@@ -218,8 +315,9 @@ void HardwareControl()
         MAP_TimerLoadSet(TIMER0_BASE, TIMER_A, 1 * ui32SysClock);
         MAP_TimerEnable(TIMER0_BASE, TIMER_A);
         MAP_TimerEnable(TIMER3_BASE, TIMER_A);
+        CardVerifFlag = false;
     }
-    else if(userStatus == UserNotRegistered && cardStatus == CardDetected && g_bIntFlag == true)
+    else if(userStatus == UserNotRegistered && CardVerifFlag == true && g_bIntFlag == true)
     {
         g_bIntFlag = false;
         LCDNotRegister();
@@ -227,10 +325,11 @@ void HardwareControl()
         MAP_TimerLoadSet(TIMER0_BASE, TIMER_A, 1 * ui32SysClock);
         MAP_TimerEnable(TIMER0_BASE, TIMER_A);
         MAP_TimerEnable(TIMER3_BASE, TIMER_A);
+        CardVerifFlag = false;
     }
-    else if(cardStatus == CardNotDetected && g_bIntFlag == true)
+    else if(cardStatus == CardNotDetected && CardVerifFlag == true && g_bIntFlag == true)
     {
-        //g_bIntFlag = false;
+        CardVerifFlag = false;
     }
 
     cardStatus = CardNotDetected;
@@ -240,19 +339,31 @@ void buscaCadastro()
 {
     if(StrCompare(RFIDCardPassWord,RFIDCardPassWord1, 5))
     {
-        userStatus = EntryAllowed;
+        userOptionsStatus = VoicePassWord;
     }
     else if(StrCompare(RFIDCardPassWord,RFIDCardPassWord2, 5))
     {
-        userStatus = EntryNotAllowed;
+        userOptionsStatus = KeyPassWord;
     }
     else if(StrCompare(RFIDCardPassWord,RFIDCardPassWord3, 5))
     {
-        userStatus = EntryAllowed;
+        userOptionsStatus = VoicePassWord;
     }
     else
     {
         userStatus = UserNotRegistered;
     }
-    //cardStatus = CardNotDetected;
 }
+
+void PasswordValidate()
+{
+    if(StrCompare(PassWord,PassWord1, 5))
+    {
+        userStatus = EntryAllowed;
+    }
+    else
+    {
+        userStatus = EntryNotAllowed;
+    }
+}
+
