@@ -22,63 +22,58 @@ uint32_t DebouncerDelay = 500;
 uint32_t DebouncerDelayCount = 0;
 void KeyboardInit()
 {
-    // Habilita periférios GPIOE e GPIOL
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOL);
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);
 
-    // Configura GPIO como input
-    GPIOPinTypeGPIOInput(GPIO_PORTE_BASE, GPIO_PIN_3|GPIO_PIN_2|GPIO_PIN_1|GPIO_PIN_0);
-    GPIOPinTypeGPIOInput(GPIO_PORTL_BASE, GPIO_PIN_3|GPIO_PIN_2|GPIO_PIN_1|GPIO_PIN_0);
 }
 
 uint8_t KeyboardGetKey()
 {
 
-    column = GPIOPinRead(GPIO_PORTE_BASE, GPIO_PIN_3|GPIO_PIN_2|GPIO_PIN_1|GPIO_PIN_0);
-    row = GPIOPinRead(GPIO_PORTL_BASE, GPIO_PIN_3|GPIO_PIN_2|GPIO_PIN_1|GPIO_PIN_0)<<4;
+    column = MAP_GPIOPinRead(GPIO_PORTE_BASE, GPIO_PIN_3|GPIO_PIN_2|GPIO_PIN_1|GPIO_PIN_0);
+    row = MAP_GPIOPinRead(GPIO_PORTL_BASE, GPIO_PIN_3|GPIO_PIN_2|GPIO_PIN_1|GPIO_PIN_0)<<4;
     key = row|column;
 
     if(KeyboardIsPressed()){
+
     switch(key)
     {
         case 0x77:
-            return '1';
+            return 0x01;
         case 0x7B:
-            return '2';
+            return 0x02;
         case 0x7D:
-            return '3';
+            return 0x03;
         case 0x7E:
-            return 'A';
+            return 0x0A;
         case 0xB7:
-            return '4';
+            return 0x04;
         case 0xBB:
-            return '5';
+            return 0x05;
         case 0xBD:
-            return '6';
+            return 0x06;
         case 0xBE:
-            return 'B';
+            return 0x0B;
         case 0xD7:
-            return '7';
+            return 0x07;
         case 0xDB:
-            return '8';
+            return 0x08;
         case 0xDD:
-            return '9';
+            return 0x09;
         case 0xDE:
-            return 'C';
+            return 0x0C;
         case 0xE7:
-            return '*';
+            return 0x0E;
         case 0xEB:
-            return '0';
-        case 0xED:
-            return '#';
-        case 0xEE:
-            return 'D';
-        default:
             return 0x00;
+        case 0xED:
+            return 0x0F;
+        case 0xEE:
+            return 0x0D;
+        default:
+            return 0xFF;
     }
     }
     else{
-        return 0x00;
+        return 0xFF;
     }
 }
 
@@ -98,36 +93,4 @@ bool KeyboardIsPressed()
         {
             return 0;
         }
-}
-
-void testeTeclado()
-{
-    uint8_t tecla = 0xFF;
-       uint8_t i = 0;
-       //testeSPI_LIBRARY();
-       //teste();
-       KeyboardInit();
-       SysCtlPeripheralEnable(SYSCTL_PERIPH_GPION);
-       while(!SysCtlPeripheralReady(SYSCTL_PERIPH_GPION))
-          {
-          }
-       GPIOPinTypeGPIOOutput(GPIO_PORTN_BASE, GPIO_PIN_0);
-       while(1)
-       {
-           tecla = KeyboardGetKey();
-           if(tecla != 0x00)
-           {
-               if(i == 0){
-                   GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_0, GPIO_PIN_0);
-                   i = 1;
-               }
-               else
-               {
-                   GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_0, 0x0);
-                   i = 0;
-               }
-
-
-           }
-       }
 }
