@@ -11,7 +11,7 @@
  * Tiago Henrique Faxina
  * Tiago Mariani Palte
  * ************************************************************** *
- * Controlador de Hardware
+ * Header Controlador Geral do Hardware
  * v1.0
  * 2017
  * ************************************************************** */
