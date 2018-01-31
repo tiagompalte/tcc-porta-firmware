@@ -1,9 +1,21 @@
-/*
- * Hardware.h
- *
- *  Created on: 31 de ago de 2017
- *      Author: thfax
- */
+/* ************************************************************** *
+ * UTFPR - Universidade Tecnologica Federal do Paraná
+ * Engenharia Eletrônica
+ * Trabalho de Conclusão de Curso
+ * ************************************************************** *
+ * Sistema de Segurança baseado em Reconhecimento de Senha Falada
+ * ************************************************************** *
+ * Equipe:
+ * Luiz Felipe Kim Evaristo
+ * Tauan Marinho
+ * Tiago Henrique Faxina
+ * Tiago Mariani Palte
+ * ************************************************************** *
+ * Controlador de Hardware
+ * v1.0
+ * 2017
+ * ************************************************************** */
+
 
 #ifndef HARDWARE_H_
 #define HARDWARE_H_
@@ -21,6 +33,12 @@ typedef enum UserStatus
     UserNotRegistered
 }UserStatus;
 
+typedef enum UserOptionsStatus
+{
+    KeyPassWord,
+    VoicePassWord
+}UserOptionsStatus;
+
 #include "stdint.h"
 uint32_t ui32SysClock;
 uint32_t ulDelayms;
@@ -29,9 +47,13 @@ extern void HardwareLoop();
 extern void HardwareRFID();
 extern void buscaCadastro();
 extern void HardwareControl();
+extern void HardwarePassWordControl();
 extern void InitConsole();
 extern void InitTimer();
+extern void PasswordValidate();
 void LCDIntHandler(void);
 void BuzzerIntHandler(void);
+void KeyBoardIntHandler(void);
+void InitInterrupt(void);
 extern void InitConsole();
 #endif /* HARDWARE_H_ */
