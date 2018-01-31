@@ -11,12 +11,12 @@
  * Tiago Henrique Faxina
  * Tiago Mariani Palte
  * ************************************************************** *
- * Controlador de GPIOs
+ * Controlador do LCD
  * v1.0
  * 2017
  * ************************************************************** */
 
-#include "driverlib/lcd.h"
+#include "lcd.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/rom_map.h"
 
@@ -47,6 +47,7 @@ char *str_PassRFIDAgain = "Passe RFID novamente";
 char *str_Gravando = " GRAVANDO";
 char *str_apaga = "                    ";
 char *str_Aguarde = "Aguarde...";
+char *str_TypePassWord = "Digite a Senha:";
 
 // Inicializa display
 void LCDInit()
@@ -68,6 +69,7 @@ void LCDInit()
     MAP_SysCtlDelay(20*ContDelayMS);
     LCDClear();
     MAP_SysCtlDelay(5*ContDelayMS);
+    LCDInicio();
 }
 
 // Limpa o display e retorna cursor para a primeira posição da primeira linha
@@ -265,6 +267,25 @@ void LCDPassword()
     }
 }
 
+void LCDKeyPassword()
+{
+    LCDClear();
+
+    LCDWriteString(str_TrancaEletronica);
+
+    LCDMoveCursorToXY(2,2);
+    LCDWriteString(str_TypePassWord);
+
+    LCDMoveCursorToXY(3,4);
+}
+
+void LCDShowKeyPassword(uint8_t count)
+{
+
+    //LCDMoveCursorToXY(3,5 + count);
+
+}
+
 void LCDAnimation(char *str)
 {
     while(*str)
@@ -375,11 +396,10 @@ uint8_t getAddress()
 void LCDRecordingSound()
 {
     LCDClear();
-    LCDMoveCursorToXY(1,5);
     LCDWriteString(str_TrancaEletronica);
     LCDMoveCursorToXY(2,5);
     LCDWriteString(str_Gravando);
-
+    LCDMoveCursorToXY(3,5);
 }
 
 
