@@ -52,7 +52,7 @@ typedef struct
     //
     const char *pcDescription;
 
-    char *audio;
+    char audio[32];
 
     char *errors;
 

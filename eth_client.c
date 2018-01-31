@@ -116,7 +116,6 @@ struct
 }
 g_sEnet;
 
-
 #define MAX_REQUEST             2048
 
 extern uint32_t g_ui32SysClock;
@@ -137,7 +136,7 @@ static const char postRequest[] =
         "POST /token";
 
 static const char postRequestAcess[] =
-        "POST /api/usuarios/confirmacaoAcesso/";
+        "POST /porta-api/api/usuarios/confirmacaoAcesso/";
 
 static const char postRequestKey[] =
         "POST /api/usuarios/autenticacaoSenha/";
@@ -1314,7 +1313,7 @@ int32_t
 requestGET(const char *pcQuery,
                 tUserReport *psUserReport, tEventFunction pfnEvent)
 {
-    int32_t i32Idx;
+    int32_t i32Idx = 0;
 
     //
     // If the requested source is not valid or there is no call back then
@@ -1345,7 +1344,7 @@ requestGET(const char *pcQuery,
     // Append the rfid string
     //
     i32Idx = MergeRequest(i32Idx, psUserReport->rfid,
-                         sizeof(psUserReport->rfid), false);
+                         sizeof(psUserReport->rfid)+4, false);
 
     //
     // Append the "HTTP:/1.1" string.
@@ -1487,7 +1486,7 @@ requestPOST(const char *pcQuery,
 
 
     //
-    // Append the " Host: localhost:8090" string.
+    // Append the " Host: portaeletronica-api.herokuapp.com" string.
     //
 
     i32Idx = MergeRequest(i32Idx, g_host,
@@ -1698,7 +1697,7 @@ requestPOSTKEY(const char *pcQuery,
 
 
     //
-    // Append the " Host: localhost:8090" string.
+    // Append the " Host: portaeletronica-api.herokuapp.com" string.
     //
 
     i32Idx = MergeRequest(i32Idx, g_host,
@@ -1848,7 +1847,7 @@ requestPOSTACCESS(const char *pcQuery,
     g_sEnet.eState = iEthTCPConnectWait;
 
     //
-    // "POST /api/usuarios/confirmacaoAcesso/";
+    // "POST /porta-api/api/usuarios/confirmacaoAcesso/";
     //
     i32Idx = MergeRequest(0, postRequestAcess,
                           sizeof(postRequestAcess), false);
@@ -1914,7 +1913,7 @@ requestPOSTACCESS(const char *pcQuery,
 
 
     //
-    // Append the " Host: localhost:80" string.
+    // Append the " Host: portaeletronica-api.herokuapp.com" string.
     //
 
     i32Idx = MergeRequest(i32Idx, g_host,
@@ -1992,7 +1991,7 @@ requestGETteste(const char *pcQuery,
     g_sUser.psUserReport = psUserReport;
 
     //
-    // Connect or reconnect to port 3000.
+    // Connect or reconnect to port 80.
     //
     g_sEnet.eState = iEthTCPConnectWait;
 
@@ -2026,7 +2025,7 @@ requestGETteste(const char *pcQuery,
     i32Idx = MergeRequest(i32Idx, g_Accept, sizeof(g_Accept), false);
 
     //
-    // Append the "Host: localhost:3000" string.
+    // Append the "Host: portaeletronica-api.herokuapp.com" string.
     //
     i32Idx = MergeRequest(i32Idx, g_hostTeste, sizeof(g_hostTeste), false);
 

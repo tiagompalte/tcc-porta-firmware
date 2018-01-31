@@ -362,16 +362,15 @@ GetFieldValueString(tBufPtr *psBufPtr, char *pcDataDest, uint32_t ui32SizeDest)
 //
 //*****************************************************************************
 int32_t
-JSONParseGET(uint32_t ui32Index, tUserReport *psUserReport,
-                  struct pbuf *psBuf)
+ JSONParseGET(uint32_t ui32Index, tUserReport *psUserReport,
+                     struct pbuf *psBuf)
 {
     tBufPtr sBufPtr, sBufList, sBufTemp;
     char pcCode[4];
     char pcBuffAudio[512];
     char pcBuffNovo[512];
     char pcBuffCodigoNovo[512];
-    int32_t i32Items,i32Code;
-
+    int32_t i32Items, i32Code;
 
     //
     // Reset the pointers.
@@ -381,7 +380,7 @@ JSONParseGET(uint32_t ui32Index, tUserReport *psUserReport,
     //
     // Check and see if the request was valid.
     //
-    if(GetField("cod", &sBufPtr) != 0)
+    if (GetField("cod", &sBufPtr) != 0)
     {
         //
         // Check for a 404 not found error.
@@ -395,21 +394,21 @@ JSONParseGET(uint32_t ui32Index, tUserReport *psUserReport,
 
         sBufTemp = sBufPtr;
 
-        if(i32Code != INVALID_INT)
+        if (i32Code != INVALID_INT)
         {
-            if(i32Code == 404)
+            if (i32Code == 404)
             {
-                return(-1);
+                return (-1);
             }
         }
-        else if(GetFieldValueString(&sBufTemp, pcCode, sizeof(pcCode)) >= 0)
+        else if (GetFieldValueString(&sBufTemp, pcCode, sizeof(pcCode)) >= 0)
         {
             //
             // Check for a 404 not found error.
             //
-            if(ustrncmp(pcCode, "404", 3) == 0)
+            if (ustrncmp(pcCode, "404", 3) == 0)
             {
-                return(-1);
+                return (-1);
             }
         }
     }
@@ -423,82 +422,49 @@ JSONParseGET(uint32_t ui32Index, tUserReport *psUserReport,
     // Initialize the number of items found.
     //
     i32Items = 0;
-        //
-        // Save the list pointer.
-        //
-        sBufList = sBufPtr;
+    //
+    // Save the list pointer.
+    //
+    sBufList = sBufPtr;
 
-        //
-        // Get the audio.
-        //
-        if(GetField("audio", &sBufPtr) != 0)
+    //
+    // Get the audio.
+    //
+
+    if (GetField("data", &sBufPtr) != 0)
+    {
+        if (GetField("hash", &sBufPtr) != 0)
         {
-            GetFieldValueString(&sBufPtr, pcBuffAudio,sizeof(pcBuffAudio));
-            psUserReport->audio = pcBuffAudio;
+            GetFieldValueString(&sBufPtr, psUserReport->audio,
+                                sizeof(psUserReport->audio));
             i32Items++;
         }
         else
         {
-            psUserReport->audio = 0;
+            psUserReport->audio[0] = ' ';
         }
+    }
+    sBufPtr = sBufList;
 
-        //
-        // Reset the pointer to the start of the list values.
-        //
-        sBufPtr = sBufList;
-
-        //
-        // Get the codigoNome.
-        //
-        if(GetField("codigoNome", &sBufPtr) != 0)
-        {
-            GetFieldValueString(&sBufPtr, pcBuffCodigoNovo,sizeof(pcBuffCodigoNovo));
-             psUserReport->codigoNome = pcBuffCodigoNovo;
-            //psUserReport->errors = GetFieldValueInt(&sBufPtr);
-            i32Items++;
-        }
-        else
-        {
-            psUserReport->codigoNome = 0;
-        }
-
-        sBufPtr = sBufList;
-
-        //
-        // Get the data.
-        //
-        if(GetField("data", &sBufPtr) != 0)
-        {
-            GetFieldValueString(&sBufPtr, pcBuffCodigoNovo,sizeof(pcBuffCodigoNovo));
-            psUserReport->data = pcBuffCodigoNovo;
-            //psUserReport->errors = GetFieldValueInt(&sBufPtr);
-            i32Items++;
-        }
-        else
-        {
-            psUserReport->data = 0;
-        }
-
-        sBufPtr = sBufList;
-
-        //
-        // Get the errors.
-        //
+    //
+    // Get the errors.
+    //
+    if (GetField("data", &sBufPtr) != 0)
+    {
         if (GetField("errors", &sBufPtr) != 0)
         {
-            GetFieldValueString(&sBufPtr, pcBuffCodigoNovo,
-                                sizeof(pcBuffCodigoNovo));
-            psUserReport->errors = pcBuffCodigoNovo;
-            //psUserReport->errors = GetFieldValueInt(&sBufPtr);
+            GetFieldValueString(&sBufPtr, psUserReport->errors,
+                                sizeof(psUserReport->errors));
             i32Items++;
         }
         else
         {
             psUserReport->errors = 0;
         }
+    }
+    sBufPtr = sBufList;
 
-
-    return(i32Items);
+    return (i32Items);
 }
 
 //*****************************************************************************
@@ -507,14 +473,12 @@ JSONParseGET(uint32_t ui32Index, tUserReport *psUserReport,
 // query for GET.
 //
 //*****************************************************************************
-int32_t
-JSONParsePOST(uint32_t ui32Index, tUserReport *psUserReport,
-                  struct pbuf *psBuf)
+int32_t JSONParsePOST(uint32_t ui32Index, tUserReport *psUserReport,
+                      struct pbuf *psBuf)
 {
     tBufPtr sBufPtr, sBufList, sBufTemp;
     char pcCode[4];
-    int32_t i32Items,i32Code;
-
+    int32_t i32Items, i32Code;
 
     //
     // Reset the pointers.
@@ -524,7 +488,7 @@ JSONParsePOST(uint32_t ui32Index, tUserReport *psUserReport,
     //
     // Check and see if the request was valid.
     //
-    if(GetField("cod", &sBufPtr) != 0)
+    if (GetField("cod", &sBufPtr) != 0)
     {
         //
         // Check for a 404 not found error.
@@ -538,21 +502,21 @@ JSONParsePOST(uint32_t ui32Index, tUserReport *psUserReport,
 
         sBufTemp = sBufPtr;
 
-        if(i32Code != INVALID_INT)
+        if (i32Code != INVALID_INT)
         {
-            if(i32Code == 404)
+            if (i32Code == 404)
             {
-                return(-1);
+                return (-1);
             }
         }
-        else if(GetFieldValueString(&sBufTemp, pcCode, sizeof(pcCode)) >= 0)
+        else if (GetFieldValueString(&sBufTemp, pcCode, sizeof(pcCode)) >= 0)
         {
             //
             // Check for a 404 not found error.
             //
-            if(ustrncmp(pcCode, "404", 3) == 0)
+            if (ustrncmp(pcCode, "404", 3) == 0)
             {
-                return(-1);
+                return (-1);
             }
         }
     }
@@ -572,18 +536,44 @@ JSONParsePOST(uint32_t ui32Index, tUserReport *psUserReport,
     //
     sBufList = sBufPtr;
 
-
-    if(GetField("data", &sBufPtr) != 0) {
-        if(GetField("token", &sBufPtr) != 0) {
-            GetFieldValueString(&sBufPtr, psUserReport->token,sizeof(psUserReport->token));
+    if (GetField("data", &sBufPtr) != 0)
+    {
+        if (GetField("token", &sBufPtr) != 0)
+        {
+            GetFieldValueString(&sBufPtr, psUserReport->token,
+                                sizeof(psUserReport->token));
             i32Items++;
-        } else {
+        }
+        else
+        {
             psUserReport->token[0] = ' ';
         }
     }
     sBufPtr = sBufList;
 
-    return(i32Items);
+    //
+    // Get the errors.
+    //
+    //
+    // Get the errors.
+    //
+    if (GetField("data", &sBufPtr) != 0)
+    {
+        if (GetField("errors", &sBufPtr) != 0)
+        {
+            GetFieldValueString(&sBufPtr, psUserReport->errors,
+                                sizeof(psUserReport->errors));
+            i32Items++;
+        }
+        else
+        {
+            psUserReport->errors = 0;
+        }
+    }
+    sBufPtr = sBufList;
+
+
+    return (i32Items);
 }
 
 //*****************************************************************************
@@ -833,16 +823,20 @@ JSONParseGETteste(uint32_t ui32Index, tUserReport *psUserReport,
         //
         // Get the audio.
         //
-        if(GetField("tag", &sBufPtr) != 0)
-        {
-            GetFieldValueString(&sBufPtr, pcBuffAudio,sizeof(pcBuffAudio));
-            psUserReport->audio = pcBuffAudio;
-            i32Items++;
-        }
-        else
-        {
-            psUserReport->audio = 0;
-        }
+        if (GetField("data", &sBufPtr) != 0)
+               {
+                   if (GetField("hash", &sBufPtr) != 0)
+                   {
+                       GetFieldValueString(&sBufPtr, psUserReport->audio,
+                                           sizeof(psUserReport->audio));
+                       i32Items++;
+                   }
+                   else
+                   {
+                       psUserReport->audio[0] = ' ';
+                   }
+               }
+
 
         //
         // Reset the pointer to the start of the list values.
