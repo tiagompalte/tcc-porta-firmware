@@ -1,10 +1,10 @@
 
 /* ************************************************************** *
- * UTFPR - Universidade Tecnologica Federal do Paraná
- * Engenharia Eletrônica
- * Trabalho de Conclusão de Curso
+ * UTFPR - Universidade Tecnologica Federal do ParanÃ¡
+ * Engenharia EletrÃ´nica
+ * Trabalho de ConclusÃ£o de Curso
  * ************************************************************** *
- * Sistema de Segurança baseado em Reconhecimento de Senha Falada
+ * Sistema de SeguranÃ§a baseado em Reconhecimento de Senha Falada
  * ************************************************************** *
  * Equipe:
  * Luiz Felipe Kim Evaristo
@@ -12,7 +12,7 @@
  * Tiago Henrique Faxina
  * Tiago Mariani Palte
  * ************************************************************** *
- * Header do Controlador de GPIOs
+ * Header do Controlador do LCD
  * v1.0
  * 2017
  * ************************************************************** */
@@ -71,7 +71,7 @@
 #define     LCD_RW               GPIO_PIN_1
 #define     LCD_RS               GPIO_PIN_2
 
-// => Define Comandos e configuraçôes do display LCD <=
+// => Define Comandos e configuraÃ§Ã´es do display LCD <=
 #define     LCDCOMMAND           0
 #define     LCDDATA              1
 #define     LCD_CLR              0x01
@@ -81,7 +81,7 @@
 // => Define Comandos ENTRY_SET_MODE <=
 #define     ENTRY_SET_MODE       0x04
 
-//Direção do cursor
+//DireÃ§Ã£o do cursor
 #define     INCREMENT            0x02
 #define     DECREMENT            0x00
 
@@ -109,7 +109,7 @@
 // => Define comandos CURSOR_DISPLAY_SHIFT <=
 #define     CURSOR_DISPLAY_SHIFT 0x10
 
-// Bits de configuração do deslocamento
+// Bits de configuraÃ§Ã£o do deslocamento
 #define     CURSOR_LEFT_AC_DECR  0x00
 #define     CURSOR_RIGHT_AC_INCR 0x04
 #define     SHIFT_DISPLAY_LEFT   0x08
@@ -131,7 +131,7 @@
 #define     FONTE_5x8            0x00
 
 //********************************************
-// => Define Endereços <=
+// => Define EndereÃ§os <=
 #define     SET_CGRAM_ADDRESS    0x40
 #define     SET_DRAM_ADDRESS     0x80
 
@@ -165,6 +165,8 @@ extern void LCDInicio();
 extern void LCDPassRFID();
 extern void LCDAnimation(char *str);
 extern void LCDPassword();
+extern void LCDKeyPassword();
+extern void LCDShowKeyPassword(uint8_t count);
 extern void LCDNotAllowed();
 extern void LCDAllowed();
 extern void LCDError();
