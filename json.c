@@ -367,9 +367,6 @@ int32_t
 {
     tBufPtr sBufPtr, sBufList, sBufTemp;
     char pcCode[4];
-    char pcBuffAudio[512];
-    char pcBuffNovo[512];
-    char pcBuffCodigoNovo[512];
     int32_t i32Items, i32Code;
 
     //
@@ -438,31 +435,17 @@ int32_t
             GetFieldValueString(&sBufPtr, psUserReport->audio,
                                 sizeof(psUserReport->audio));
             i32Items++;
+            psUserReport->status = 200;
         }
         else
         {
             psUserReport->audio[0] = ' ';
+            psUserReport->status = 404;
+            i32Items++;
         }
     }
     sBufPtr = sBufList;
 
-    //
-    // Get the errors.
-    //
-    if (GetField("data", &sBufPtr) != 0)
-    {
-        if (GetField("errors", &sBufPtr) != 0)
-        {
-            GetFieldValueString(&sBufPtr, psUserReport->errors,
-                                sizeof(psUserReport->errors));
-            i32Items++;
-        }
-        else
-        {
-            psUserReport->errors = 0;
-        }
-    }
-    sBufPtr = sBufList;
 
     return (i32Items);
 }
@@ -470,7 +453,7 @@ int32_t
 //*****************************************************************************
 //
 // Fill out the psUserReport structure from data returned from the JSON
-// query for GET.
+// query for POST.
 //
 //*****************************************************************************
 int32_t JSONParsePOST(uint32_t ui32Index, tUserReport *psUserReport,
@@ -543,31 +526,12 @@ int32_t JSONParsePOST(uint32_t ui32Index, tUserReport *psUserReport,
             GetFieldValueString(&sBufPtr, psUserReport->token,
                                 sizeof(psUserReport->token));
             i32Items++;
+            psUserReport->status = 200;
         }
         else
         {
+            psUserReport->status = 404;
             psUserReport->token[0] = ' ';
-        }
-    }
-    sBufPtr = sBufList;
-
-    //
-    // Get the errors.
-    //
-    //
-    // Get the errors.
-    //
-    if (GetField("data", &sBufPtr) != 0)
-    {
-        if (GetField("errors", &sBufPtr) != 0)
-        {
-            GetFieldValueString(&sBufPtr, psUserReport->errors,
-                                sizeof(psUserReport->errors));
-            i32Items++;
-        }
-        else
-        {
-            psUserReport->errors = 0;
         }
     }
     sBufPtr = sBufList;
@@ -579,7 +543,7 @@ int32_t JSONParsePOST(uint32_t ui32Index, tUserReport *psUserReport,
 //*****************************************************************************
 //
 // Fill out the psUserReport structure from data returned from the JSON
-// query for GET.
+// query for POST.
 //
 //*****************************************************************************
 int32_t
@@ -652,11 +616,14 @@ JSONParsePOSTKEY(uint32_t ui32Index, tUserReport *psUserReport,
         if(GetField("token", &sBufPtr) != 0) {
             GetFieldValueString(&sBufPtr, psUserReport->token,sizeof(psUserReport->token));
             i32Items++;
+            psUserReport->status = 200;
         } else {
             psUserReport->token[0] = ' ';
+            psUserReport->status = 404;
         }
     }
     sBufPtr = sBufList;
+
 
     return(i32Items);
 }
@@ -734,11 +701,13 @@ JSONParsePOSTACCESS(uint32_t ui32Index, tUserReport *psUserReport,
 
 
     if(GetField("data", &sBufPtr) != 0) {
-        if(GetField("token", &sBufPtr) != 0) {
-            GetFieldValueString(&sBufPtr, psUserReport->token,sizeof(psUserReport->token));
+        if(GetField("hash", &sBufPtr) != 0) {
+            GetFieldValueString(&sBufPtr, psUserReport->log,sizeof(psUserReport->log));
             i32Items++;
+            psUserReport->status = 200;
         } else {
-            psUserReport->token[0] = ' ';
+            psUserReport->log[0] = ' ';
+            psUserReport->status = 404;
         }
     }
     sBufPtr = sBufList;
@@ -830,10 +799,12 @@ JSONParseGETteste(uint32_t ui32Index, tUserReport *psUserReport,
                        GetFieldValueString(&sBufPtr, psUserReport->audio,
                                            sizeof(psUserReport->audio));
                        i32Items++;
+                       psUserReport->status = 200;
                    }
                    else
                    {
                        psUserReport->audio[0] = ' ';
+                       psUserReport->status = 200;
                    }
                }
 
@@ -849,13 +820,13 @@ JSONParseGETteste(uint32_t ui32Index, tUserReport *psUserReport,
         if(GetField("codigoNome", &sBufPtr) != 0)
         {
             GetFieldValueString(&sBufPtr, pcBuffNovo,sizeof(pcBuffNovo));
-            psUserReport->errors = pcBuffNovo;
-            //psUserReport->errors = GetFieldValueInt(&sBufPtr);
+            //psUserReport->status = pcBuffNovo;
+            //psUserReport->status = GetFieldValueInt(&sBufPtr);
             i32Items++;
         }
         else
         {
-            psUserReport->errors = 0;
+            psUserReport->status = 0;
         }
 
         sBufPtr = sBufList;
@@ -867,7 +838,7 @@ JSONParseGETteste(uint32_t ui32Index, tUserReport *psUserReport,
         {
             GetFieldValueString(&sBufPtr, pcBuffCodigoNovo,sizeof(pcBuffCodigoNovo));
             psUserReport->codigoNome = pcBuffCodigoNovo;
-            //psUserReport->errors = GetFieldValueInt(&sBufPtr);
+            //psUserReport->status = GetFieldValueInt(&sBufPtr);
             i32Items++;
         }
         else

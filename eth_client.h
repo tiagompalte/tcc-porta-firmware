@@ -54,7 +54,7 @@ typedef struct
 
     char audio[32];
 
-    char *errors;
+    int status;
 
     char *codigoNome;
 
@@ -67,6 +67,8 @@ typedef struct
     char token[512];
 
     char *rfid;
+
+    char log[32];
 
     //
     // The last time these values were update (GMT Unix time).

@@ -116,6 +116,11 @@ struct
 }
 g_sEnet;
 
+//*****************************************************************************
+//
+// Maximum size of an weather request.
+//
+//*****************************************************************************
 #define MAX_REQUEST             2048
 
 extern uint32_t g_ui32SysClock;
@@ -136,7 +141,7 @@ static const char postRequest[] =
         "POST /token";
 
 static const char postRequestAcess[] =
-        "POST /porta-api/api/usuarios/confirmacaoAcesso/";
+        "POST /api/usuarios/confirmacaoAcesso/";
 
 static const char postRequestKey[] =
         "POST /api/usuarios/autenticacaoSenha/";
@@ -1249,11 +1254,6 @@ EthClientTick(uint32_t ui32TickMS)
     }
 }
 
-//*****************************************************************************
-//
-// Set the current weather source.
-//
-//*****************************************************************************
 void
 userSourceSet()
 {
@@ -1333,12 +1333,11 @@ requestGET(const char *pcQuery,
     g_sEnet.eState = iEthTCPConnectWait;
 
     //
-    // "GET /api/usuarios/rfid/";//rfid/codigo do usuario
+    // "GET /api/usuarios/rfid/"
     //
     i32Idx = MergeRequest(0, getRequest,
                           sizeof(getRequest), false);
 
-    //psUserReport->rfid = "1111";
 
     //
     // Append the rfid string
@@ -1486,7 +1485,7 @@ requestPOST(const char *pcQuery,
 
 
     //
-    // Append the " Host: portaeletronica-api.herokuapp.com" string.
+    // Append the " Host: localhost:8090" string.
     //
 
     i32Idx = MergeRequest(i32Idx, g_host,
@@ -1633,7 +1632,7 @@ requestPOSTKEY(const char *pcQuery,
     g_sUser.psUserReport = psUserReport;
 
     //
-    // Connect or reconnect to port 80.
+    // Connect or reconnect to port 3000.
     //
     g_sEnet.eState = iEthTCPConnectWait;
 
@@ -1697,7 +1696,7 @@ requestPOSTKEY(const char *pcQuery,
 
 
     //
-    // Append the " Host: portaeletronica-api.herokuapp.com" string.
+    // Append the " Host: localhost:8090" string.
     //
 
     i32Idx = MergeRequest(i32Idx, g_host,
@@ -1755,8 +1754,6 @@ requestPOSTKEY(const char *pcQuery,
     i32Idx = MergeRequest(i32Idx, g_rfid,
                                       sizeof(g_Code1), false);
 
-
-    psUserReport->rfid = "1111";
 
     //
     // Append the "User" string.
@@ -1842,119 +1839,79 @@ requestPOSTACCESS(const char *pcQuery,
     g_sUser.psUserReport = psUserReport;
 
     //
-    // Connect or reconnect to port 80.
+    // Connect or reconnect to port 3000.
     //
     g_sEnet.eState = iEthTCPConnectWait;
 
     //
-    // "POST /porta-api/api/usuarios/confirmacaoAcesso/";
+    // "POST /api/usuarios/confirmacaoAcesso/";
     //
     i32Idx = MergeRequest(0, postRequestAcess,
                           sizeof(postRequestAcess), false);
 
-    psUserReport->rfid = "1111";
 
     //
-    // Append the rfid string
-    //
-    i32Idx = MergeRequest(i32Idx, psUserReport->rfid,
-                         sizeof(psUserReport->rfid), false);
+        // Append the rfid string
+        //
+        i32Idx = MergeRequest(i32Idx, psUserReport->rfid,
+                             sizeof(psUserReport->rfid)+4, false);
 
-    //
-    // Append the "HTTP:/1.1" string.
-    //
-    i32Idx = MergeRequest(i32Idx, g_cHTTP11, sizeof(g_cHTTP11), false);
+        //
+        // Append the "HTTP:/1.1" string.
+        //
+        i32Idx = MergeRequest(i32Idx, g_cHTTP11, sizeof(g_cHTTP11), false);
 
-    //
-    // Append the g_ControlCache.
-    //
-    i32Idx = MergeRequest(i32Idx, g_ControlCache, sizeof(g_ControlCache), false);
+        //
+        // Append the "Cache-Control: no-cache" string.
+        //
+        i32Idx = MergeRequest(i32Idx, g_ControlCache, sizeof(g_ControlCache), false);
 
-    //
-    // Append the "zone: UTC-3" string.
-    //
-    i32Idx = MergeRequest(i32Idx, g_Zone, sizeof(g_Zone), false);
+        //
+        // Append the "zone: UTC-3" string.
+        //
+        i32Idx = MergeRequest(i32Idx, g_Zone, sizeof(g_Zone), false);
 
-    //
-    // Append the "Authorization: Bearer token" string.
-    //
-    i32Idx = MergeRequest(i32Idx, g_Authorization, sizeof(g_Authorization), false);
+        //
+        // Append the "Authorization: Bearer token" string.
+        //
+        i32Idx = MergeRequest(i32Idx, g_Authorization, sizeof(g_Authorization), false);
 
-    //
-     // Append the token
-     //
-     i32Idx = MergeRequest(i32Idx, psUserReport->token, sizeof(psUserReport->token), false);
+        //
+        // Append the token
+        //
+        i32Idx = MergeRequest(i32Idx, psUserReport->token, sizeof(psUserReport->token), false);
 
-     //
-     // Break line
-     //
-     i32Idx = MergeRequest(i32Idx, g_AfterLength, sizeof(g_AfterLength), false);
-
-    //
-    // Append the "Content-Type: application/json" string.
-    //
-
-    i32Idx = MergeRequest(i32Idx, g_ContentType,
-                              sizeof(g_ContentType), false);
-
-    //
-    // Append the " User-Agent: Placa1 Version/1.0d" string.
-    //
-
-    i32Idx = MergeRequest(i32Idx, g_UserAgent,
-                              sizeof(g_UserAgent), false);
-
-    //
-    // Append the " g_Accept"string.
-    //
-
-    i32Idx = MergeRequest(i32Idx, g_Accept,
-                              sizeof(g_Accept), false);
+        //
+        // Break line
+        //
+        i32Idx = MergeRequest(i32Idx, g_AfterLength, sizeof(g_AfterLength), false);
 
 
-    //
-    // Append the " Host: portaeletronica-api.herokuapp.com" string.
-    //
-
-    i32Idx = MergeRequest(i32Idx, g_host,
-                              sizeof(g_host), false);
-
-    //
-    // Append the " Accept-Encoding:  gzip, deflate" string.
-    //
-
-    i32Idx = MergeRequest(i32Idx, g_AcceptEncoding,
-                              sizeof(g_AcceptEncoding), false);
-
-    //
-    // Append the " Content-Length: " string.
-    //
-
-    i32Idx = MergeRequest(i32Idx, g_ContentLength,
-                              sizeof(g_ContentLength), false);
+        //
+        // Append the "UserAgent: Placa1 Version 1.0" string.
+        //
+        i32Idx = MergeRequest(i32Idx, g_UserAgent, sizeof(g_UserAgent), false);
 
 
-    //
-    // Append the size of the string.
-    //
+        //
+        // Append the "Accept: * /*" string.
+        //
+        i32Idx = MergeRequest(i32Idx, g_Accept, sizeof(g_Accept), false);
 
-    i32Idx = MergeRequest(i32Idx, size,
-                                  sizeof(size), false);
+        //
+        // Append the "Host: portaeletronica-api.herokuapp.com" string.
+        //
+        i32Idx = MergeRequest(i32Idx, g_host, sizeof(g_host), false);
 
-    //
-    // Append the break line.
-    //
+        //
+        // Append the "accept-encoding: gzip, deflate" string.
+        //
+        i32Idx = MergeRequest(i32Idx, g_AcceptEncoding, sizeof(g_AcceptEncoding), false);
 
-    i32Idx = MergeRequest(i32Idx, g_AfterLength,
-                                  sizeof(g_AfterLength), false);
-
-
-    //
-    // Append the " Connection: Keep-Alive" string.
-    //
-
-    i32Idx = MergeRequest(i32Idx, g_Conncection,
-                              sizeof(g_Conncection), false);
+        //
+        // Append the "Connection: keep-alive" string.
+        //
+        i32Idx = MergeRequest(i32Idx, g_Conncection, sizeof(g_Conncection), false);
 
 
     g_sEnet.ulRequest = POSTACCESS;
@@ -2025,7 +1982,7 @@ requestGETteste(const char *pcQuery,
     i32Idx = MergeRequest(i32Idx, g_Accept, sizeof(g_Accept), false);
 
     //
-    // Append the "Host: portaeletronica-api.herokuapp.com" string.
+    // Append the "Host: localhost:8090" string.
     //
     i32Idx = MergeRequest(i32Idx, g_hostTeste, sizeof(g_hostTeste), false);
 

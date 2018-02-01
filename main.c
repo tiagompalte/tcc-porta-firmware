@@ -284,7 +284,7 @@ char g_pcIPAddr[20];
 void ResetUser(uint32_t ui32Idx) {
     g_psUserInfo.sReport.pcDescription = 0;
     //g_psUserInfo.sReport.audio = 0;
-    g_psUserInfo.sReport.errors = 0;
+    //g_psUserInfo.sReport.errors = 0;
     g_psUserInfo.sReport.rfid = 0;
     g_psUserInfo.ui32LastUpdate = 0;
 }
@@ -484,16 +484,19 @@ int Communication (int request, char* size) {
     }
 }
 
-int CommunicationVoice()
-{
+int CommunicationVoice(){
 
     Communication(POST, "38");
     Communication(GET, "38");
+    Communication(POSTACCESS, "38");
 
     //g_iState == STATE_NEW_CONNECTION;
     //g_ui32Delay = 500;
     //Communication(GET);
-    return 1;
+    if (g_psUserInfo.sReport.status == 200)
+        return 1;
+    else
+        return 0;
 }
 
 
