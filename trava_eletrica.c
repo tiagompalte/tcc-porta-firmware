@@ -24,7 +24,7 @@
 #include"driverlib/pin_map.h"
 #include "driverlib/rom_map.h"
 #include "driverlib/gpio.h"
-#include "trava_eletrica.h"
+#include "driverlib/trava_eletrica.h"
 
 bool trava_acionada = 0;
 

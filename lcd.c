@@ -16,7 +16,7 @@
  * 2017
  * ************************************************************** */
 
-#include "lcd.h"
+#include "driverlib/lcd.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/rom_map.h"
 
