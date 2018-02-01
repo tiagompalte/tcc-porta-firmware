@@ -47,6 +47,7 @@ unsigned char PassWord1[] = {1,1,1,1,1,'\0'};
 uint8_t PassWordCount = 0;
 CardStatus cardStatus = CardNotDetected;
 UserStatus userStatus = EntryNotAllowed;
+UserOptionsStatus userOptionsStatus = VoicePassWord;
 static volatile bool g_bIntFlag = true;
 static volatile bool TestFlag = false;
 static volatile bool ExternIntFlag = false;
