@@ -356,7 +356,7 @@ void EnetEvents(uint32_t ui32Event, void *pvData, uint32_t ui32Param) {
     }
     else if(ui32Event == ETH_EVENT_DISCONNECT)   {
         if(g_iState != STATE_CONNECTED_IDLE)      {
-            ResetUser(0);
+            ResetUser();
         }
 
         g_iState = STATE_NOT_CONNECTED;
@@ -406,7 +406,7 @@ int Communication (int request, char* size) {
             else if(iRequest == eRequestGETteste)
             {
                             g_iState = STATE_WAIT_DATA;
-                            g_ui32Delay = 1000;
+                            g_ui32Delay = 100;
 
                            requestGETteste(
                                     g_psUserInfo.pcName,
@@ -418,7 +418,7 @@ int Communication (int request, char* size) {
             else if(iRequest == eRequestGET)
             {
                 g_iState = STATE_WAIT_DATA;
-                g_ui32Delay = 1000;
+                g_ui32Delay = 100;
 
                requestGET(
                         g_psUserInfo.pcName,
@@ -431,7 +431,7 @@ int Communication (int request, char* size) {
             {
                 g_iState = STATE_WAIT_DATA;
 
-                g_ui32Delay = 1000;
+                g_ui32Delay = 100;
 
                 requestPOST(
                         g_psUserInfo.pcName,
@@ -444,7 +444,7 @@ int Communication (int request, char* size) {
                         {
                             g_iState = STATE_WAIT_DATA;
 
-                            g_ui32Delay = 1000;
+                            g_ui32Delay = 100;
 
                             requestPOSTKEY(
                                     g_psUserInfo.pcName,
@@ -457,7 +457,7 @@ int Communication (int request, char* size) {
                         {
                             g_iState = STATE_WAIT_DATA;
 
-                            g_ui32Delay = 1000;
+                            g_ui32Delay = 100;
 
                             requestPOSTACCESS(
                                     g_psUserInfo.pcName,
@@ -477,7 +477,7 @@ int Communication (int request, char* size) {
         {
 
             g_iState = STATE_WAIT_NICE;
-            g_ui32Delay = SYSTEM_TICK_MS * 10;
+            g_ui32Delay = SYSTEM_TICK_MS * 1;
         }
         else if(g_iState == STATE_WAIT_NICE)
         {
@@ -498,6 +498,11 @@ int Communication (int request, char* size) {
     }
 }
 
+int CommunicationDigit(){
+
+    //TODO
+}
+
 int CommunicationVoice(){
 
     int try = ResetStatus();
@@ -505,6 +510,7 @@ int CommunicationVoice(){
     {
         Communication(POST, "38");
         try++;
+        g_ui32Delay = 500;
     }
 
     if (try == 3)
@@ -516,28 +522,34 @@ int CommunicationVoice(){
     {
         Communication(GET, "38");
         try++;
+        g_ui32Delay = 500;
     }
 
     if (try == 3)
         return errorConnection;
-
-    try = ResetStatus();
-
-    while ((g_psUserInfo.sReport.status != OK) && (try < 3))
-    {
-        Communication(POSTACCESS, "38");
-        try++;
-    }
-    if (try == 3)
-        return errorConnection;
-
-
 
     //g_iState == STATE_NEW_CONNECTION;
     //g_ui32Delay = 500;
     //Communication(GET);
     if (g_psUserInfo.sReport.status == 200)
         return OK;
+}
+
+int CommunicationLog(){
+
+    int try = ResetStatus();
+
+        while ((g_psUserInfo.sReport.status != OK) && (try < 3))
+        {
+            Communication(POSTACCESS, "38");
+            try++;
+            g_ui32Delay = 500;
+        }
+        if (try == 3)
+            return errorConnection;
+
+        if (g_psUserInfo.sReport.status == 200)
+            return OK;
 }
 
 
@@ -549,6 +561,7 @@ main(void)
     ledConv = 0;
     indiceAmostra = DELAY_MAX;
     conversionEnd = 0;
+    int status;
 
     // Inicializar sistema
     systemInit();
@@ -666,15 +679,16 @@ main(void)
     g_psUserInfo.sReport.keyBoard = "1234";
     g_psUserInfo.sReport.rfid = "12345678";
 
-    //Communication(POST, "38");
+    if (CommunicationVoice() == errorConnection){
+        status = -1;
+    } else {
+        status = 1;
+    }
 
-    //Communication(POSTACCESS, "38");
+    if (status == 1)
+        CommunicationLog();
 
-    //Communication(GET, "38");
-
-    HardwareInit();
-   // Communication(GETteste, "38", "2","TZgJS", "1111");
-    //loginServer(); */
+    HardwareInit();*/
 
 }
 
