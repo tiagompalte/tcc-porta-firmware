@@ -43,6 +43,7 @@
 #include "utils/ustdlib.h"
 #include "eth_client.h"
 #include "json.h"
+#include "communication.h"
 #include "driverlib/Hardware.h"
 
 #include <stdint.h>
@@ -243,103 +244,12 @@ void ADCInit() {
     MAP_ADCSequenceEnable(ADC0_BASE, 3);
 }
 
-/*****************************/
-volatile enum {
-    STATE_NOT_CONNECTED,
-        STATE_NEW_CONNECTION,
-        STATE_CONNECTED_IDLE,
-        STATE_WAIT_DATA,
-        STATE_UPDATE_USER,
-        STATE_WAIT_NICE,
-}
-g_iState = STATE_NOT_CONNECTED;
-
-uint32_t g_ui32IPaddr;
-uint32_t g_ui32ProcessingCmds;
-volatile uint32_t g_ui32Delay;
-volatile uint32_t g_ui32Cycles;
-uint32_t g_ui32SysClock;
-struct {
-    uint32_t ui32LastUpdate;
-    tUserReport sReport;
-    const char *pcName;
-}
-g_psUserInfo;
-
-const char g_pcNotFound[] = "User Not Found";
-const char g_pcServerBusy[] = "Server Busy";
-const char g_pcWaitData[] = "Waiting for Data";
-
-#define SYSTICK_INT_PRIORITY    0x80
-#define ETHERNET_INT_PRIORITY   0xC0
-
 #ifdef DEBUG
 void
 __error__(char *pcFilename, uint32_t ui32Line)
 {
 }
 #endif
-
-char g_pcMACAddr[40];
-char g_pcIPAddr[20];
-
-int ResetUser()
-{
-    g_psUserInfo.sReport.pcDescription = 0;
-    g_psUserInfo.sReport.audio[0] = ' ';
-    g_psUserInfo.sReport.status = 0;
-    g_psUserInfo.sReport.rfid = 0;
-    g_psUserInfo.ui32LastUpdate = 0;
-
-    return 1;
-}
-
-int ResetStatus()
-{
-
-    g_psUserInfo.sReport.status = 0;
-    g_psUserInfo.ui32LastUpdate = 0;
-
-    return 0;
-}
-
-void UpdateIPAddress(char *pcAddr, uint32_t ipAddr) {
-    uint8_t *pui8Temp = (uint8_t *)&ipAddr;
-
-    if(ipAddr == 0)     {
-        ustrncpy(pcAddr, "IP: ---.---.---.---", sizeof(g_pcIPAddr));
-    }
-    else     {
-        usprintf(pcAddr,"IP: %d.%d.%d.%d", pui8Temp[0], pui8Temp[1],
-                pui8Temp[2], pui8Temp[3]);
-    }
-}
-
-void WeatherEvent(uint32_t ui32Event, void* pvData, uint32_t ui32Param) {
-
-    if(ui32Event == ETH_EVENT_RECEIVE)    {
-        g_iState = STATE_UPDATE_USER;
-
-        g_psUserInfo.ui32LastUpdate =
-            g_psUserInfo.sReport.ui32Time;
-    }
-    else if(ui32Event == ETH_EVENT_INVALID_REQ)   {
-        g_psUserInfo.sReport.pcDescription = g_pcNotFound;
-        g_iState = STATE_UPDATE_USER;
-    }
-    else if(ui32Event == ETH_EVENT_CLOSE)  {
-        if(g_iState == STATE_WAIT_DATA)        {
-            g_psUserInfo.sReport.pcDescription =
-                g_pcServerBusy;
-
-            g_iState = STATE_UPDATE_USER;
-        }
-    }
-
-    if(g_psUserInfo.ui32LastUpdate == 0)   {
-        g_psUserInfo.ui32LastUpdate = 1;
-    }
-}
 
 void SysTickIntHandler(void) {
     EthClientTick(SYSTEM_TICK_MS);
@@ -348,215 +258,12 @@ void SysTickIntHandler(void) {
     }
 }
 
-void EnetEvents(uint32_t ui32Event, void *pvData, uint32_t ui32Param) {
-    if(ui32Event == ETH_EVENT_CONNECT)   {
-        g_iState = STATE_NEW_CONNECTION;
-
-        UpdateIPAddress(g_pcIPAddr, EthClientAddrGet());
-    }
-    else if(ui32Event == ETH_EVENT_DISCONNECT)   {
-        if(g_iState != STATE_CONNECTED_IDLE)      {
-            ResetUser();
-        }
-
-        g_iState = STATE_NOT_CONNECTED;
-        UpdateIPAddress(g_pcIPAddr, 0);
-    }
-}
-
-
-int Communication (int request, char* size) {
-    enum    {
-        eRequestIdle,
-        eRequestUpdate,
-        eRequestGET,
-        eRequestPOST,
-        eRequestPOSTKEY,
-        eRequestPOSTACCESS,
-        eRequestGETteste,
-        eRequestComplete,
-    }
-    iRequest;
-    iRequest = eRequestIdle;
-
-    while(1)
-    {
-        if(g_iState == STATE_NEW_CONNECTION)
-        {
-            iRequest = eRequestIdle;
-
-            g_iState = STATE_CONNECTED_IDLE;
-        }
-        else if(g_iState == STATE_CONNECTED_IDLE)
-        {
-            if(iRequest == eRequestIdle)
-            {
-                if (request == GET){
-                    iRequest = eRequestGET; //--- para GET
-                } else if (request == POST){
-                    iRequest = eRequestPOST;// Para POST
-                } else if (request == POSTKEY){
-                    iRequest = eRequestPOSTKEY;// Para POSTKEY
-                } else if (request == POSTACCESS){
-                    iRequest = eRequestPOSTACCESS;// Para POSTACCESS
-                } else if (request == GETteste){
-                    iRequest = eRequestGETteste;// Para GETteste
-                }
-            }
-            else if(iRequest == eRequestGETteste)
-            {
-                            g_iState = STATE_WAIT_DATA;
-                            g_ui32Delay = 100;
-
-                           requestGETteste(
-                                    g_psUserInfo.pcName,
-                                    &g_psUserInfo.sReport,
-                                    WeatherEvent);
-
-                            iRequest = eRequestUpdate;
-            }
-            else if(iRequest == eRequestGET)
-            {
-                g_iState = STATE_WAIT_DATA;
-                g_ui32Delay = 100;
-
-               requestGET(
-                        g_psUserInfo.pcName,
-                        &g_psUserInfo.sReport,
-                        WeatherEvent);
-
-                iRequest = eRequestUpdate;
-            }
-            else if(iRequest == eRequestPOST)
-            {
-                g_iState = STATE_WAIT_DATA;
-
-                g_ui32Delay = 100;
-
-                requestPOST(
-                        g_psUserInfo.pcName,
-                        &g_psUserInfo.sReport,
-                        WeatherEvent, size);
-
-                iRequest = eRequestUpdate;
-            }
-            else if(iRequest == eRequestPOSTKEY)
-                        {
-                            g_iState = STATE_WAIT_DATA;
-
-                            g_ui32Delay = 100;
-
-                            requestPOSTKEY(
-                                    g_psUserInfo.pcName,
-                                    &g_psUserInfo.sReport,
-                                    WeatherEvent, size);
-
-                            iRequest = eRequestUpdate;
-                        }
-            else if(iRequest == eRequestPOSTACCESS)
-                        {
-                            g_iState = STATE_WAIT_DATA;
-
-                            g_ui32Delay = 100;
-
-                            requestPOSTACCESS(
-                                    g_psUserInfo.pcName,
-                                    &g_psUserInfo.sReport,
-                                    WeatherEvent, size);
-
-                            iRequest = eRequestUpdate;
-                        }
-            else if(iRequest == eRequestUpdate)
-            {
-                iRequest = eRequestIdle;
-
-
-            }
-        }
-        else if(g_iState == STATE_UPDATE_USER)
-        {
-
-            g_iState = STATE_WAIT_NICE;
-            g_ui32Delay = SYSTEM_TICK_MS * 1;
-        }
-        else if(g_iState == STATE_WAIT_NICE)
-        {
-            if(g_ui32Delay == 0)
-            {
-                g_iState = STATE_CONNECTED_IDLE;
-            }
-        }
-        else if(g_iState == STATE_WAIT_DATA)
-        {
-            if(g_ui32Delay == 0)
-            {
-                EthClientTCPDisconnect();
-                return 0;
-            }
-        }
-
-    }
-}
-
-int CommunicationDigit(){
-
-    //TODO
-}
-
-int CommunicationVoice(){
-
-    int try = ResetStatus();
-    while ((g_psUserInfo.sReport.status != OK) && (try < 3))
-    {
-        Communication(POST, "38");
-        try++;
-        g_ui32Delay = 500;
-    }
-
-    if (try == 3)
-        return errorConnection;
-
-    try = ResetStatus();
-
-    while ((g_psUserInfo.sReport.status != OK) && (try < 3))
-    {
-        Communication(GET, "38");
-        try++;
-        g_ui32Delay = 500;
-    }
-
-    if (try == 3)
-        return errorConnection;
-
-    //g_iState == STATE_NEW_CONNECTION;
-    //g_ui32Delay = 500;
-    //Communication(GET);
-    if (g_psUserInfo.sReport.status == 200)
-        return OK;
-}
-
-int CommunicationLog(){
-
-    int try = ResetStatus();
-
-        while ((g_psUserInfo.sReport.status != OK) && (try < 3))
-        {
-            Communication(POSTACCESS, "38");
-            try++;
-            g_ui32Delay = 500;
-        }
-        if (try == 3)
-            return errorConnection;
-
-        if (g_psUserInfo.sReport.status == 200)
-            return OK;
-}
 
 
 int
 main(void)
 {
-    //tempIndex = 0;
+  /* //tempIndex = 0;
     led3s = 0;
     ledConv = 0;
     indiceAmostra = DELAY_MAX;
@@ -584,7 +291,7 @@ main(void)
 
     //  HardwareInit();
 
-    while (1) {
+   /* while (1) {
             // AGUARDA VERIFICACAO DO RFID
             //MAP_TimerEnable(TIMER2_BASE, TIMER_A); // Timer 10s
             // tem 10 segundos pra enviar o cÃ›digo RFID e comeÃ�ar a receber os dados
@@ -601,9 +308,9 @@ main(void)
                 } else {
                     // MENSAGEM DE ERRO
                 } */
-                conversionEnd = 0;
-          }
-      }
+              //  conversionEnd = 0;
+          //}
+     // }
 
  /*
 
@@ -689,6 +396,89 @@ main(void)
         CommunicationLog();
 
     HardwareInit();*/
+
+    int status;
+
+        //
+        // Make sure the main oscillator is enabled because this is required by
+        // the PHY.  The system must have a 25MHz crystal attached to the OSC
+        // pins.  The SYSCTL_MOSC_HIGHFREQ parameter is used when the crystal
+        // frequency is 10MHz or higher.
+        //
+        SysCtlMOSCConfigSet(SYSCTL_MOSC_HIGHFREQ);
+
+        //
+        // Run from the PLL at 120 MHz.
+        //
+        g_ui32SysClock = MAP_SysCtlClockFreqSet((SYSCTL_XTAL_25MHZ |
+                    SYSCTL_OSC_MAIN |
+                    SYSCTL_USE_PLL |
+                    SYSCTL_CFG_VCO_480), 120000000);
+
+        //
+        // Configure the device pins.
+        //
+        PinoutSet(true, false);
+
+
+        //
+        // Configure SysTick for a periodic interrupt at 10ms.
+        //
+        SysTickPeriodSet((g_ui32SysClock / 1000) * SYSTEM_TICK_MS);
+        SysTickEnable();
+        SysTickIntEnable();
+
+        //
+        // Initialized the flash program block and read the current settings.
+        //
+        FlashPBInit(FLASH_PB_START, FLASH_PB_END, 256);
+
+
+
+            ResetUser();
+
+
+        //
+        // Set the IP address to 0.0.0.0.
+        //
+        UpdateIPAddress(g_pcIPAddr, 0);
+
+        //
+        // Enable processor interrupts.
+        //
+        IntMasterEnable();
+
+        //
+        // Set the interrupt priorities.  We set the SysTick interrupt to a higher
+        // priority than the Ethernet interrupt to ensure that the file system
+        // tick is processed if SysTick occurs while the Ethernet handler is being
+        // processed.  This is very likely since all the TCP/IP and HTTP work is
+        // done in the context of the Ethernet interrupt.
+        //
+        IntPriorityGroupingSet(4);
+        IntPrioritySet(INT_EMAC0, ETHERNET_INT_PRIORITY);
+        IntPrioritySet(FAULT_SYSTICK, SYSTICK_INT_PRIORITY);
+
+            EthClientProxySet(0);
+            EthClientInit(EnetEvents);
+
+        //
+        // Get the IP address.
+        //
+        g_ui32IPaddr = EthClientAddrGet();
+
+        g_psUserInfo.sReport.idBoard = "11";
+        g_psUserInfo.sReport.keyBoard = "1234";
+        g_psUserInfo.sReport.rfid = "12345678";
+
+        if (CommunicationVoice() == errorConnection){
+            status = -1;
+        } else {
+            status = 1;
+        }
+
+        if (status == 1)
+            CommunicationLog();
 
 }
 
