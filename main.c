@@ -80,6 +80,8 @@
 #define POSTKEY     2
 #define POSTACCESS  3
 #define GETteste    4
+#define errorConnection    -1
+#define OK    200
 
 int led3s, ledConv;
 int i, tempIndex;
@@ -281,12 +283,24 @@ __error__(char *pcFilename, uint32_t ui32Line)
 char g_pcMACAddr[40];
 char g_pcIPAddr[20];
 
-void ResetUser(uint32_t ui32Idx) {
+int ResetUser()
+{
     g_psUserInfo.sReport.pcDescription = 0;
-    //g_psUserInfo.sReport.audio = 0;
-    //g_psUserInfo.sReport.errors = 0;
+    g_psUserInfo.sReport.audio[0] = ' ';
+    g_psUserInfo.sReport.status = 0;
     g_psUserInfo.sReport.rfid = 0;
     g_psUserInfo.ui32LastUpdate = 0;
+
+    return 1;
+}
+
+int ResetStatus()
+{
+
+    g_psUserInfo.sReport.status = 0;
+    g_psUserInfo.ui32LastUpdate = 0;
+
+    return 0;
 }
 
 void UpdateIPAddress(char *pcAddr, uint32_t ipAddr) {
@@ -486,17 +500,44 @@ int Communication (int request, char* size) {
 
 int CommunicationVoice(){
 
-    Communication(POST, "38");
-    Communication(GET, "38");
-    Communication(POSTACCESS, "38");
+    int try = ResetStatus();
+    while ((g_psUserInfo.sReport.status != OK) && (try < 3))
+    {
+        Communication(POST, "38");
+        try++;
+    }
+
+    if (try == 3)
+        return errorConnection;
+
+    try = ResetStatus();
+
+    while ((g_psUserInfo.sReport.status != OK) && (try < 3))
+    {
+        Communication(GET, "38");
+        try++;
+    }
+
+    if (try == 3)
+        return errorConnection;
+
+    try = ResetStatus();
+
+    while ((g_psUserInfo.sReport.status != OK) && (try < 3))
+    {
+        Communication(POSTACCESS, "38");
+        try++;
+    }
+    if (try == 3)
+        return errorConnection;
+
+
 
     //g_iState == STATE_NEW_CONNECTION;
     //g_ui32Delay = 500;
     //Communication(GET);
     if (g_psUserInfo.sReport.status == 200)
-        return 1;
-    else
-        return 0;
+        return OK;
 }
 
 

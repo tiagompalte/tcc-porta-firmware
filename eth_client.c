@@ -1589,7 +1589,7 @@ requestPOST(const char *pcQuery,
                                       sizeof(g_Close), false);
 
     //
-    // Forcast weather report request.
+    // Forcast ulr report request.
     //
     g_sEnet.ulRequest = POST;
 
@@ -1632,7 +1632,7 @@ requestPOSTKEY(const char *pcQuery,
     g_sUser.psUserReport = psUserReport;
 
     //
-    // Connect or reconnect to port 3000.
+    // Connect or reconnect to port 80.
     //
     g_sEnet.eState = iEthTCPConnectWait;
 
@@ -1839,7 +1839,7 @@ requestPOSTACCESS(const char *pcQuery,
     g_sUser.psUserReport = psUserReport;
 
     //
-    // Connect or reconnect to port 3000.
+    // Connect or reconnect to port 80.
     //
     g_sEnet.eState = iEthTCPConnectWait;
 
