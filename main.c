@@ -84,6 +84,9 @@
 #define errorConnection    -1
 #define OK    200
 
+#define KEYBOARD       "1234"
+#define IDBOARD         "11"
+
 int led3s, ledConv;
 int i, tempIndex;
 int conversionEnd;
@@ -466,12 +469,12 @@ main(void)
         // Get the IP address.
         //
         g_ui32IPaddr = EthClientAddrGet();
-
-        g_psUserInfo.sReport.idBoard = "11";
-        g_psUserInfo.sReport.keyBoard = "1234";
+        g_psUserInfo.sReport.userKey = "1234";
+        g_psUserInfo.sReport.idBoard = IDBOARD;
+        g_psUserInfo.sReport.keyBoard = KEYBOARD;
         g_psUserInfo.sReport.rfid = "12345678";
 
-        if (CommunicationVoice() == errorConnection){
+        if (CommunicationConnecting(VOICE) == errorConnection){
             status = -1;
         } else {
             status = 1;

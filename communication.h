@@ -1,10 +1,18 @@
-/*
- * Communication.h
- *
- *  Created on: 2 de fev de 2018
- *      Author: tauanmarinho
- */
-
+/* ************************************************************** *
+ * UTFPR - Universidade Tecnologica Federal do Paraná
+ * Engenharia Eletronica
+ * Trabalho de Conclusao de Curso
+ * ************************************************************** *
+ * Sistema de Seguranca baseado em Reconhecimento de Senha Falada
+ * ************************************************************** *
+ * Equipe:
+ * Luiz Felipe Kim Evaristo
+ * Tauan Marinho
+ * Tiago Henrique Faxina
+ * Tiago Mariani Palte
+ * ************************************************************** *
+ * communication.h - Prototypes for the driver for the communication.
+ * ************************************************************** */
 #ifndef COMMUNICATION_H_
 #define COMMUNICATION_H_
 
@@ -36,7 +44,12 @@ extern "C"
 #define POSTACCESS          3
 #define GETteste            4
 #define errorConnection    -1
+#define errorKey            400
+#define errorConnect        404
 #define OK                  200
+
+#define VOICE                1
+#define KEY                  2
 
 
 //*****************************************************************************
@@ -89,6 +102,8 @@ struct
     //
     tUserReport sReport;
 
+    int t_error[3][3];
+
     //
     // The name of the current.
     //
@@ -118,8 +133,7 @@ extern void CommunicationEvent(uint32_t ui32Event, void* pvData, uint32_t ui32Pa
 extern void SysTickIntHandler(void);
 extern void EnetEvents(uint32_t ui32Event, void *pvData, uint32_t ui32Param);
 extern int Communication(int request, char* size);
-extern int CommunicationDigit();
-extern int CommunicationVoice();
+extern int CommunicationConnecting(int type);
 extern int CommunicationLog();
 
 

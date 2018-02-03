@@ -1,9 +1,18 @@
-/*
- * Communication.c
- *
- *  Created on: 2 de fev de 2018
- *      Author: tauanmarinho
- */
+/* ************************************************************** *
+ * UTFPR - Universidade Tecnologica Federal do Paraná
+ * Engenharia Eletronica
+ * Trabalho de Conclusao de Curso
+ * ************************************************************** *
+ * Sistema de Seguranca baseado em Reconhecimento de Senha Falada
+ * ************************************************************** *
+ * Equipe:
+ * Luiz Felipe Kim Evaristo
+ * Tauan Marinho
+ * Tiago Henrique Faxina
+ * Tiago Mariani Palte
+ * ************************************************************** *
+ * communication.c - Prototypes for the driver for the communication.
+ * ************************************************************** */
 #include "communication.h"
 #include <stdint.h>
 #include <stdbool.h>
@@ -358,18 +367,13 @@ int Communication(int request, char* size)
     }
 }
 
-int CommunicationDigit()
-{
-
-    //TODO
-}
-
-int CommunicationVoice()
+int CommunicationConnecting(int type)
 {
     int try = ResetStatus();
     while ((g_psUserInfo.sReport.status != OK) && (try < 3))
     {
         Communication(POST, "38");
+        g_psUserInfo.t_error[0][try] = g_psUserInfo.sReport.status;
         try++;
         g_ui32Delay = 500;
     }
@@ -381,7 +385,15 @@ int CommunicationVoice()
 
     while ((g_psUserInfo.sReport.status != OK) && (try < 3))
     {
-        Communication(GET, "38");
+        if (type == VOICE)
+        {
+            Communication(GET, "38");
+        }
+        else if (type == KEY)
+        {
+            Communication(POSTKEY, "38");
+        }
+        g_psUserInfo.t_error[1][try] = g_psUserInfo.sReport.status;
         try++;
         g_ui32Delay = 500;
     }
@@ -389,11 +401,10 @@ int CommunicationVoice()
     if (try == 3)
         return errorConnection;
 
-    //g_iState == STATE_NEW_CONNECTION;
-    //g_ui32Delay = 500;
-    //Communication(GET);
     if (g_psUserInfo.sReport.status == 200)
         return OK;
+    else
+        return errorConnection;
 }
 
 int CommunicationLog()
@@ -404,6 +415,7 @@ int CommunicationLog()
     while ((g_psUserInfo.sReport.status != OK) && (try < 3))
     {
         Communication(POSTACCESS, "38");
+        g_psUserInfo.t_error[2][try] = g_psUserInfo.sReport.status;
         try++;
         g_ui32Delay = 500;
     }
@@ -412,5 +424,7 @@ int CommunicationLog()
 
     if (g_psUserInfo.sReport.status == 200)
         return OK;
+    else
+        return errorConnection;
 }
 

@@ -1752,7 +1752,7 @@ requestPOSTKEY(const char *pcQuery,
     //
 
     i32Idx = MergeRequest(i32Idx, g_rfid,
-                                      sizeof(g_Code1), false);
+                                      sizeof(g_rfid), false);
 
 
     //
@@ -1781,8 +1781,8 @@ requestPOSTKEY(const char *pcQuery,
     // Append the "User" string.
     //
 
-    i32Idx = MergeRequest(i32Idx, psUserReport->keyBoard,
-                                      sizeof(psUserReport->keyBoard)+1, false);
+    i32Idx = MergeRequest(i32Idx, psUserReport->userKey,
+                                      sizeof(psUserReport->userKey), false);
 
 
     //

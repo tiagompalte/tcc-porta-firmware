@@ -48,7 +48,7 @@ extern "C"
 typedef struct
 {
     //
-    // The brief weather description, this is caller provided.
+    // The brief user description, this is caller provided.
     //
     const char *pcDescription;
 
@@ -61,6 +61,8 @@ typedef struct
     char *data;
 
     char *keyBoard;
+
+    char *userKey;//TODO ver quantos caracteres é o máximo
 
     char *idBoard;
 
