@@ -37,6 +37,6 @@ uint8_t rCross[2*DELAY_MAX + 1];
 extern float crossCorrelate(float *signal1, float *signal2); */
 extern int autoCorrelate(uint8_t *signal);
 extern int crossCorrelate(uint8_t *signal1, uint8_t *signal2);
-extern bool validate();
+extern int validate();
 
 #endif /* ALGORITHM_ALGORITHM_H_ */
