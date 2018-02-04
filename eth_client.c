@@ -1306,12 +1306,19 @@ MergeRequest(int32_t i32Offset, const char *pcSrc, int32_t i32Size,
 
 //*****************************************************************************
 //
-// GET
+// Function requestGET
+//
+// \param pcQuery is the name of the current user.
+// \param psUserReport contains all about the current user.
+// \param pfnEvent is the current event.
+//
+// This function is called when the communication needs to send a GET request to the server.
+//
+// \return none.
 //
 //*****************************************************************************
-int32_t
-requestGET(const char *pcQuery,
-                tUserReport *psUserReport, tEventFunction pfnEvent)
+int32_t requestGET(const char *pcQuery, tUserReport *psUserReport,
+                   tEventFunction pfnEvent)
 {
     int32_t i32Idx = 0;
 
@@ -1319,7 +1326,7 @@ requestGET(const char *pcQuery,
     // If the requested source is not valid or there is no call back then
     // just fail.
     //
-    if(g_sUser.pfnEvent)
+    if (g_sUser.pfnEvent)
     {
         return (-1);
     }
@@ -1335,15 +1342,13 @@ requestGET(const char *pcQuery,
     //
     // "GET /api/usuarios/rfid/"
     //
-    i32Idx = MergeRequest(0, getRequest,
-                          sizeof(getRequest), false);
-
+    i32Idx = MergeRequest(0, getRequest, sizeof(getRequest), false);
 
     //
     // Append the rfid string
     //
     i32Idx = MergeRequest(i32Idx, psUserReport->rfid,
-                         sizeof(psUserReport->rfid)+4, false);
+                          sizeof(psUserReport->rfid) + 4, false);
 
     //
     // Append the "HTTP:/1.1" string.
@@ -1353,7 +1358,8 @@ requestGET(const char *pcQuery,
     //
     // Append the "Cache-Control: no-cache" string.
     //
-    i32Idx = MergeRequest(i32Idx, g_ControlCache, sizeof(g_ControlCache), false);
+    i32Idx = MergeRequest(i32Idx, g_ControlCache, sizeof(g_ControlCache),
+                          false);
 
     //
     // Append the "zone: UTC-3" string.
@@ -1363,24 +1369,24 @@ requestGET(const char *pcQuery,
     //
     // Append the "Authorization: Bearer token" string.
     //
-    i32Idx = MergeRequest(i32Idx, g_Authorization, sizeof(g_Authorization), false);
+    i32Idx = MergeRequest(i32Idx, g_Authorization, sizeof(g_Authorization),
+                          false);
 
     //
     // Append the token
     //
-    i32Idx = MergeRequest(i32Idx, psUserReport->token, sizeof(psUserReport->token), false);
+    i32Idx = MergeRequest(i32Idx, psUserReport->token,
+                          sizeof(psUserReport->token), false);
 
     //
     // Break line
     //
     i32Idx = MergeRequest(i32Idx, g_AfterLength, sizeof(g_AfterLength), false);
 
-
     //
     // Append the "UserAgent: Placa1 Version 1.0" string.
     //
     i32Idx = MergeRequest(i32Idx, g_UserAgent, sizeof(g_UserAgent), false);
-
 
     //
     // Append the "Accept: * /*" string.
@@ -1395,19 +1401,19 @@ requestGET(const char *pcQuery,
     //
     // Append the "accept-encoding: gzip, deflate" string.
     //
-    i32Idx = MergeRequest(i32Idx, g_AcceptEncoding, sizeof(g_AcceptEncoding), false);
+    i32Idx = MergeRequest(i32Idx, g_AcceptEncoding, sizeof(g_AcceptEncoding),
+                          false);
 
     //
     // Append the "Connection: keep-alive" string.
     //
     i32Idx = MergeRequest(i32Idx, g_Conncection, sizeof(g_Conncection), false);
 
-
     g_sEnet.ulRequest = GET;
 
-    if(EthClientTCPConnect(n_Port) != ERR_OK)
+    if (EthClientTCPConnect(n_Port) != ERR_OK)
     {
-        return(-1);
+        return (-1);
     }
 
     //
@@ -1415,17 +1421,24 @@ requestGET(const char *pcQuery,
     //
     g_sUser.ui32RequestSize = i32Idx;
 
-    return(0);
+    return (0);
 }
 
 //*****************************************************************************
 //
-// POST
+// Function requestPOST
+//
+// \param pcQuery is the name of the current user.
+// \param psUserReport contains all about the current user.
+// \param pfnEvent is the current event.
+//
+// This function is called when the communication needs to send a POST request to the server.
+//
+// \return none.
 //
 //*****************************************************************************
-int32_t
-requestPOST(const char *pcQuery,
-                tUserReport *psUserReport, tEventFunction pfnEvent, char* size)
+int32_t requestPOST(const char *pcQuery, tUserReport *psUserReport,
+                    tEventFunction pfnEvent, char* size)
 {
     int32_t i32Idx;
 
@@ -1433,7 +1446,7 @@ requestPOST(const char *pcQuery,
     // If the requested source is not valid or there is no call back then
     // just fail.
     //
-    if(g_sUser.pfnEvent)
+    if (g_sUser.pfnEvent)
     {
         return (-1);
     }
@@ -1449,8 +1462,7 @@ requestPOST(const char *pcQuery,
     //
     // Copy the base forecast request to the buffer. This buffer is the buffer sent
     //
-    i32Idx = MergeRequest(0, postRequest,
-                          sizeof(postRequest), false);
+    i32Idx = MergeRequest(0, postRequest, sizeof(postRequest), false);
 
     //
     // Append the "HTTP:/1.1" string.
@@ -1460,170 +1472,156 @@ requestPOST(const char *pcQuery,
     //
     // Append the g_ControlCache.
     //
-    i32Idx = MergeRequest(i32Idx, g_ControlCache, sizeof(g_ControlCache), false);
+    i32Idx = MergeRequest(i32Idx, g_ControlCache, sizeof(g_ControlCache),
+                          false);
 
     //
     // Append the "Content-Type: application/json" string.
     //
 
-    i32Idx = MergeRequest(i32Idx, g_ContentType,
-                              sizeof(g_ContentType), false);
+    i32Idx = MergeRequest(i32Idx, g_ContentType, sizeof(g_ContentType), false);
 
     //
     // Append the " User-Agent: Placa1 Version/1.0d" string.
     //
 
-    i32Idx = MergeRequest(i32Idx, g_UserAgent,
-                              sizeof(g_UserAgent), false);
+    i32Idx = MergeRequest(i32Idx, g_UserAgent, sizeof(g_UserAgent), false);
 
     //
     // Append the " g_Accept"string.
     //
 
-    i32Idx = MergeRequest(i32Idx, g_Accept,
-                              sizeof(g_Accept), false);
-
+    i32Idx = MergeRequest(i32Idx, g_Accept, sizeof(g_Accept), false);
 
     //
     // Append the " Host: localhost:8090" string.
     //
 
-    i32Idx = MergeRequest(i32Idx, g_host,
-                              sizeof(g_host), false);
+    i32Idx = MergeRequest(i32Idx, g_host, sizeof(g_host), false);
 
     //
     // Append the " Accept-Encoding:  gzip, deflate" string.
     //
 
-    i32Idx = MergeRequest(i32Idx, g_AcceptEncoding,
-                              sizeof(g_AcceptEncoding), false);
+    i32Idx = MergeRequest(i32Idx, g_AcceptEncoding, sizeof(g_AcceptEncoding),
+                          false);
 
     //
     // Append the " Content-Length: " string.
     //
 
-    i32Idx = MergeRequest(i32Idx, g_ContentLength,
-                              sizeof(g_ContentLength), false);
-
+    i32Idx = MergeRequest(i32Idx, g_ContentLength, sizeof(g_ContentLength),
+                          false);
 
     //
     // Append the size of the string.
     //
 
-    i32Idx = MergeRequest(i32Idx, size,
-                                  sizeof(size), false);
+    i32Idx = MergeRequest(i32Idx, size, sizeof(size), false);
 
     //
     // Append the break line.
     //
 
-    i32Idx = MergeRequest(i32Idx, g_AfterLength,
-                                  sizeof(g_AfterLength), false);
-
+    i32Idx = MergeRequest(i32Idx, g_AfterLength, sizeof(g_AfterLength), false);
 
     //
     // Append the " Connection: Keep-Alive" string.
     //
 
-    i32Idx = MergeRequest(i32Idx, g_Conncection,
-                              sizeof(g_Conncection), false);
+    i32Idx = MergeRequest(i32Idx, g_Conncection, sizeof(g_Conncection), false);
 
     //
     // Append the "User" string.
     //
 
-    i32Idx = MergeRequest(i32Idx, g_Open,
-                                  sizeof(g_Open), false);
-
+    i32Idx = MergeRequest(i32Idx, g_Open, sizeof(g_Open), false);
 
     //
     // Append the "User" string.
     //
 
-    i32Idx = MergeRequest(i32Idx, g_Code1,
-                                      sizeof(g_Code1), false);
-
+    i32Idx = MergeRequest(i32Idx, g_Code1, sizeof(g_Code1), false);
 
     //
     // Append the "User" string.
     //
 
-    i32Idx = MergeRequest(i32Idx,psUserReport->idBoard ,
-                                      sizeof(psUserReport->idBoard), false);
+    i32Idx = MergeRequest(i32Idx, psUserReport->idBoard,
+                          sizeof(psUserReport->idBoard), false);
 
     //
     // Append the "User" string.
     //
 
-    i32Idx = MergeRequest(i32Idx, g_Code2,
-                                      sizeof(g_Code2), false);
+    i32Idx = MergeRequest(i32Idx, g_Code2, sizeof(g_Code2), false);
 
     //
     // Append the "User" string.
     //
 
-    i32Idx = MergeRequest(i32Idx, g_Key1,
-                                      sizeof(g_Key1), false);
-
+    i32Idx = MergeRequest(i32Idx, g_Key1, sizeof(g_Key1), false);
 
     //
     // Append the "User" string.
     //
 
     i32Idx = MergeRequest(i32Idx, psUserReport->keyBoard,
-                                      sizeof(psUserReport->keyBoard)+1, false);
-
-
-    //
-    // Append the "User" string.
-    //
-
-    i32Idx = MergeRequest(i32Idx, g_Key2,
-                                      sizeof(g_Key2), false);
+                          sizeof(psUserReport->keyBoard) + 1, false);
 
     //
     // Append the "User" string.
     //
 
-    i32Idx = MergeRequest(i32Idx, g_Close,
-                                      sizeof(g_Close), false);
+    i32Idx = MergeRequest(i32Idx, g_Key2, sizeof(g_Key2), false);
+
+    //
+    // Append the "User" string.
+    //
+
+    i32Idx = MergeRequest(i32Idx, g_Close, sizeof(g_Close), false);
 
     //
     // Forcast ulr report request.
     //
     g_sEnet.ulRequest = POST;
 
-    if(EthClientTCPConnect(n_Port) != ERR_OK)
+    if (EthClientTCPConnect(n_Port) != ERR_OK)
     {
-        return(-1);
+        return (-1);
     }
 
     //
     // Save the size of the request.
     //
     g_sUser.ui32RequestSize = i32Idx;
-    //g_sUser é o buffer que será enviado
 
-    return(0);
+    return (0);
 }
 
 //*****************************************************************************
 //
-// POST KEY
+// Function requestPOSTKEY
+//
+// \param pcQuery is the name of the current user.
+// \param psUserReport contains all about the current user.
+// \param pfnEvent is the current event.
+//
+// This function is called when the communication needs to send a POST request to the server
+// with key like a parameter
+// \return none.
 //
 //*****************************************************************************
-int32_t
-requestPOSTKEY(const char *pcQuery,
-                tUserReport *psUserReport, tEventFunction pfnEvent, char* size)
+int32_t requestPOSTKEY(const char *pcQuery, tUserReport *psUserReport,
+                       tEventFunction pfnEvent, char* size)
 {
     int32_t i32Idx;
-
 
     //
     // If the requested source is not valid or there is no call back then
     // just fail.
     //
-    if(g_sUser.pfnEvent)
+    if (g_sUser.pfnEvent)
     {
         return (-1);
     }
@@ -1639,8 +1637,7 @@ requestPOSTKEY(const char *pcQuery,
     //
     // Copy the base forecast request to the buffer. This buffer is the buffer sent
     //
-    i32Idx = MergeRequest(0, postRequestKey,
-                          sizeof(postRequestKey), false);
+    i32Idx = MergeRequest(0, postRequestKey, sizeof(postRequestKey), false);
 
     //
     // Append the "HTTP:/1.1" string.
@@ -1650,8 +1647,8 @@ requestPOSTKEY(const char *pcQuery,
     //
     // Append the g_ControlCache.
     //
-    i32Idx = MergeRequest(i32Idx, g_ControlCache, sizeof(g_ControlCache), false);
-
+    i32Idx = MergeRequest(i32Idx, g_ControlCache, sizeof(g_ControlCache),
+                          false);
 
     //
     // Append the "zone: UTC-3" string.
@@ -1661,150 +1658,131 @@ requestPOSTKEY(const char *pcQuery,
     //
     // Append the "Authorization: Bearer token" string.
     //
-    i32Idx = MergeRequest(i32Idx, g_Authorization, sizeof(g_Authorization), false);
+    i32Idx = MergeRequest(i32Idx, g_Authorization, sizeof(g_Authorization),
+                          false);
 
     //
-     // Append the token
-     //
-     i32Idx = MergeRequest(i32Idx, psUserReport->token, sizeof(psUserReport->token), false);
+    // Append the token
+    //
+    i32Idx = MergeRequest(i32Idx, psUserReport->token,
+                          sizeof(psUserReport->token), false);
 
-     //
-     // Break line
-     //
-     i32Idx = MergeRequest(i32Idx, g_AfterLength, sizeof(g_AfterLength), false);
+    //
+    // Break line
+    //
+    i32Idx = MergeRequest(i32Idx, g_AfterLength, sizeof(g_AfterLength), false);
 
     //
     // Append the "Content-Type: application/json" string.
     //
 
-    i32Idx = MergeRequest(i32Idx, g_ContentType,
-                              sizeof(g_ContentType), false);
+    i32Idx = MergeRequest(i32Idx, g_ContentType, sizeof(g_ContentType), false);
 
     //
     // Append the " User-Agent: Placa1 Version/1.0d" string.
     //
 
-    i32Idx = MergeRequest(i32Idx, g_UserAgent,
-                              sizeof(g_UserAgent), false);
+    i32Idx = MergeRequest(i32Idx, g_UserAgent, sizeof(g_UserAgent), false);
 
     //
     // Append the " g_Accept"string.
     //
 
-    i32Idx = MergeRequest(i32Idx, g_Accept,
-                              sizeof(g_Accept), false);
-
+    i32Idx = MergeRequest(i32Idx, g_Accept, sizeof(g_Accept), false);
 
     //
     // Append the " Host: localhost:8090" string.
     //
 
-    i32Idx = MergeRequest(i32Idx, g_host,
-                              sizeof(g_host), false);
+    i32Idx = MergeRequest(i32Idx, g_host, sizeof(g_host), false);
 
     //
     // Append the " Accept-Encoding:  gzip, deflate" string.
     //
 
-    i32Idx = MergeRequest(i32Idx, g_AcceptEncoding,
-                              sizeof(g_AcceptEncoding), false);
+    i32Idx = MergeRequest(i32Idx, g_AcceptEncoding, sizeof(g_AcceptEncoding),
+                          false);
 
     //
     // Append the " Content-Length: " string.
     //
 
-    i32Idx = MergeRequest(i32Idx, g_ContentLength,
-                              sizeof(g_ContentLength), false);
-
+    i32Idx = MergeRequest(i32Idx, g_ContentLength, sizeof(g_ContentLength),
+                          false);
 
     //
     // Append the size of the string.
     //
 
-    i32Idx = MergeRequest(i32Idx, size,
-                                  sizeof(size), false);
+    i32Idx = MergeRequest(i32Idx, size, sizeof(size), false);
 
     //
     // Append the break line.
     //
 
-    i32Idx = MergeRequest(i32Idx, g_AfterLength,
-                                  sizeof(g_AfterLength), false);
-
+    i32Idx = MergeRequest(i32Idx, g_AfterLength, sizeof(g_AfterLength), false);
 
     //
     // Append the " Connection: Keep-Alive" string.
     //
 
-    i32Idx = MergeRequest(i32Idx, g_Conncection,
-                              sizeof(g_Conncection), false);
+    i32Idx = MergeRequest(i32Idx, g_Conncection, sizeof(g_Conncection), false);
 
     //
     // Append the "User" string.
     //
 
-    i32Idx = MergeRequest(i32Idx, g_Open,
-                                  sizeof(g_Open), false);
-
+    i32Idx = MergeRequest(i32Idx, g_Open, sizeof(g_Open), false);
 
     //
     // Append the "User" string.
     //
 
-    i32Idx = MergeRequest(i32Idx, g_rfid,
-                                      sizeof(g_rfid), false);
-
+    i32Idx = MergeRequest(i32Idx, g_rfid, sizeof(g_rfid), false);
 
     //
     // Append the "User" string.
     //
 
     i32Idx = MergeRequest(i32Idx, psUserReport->rfid,
-                                      sizeof(psUserReport->rfid), false);
+                          sizeof(psUserReport->rfid), false);
 
     //
     // Append the "User" string.
     //
 
-    i32Idx = MergeRequest(i32Idx, g_Code2,
-                                      sizeof(g_Code2), false);
+    i32Idx = MergeRequest(i32Idx, g_Code2, sizeof(g_Code2), false);
 
     //
     // Append the "User" string.
     //
 
-    i32Idx = MergeRequest(i32Idx, g_Key1,
-                                      sizeof(g_Key1), false);
-
+    i32Idx = MergeRequest(i32Idx, g_Key1, sizeof(g_Key1), false);
 
     //
     // Append the "User" string.
     //
 
     i32Idx = MergeRequest(i32Idx, psUserReport->userKey,
-                                      sizeof(psUserReport->userKey), false);
-
-
-    //
-    // Append the "User" string.
-    //
-
-    i32Idx = MergeRequest(i32Idx, g_Key2,
-                                      sizeof(g_Key2), false);
+                          sizeof(psUserReport->userKey), false);
 
     //
     // Append the "User" string.
     //
 
-    i32Idx = MergeRequest(i32Idx, g_Close,
-                                      sizeof(g_Close), false);
+    i32Idx = MergeRequest(i32Idx, g_Key2, sizeof(g_Key2), false);
 
+    //
+    // Append the "User" string.
+    //
+
+    i32Idx = MergeRequest(i32Idx, g_Close, sizeof(g_Close), false);
 
     g_sEnet.ulRequest = POSTKEY;
 
-    if(EthClientTCPConnect(n_Port) != ERR_OK)
+    if (EthClientTCPConnect(n_Port) != ERR_OK)
     {
-        return(-1);
+        return (-1);
     }
 
     //
@@ -1812,17 +1790,24 @@ requestPOSTKEY(const char *pcQuery,
     //
     g_sUser.ui32RequestSize = i32Idx;
 
-    return(0);
+    return (0);
 }
 
 //*****************************************************************************
 //
-// POSTACCESS
+// Function requestPOSTACCESS
+//
+// \param pcQuery is the name of the current user.
+// \param psUserReport contains all about the current user.
+// \param pfnEvent is the current event.
+//
+// This function is called when the communication needs to send a POST request to the server
+// to register a log
+// \return none.
 //
 //*****************************************************************************
-int32_t
-requestPOSTACCESS(const char *pcQuery,
-                tUserReport *psUserReport, tEventFunction pfnEvent, char* size)
+int32_t requestPOSTACCESS(const char *pcQuery, tUserReport *psUserReport,
+                          tEventFunction pfnEvent, char* size)
 {
     int32_t i32Idx;
 
@@ -1830,7 +1815,7 @@ requestPOSTACCESS(const char *pcQuery,
     // If the requested source is not valid or there is no call back then
     // just fail.
     //
-    if(g_sUser.pfnEvent)
+    if (g_sUser.pfnEvent)
     {
         return (-1);
     }
@@ -1846,79 +1831,78 @@ requestPOSTACCESS(const char *pcQuery,
     //
     // "POST /api/usuarios/confirmacaoAcesso/";
     //
-    i32Idx = MergeRequest(0, postRequestAcess,
-                          sizeof(postRequestAcess), false);
-
+    i32Idx = MergeRequest(0, postRequestAcess, sizeof(postRequestAcess), false);
 
     //
-        // Append the rfid string
-        //
-        i32Idx = MergeRequest(i32Idx, psUserReport->rfid,
-                             sizeof(psUserReport->rfid)+4, false);
+    // Append the rfid string
+    //
+    i32Idx = MergeRequest(i32Idx, psUserReport->rfid,
+                          sizeof(psUserReport->rfid) + 4, false);
 
-        //
-        // Append the "HTTP:/1.1" string.
-        //
-        i32Idx = MergeRequest(i32Idx, g_cHTTP11, sizeof(g_cHTTP11), false);
+    //
+    // Append the "HTTP:/1.1" string.
+    //
+    i32Idx = MergeRequest(i32Idx, g_cHTTP11, sizeof(g_cHTTP11), false);
 
-        //
-        // Append the "Cache-Control: no-cache" string.
-        //
-        i32Idx = MergeRequest(i32Idx, g_ControlCache, sizeof(g_ControlCache), false);
+    //
+    // Append the "Cache-Control: no-cache" string.
+    //
+    i32Idx = MergeRequest(i32Idx, g_ControlCache, sizeof(g_ControlCache),
+                          false);
 
-        //
-        // Append the "zone: UTC-3" string.
-        //
-        i32Idx = MergeRequest(i32Idx, g_Zone, sizeof(g_Zone), false);
+    //
+    // Append the "zone: UTC-3" string.
+    //
+    i32Idx = MergeRequest(i32Idx, g_Zone, sizeof(g_Zone), false);
 
-        //
-        // Append the "Authorization: Bearer token" string.
-        //
-        i32Idx = MergeRequest(i32Idx, g_Authorization, sizeof(g_Authorization), false);
+    //
+    // Append the "Authorization: Bearer token" string.
+    //
+    i32Idx = MergeRequest(i32Idx, g_Authorization, sizeof(g_Authorization),
+                          false);
 
-        //
-        // Append the token
-        //
-        i32Idx = MergeRequest(i32Idx, psUserReport->token, sizeof(psUserReport->token), false);
+    //
+    // Append the token
+    //
+    i32Idx = MergeRequest(i32Idx, psUserReport->token,
+                          sizeof(psUserReport->token), false);
 
-        //
-        // Break line
-        //
-        i32Idx = MergeRequest(i32Idx, g_AfterLength, sizeof(g_AfterLength), false);
+    //
+    // Break line
+    //
+    i32Idx = MergeRequest(i32Idx, g_AfterLength, sizeof(g_AfterLength), false);
 
+    //
+    // Append the "UserAgent: Placa1 Version 1.0" string.
+    //
+    i32Idx = MergeRequest(i32Idx, g_UserAgent, sizeof(g_UserAgent), false);
 
-        //
-        // Append the "UserAgent: Placa1 Version 1.0" string.
-        //
-        i32Idx = MergeRequest(i32Idx, g_UserAgent, sizeof(g_UserAgent), false);
+    //
+    // Append the "Accept: * /*" string.
+    //
+    i32Idx = MergeRequest(i32Idx, g_Accept, sizeof(g_Accept), false);
 
+    //
+    // Append the "Host: portaeletronica-api.herokuapp.com" string.
+    //
+    i32Idx = MergeRequest(i32Idx, g_host, sizeof(g_host), false);
 
-        //
-        // Append the "Accept: * /*" string.
-        //
-        i32Idx = MergeRequest(i32Idx, g_Accept, sizeof(g_Accept), false);
+    //
+    // Append the "accept-encoding: gzip, deflate" string.
+    //
+    i32Idx = MergeRequest(i32Idx, g_AcceptEncoding, sizeof(g_AcceptEncoding),
+                          false);
 
-        //
-        // Append the "Host: portaeletronica-api.herokuapp.com" string.
-        //
-        i32Idx = MergeRequest(i32Idx, g_host, sizeof(g_host), false);
-
-        //
-        // Append the "accept-encoding: gzip, deflate" string.
-        //
-        i32Idx = MergeRequest(i32Idx, g_AcceptEncoding, sizeof(g_AcceptEncoding), false);
-
-        //
-        // Append the "Connection: keep-alive" string.
-        //
-        i32Idx = MergeRequest(i32Idx, g_Conncection, sizeof(g_Conncection), false);
-
+    //
+    // Append the "Connection: keep-alive" string.
+    //
+    i32Idx = MergeRequest(i32Idx, g_Conncection, sizeof(g_Conncection), false);
 
     g_sEnet.ulRequest = POSTACCESS;
 
-    if(EthClientTCPConnect(n_Port) != ERR_OK)
+    if (EthClientTCPConnect(n_Port) != ERR_OK)
     {
-        return(-1);
+        return (-1);
     }
 
     //
@@ -1926,12 +1910,25 @@ requestPOSTACCESS(const char *pcQuery,
     //
     g_sUser.ui32RequestSize = i32Idx;
 
-    return(0);
+    return (0);
 }
 
-int32_t
-requestGETteste(const char *pcQuery,
-                tUserReport *psUserReport, tEventFunction pfnEvent)
+//*****************************************************************************
+//
+// Function requestGETteste
+//
+// \param pcQuery is the name of the current user.
+// \param psUserReport contains all about the current user.
+// \param pfnEvent is the current event.
+//
+// This function is called when the communication needs to send a GET request to the server.
+// Just used for test
+// \return i32Idx.
+//
+//*****************************************************************************
+
+int32_t requestGETteste(const char *pcQuery, tUserReport *psUserReport,
+                        tEventFunction pfnEvent)
 {
     int32_t i32Idx;
 
@@ -1939,7 +1936,7 @@ requestGETteste(const char *pcQuery,
     // If the requested source is not valid or there is no call back then
     // just fail.
     //
-    if(g_sUser.pfnEvent)
+    if (g_sUser.pfnEvent)
     {
         return (-1);
     }
@@ -1955,8 +1952,7 @@ requestGETteste(const char *pcQuery,
     //
     // Copy the base forecast request to the buffer. This buffer is the buffer sent
     //
-    i32Idx = MergeRequest(0, getRequestTeste,
-                          sizeof(getRequestTeste), false);
+    i32Idx = MergeRequest(0, getRequestTeste, sizeof(getRequestTeste), false);
 
     //
     // Append the "HTTP:/1.1" string.
@@ -1966,15 +1962,13 @@ requestGETteste(const char *pcQuery,
     //
     // Append the "Cache-Control: no-cache" string.
     //
-    i32Idx = MergeRequest(i32Idx, g_ControlCacheTeste, sizeof(g_ControlCacheTeste), false);
-
-
+    i32Idx = MergeRequest(i32Idx, g_ControlCacheTeste,
+                          sizeof(g_ControlCacheTeste), false);
 
     //
     // Append the "UserAgent: Placa1 Version 1.0" string.
     //
     i32Idx = MergeRequest(i32Idx, g_UserAgent, sizeof(g_UserAgent), false);
-
 
     //
     // Append the "Accept: * /*" string.
@@ -1989,7 +1983,8 @@ requestGETteste(const char *pcQuery,
     //
     // Append the "accept-encoding: gzip, deflate" string.
     //
-    i32Idx = MergeRequest(i32Idx, g_AcceptEncodingTeste, sizeof(g_AcceptEncodingTeste), false);
+    i32Idx = MergeRequest(i32Idx, g_AcceptEncodingTeste,
+                          sizeof(g_AcceptEncodingTeste), false);
 
     //
     // Append the "Connection: keep-alive" string.
@@ -1998,9 +1993,9 @@ requestGETteste(const char *pcQuery,
 
     g_sEnet.ulRequest = GETteste;
 
-    if(EthClientTCPConnect(n_Port) != ERR_OK)
+    if (EthClientTCPConnect(n_Port) != ERR_OK)
     {
-        return(-1);
+        return (-1);
     }
 
     //
@@ -2008,6 +2003,6 @@ requestGETteste(const char *pcQuery,
     //
     g_sUser.ui32RequestSize = i32Idx;
 
-    return(0);
+    return (0);
 }
 
