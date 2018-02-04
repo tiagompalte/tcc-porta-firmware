@@ -1,7 +1,7 @@
 /* ************************************************************** *
  * UTFPR - Universidade Tecnologica Federal do Paraná
- * Engenharia Eletronica
- * Trabalho de Conclusao de Curso
+ * Engenharia Eletrônica
+ * Trabalho de Conclusão de Curso
  * ************************************************************** *
  * Sistema de Seguranca baseado em Reconhecimento de Senha Falada
  * ************************************************************** *

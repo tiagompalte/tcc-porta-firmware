@@ -1,7 +1,7 @@
 /* ************************************************************** *
  * UTFPR - Universidade Tecnologica Federal do Paraná
- * Engenharia Eletronica
- * Trabalho de Conclusao de Curso
+ * Engenharia Eletrônica
+ * Trabalho de Conclusão de Curso
  * ************************************************************** *
  * Sistema de Seguranca baseado em Reconhecimento de Senha Falada
  * ************************************************************** *
@@ -182,7 +182,7 @@ void EnetEvents(uint32_t ui32Event, void *pvData, uint32_t ui32Param)
     else if (ui32Event == ETH_EVENT_DISCONNECT)
     {
         //
-        // If a city was waiting to be updated then reset its data.
+        // If a USER was waiting to be updated then reset its data.
         //
         if (g_iState != STATE_CONNECTED_IDLE)
         {
@@ -197,6 +197,21 @@ void EnetEvents(uint32_t ui32Event, void *pvData, uint32_t ui32Param)
         UpdateIPAddress(g_pcIPAddr, 0);
     }
 }
+
+//*****************************************************************************
+//
+// Communication send the respective request to the server
+//
+// \param request is the int used set what kind of request is gonna be
+// Put GET on the parameter for a GET request
+// Put POST on the parameter for a POST request
+// Put POSTACCESS on the parameter for a POSTACCESS request
+// Put POSTKEY on the parameter for a POSTKEY request
+// The function try three times each request if it was some problems with
+// the communication
+// \return 0
+//
+//*****************************************************************************
 
 int Communication(int request, char* size)
 {
@@ -227,23 +242,23 @@ int Communication(int request, char* size)
             {
                 if (request == GET)
                 {
-                    iRequest = eRequestGET; //--- para GET
+                    iRequest = eRequestGET;
                 }
                 else if (request == POST)
                 {
-                    iRequest = eRequestPOST; // Para POST
+                    iRequest = eRequestPOST;
                 }
                 else if (request == POSTKEY)
                 {
-                    iRequest = eRequestPOSTKEY; // Para POSTKEY
+                    iRequest = eRequestPOSTKEY;
                 }
                 else if (request == POSTACCESS)
                 {
-                    iRequest = eRequestPOSTACCESS; // Para POSTACCESS
+                    iRequest = eRequestPOSTACCESS;
                 }
                 else if (request == GETteste)
                 {
-                    iRequest = eRequestGETteste; // Para GETteste
+                    iRequest = eRequestGETteste;
                 }
             }
             else if (iRequest == eRequestGETteste)
@@ -367,6 +382,19 @@ int Communication(int request, char* size)
     }
 }
 
+//*****************************************************************************
+//
+// CommunicationConnecting is the final function of this layer. Communicate with
+// the server
+// \param type is the int used set whether is voice or key.
+// Put VOICE on the parameter if the user is using access by voice
+// Put KEY on the parameter if the user is using access by key
+// The function try three times each request if it was some problems with
+// the communication
+// \return OK OR errorConnection.
+//
+//*****************************************************************************
+
 int CommunicationConnecting(int type)
 {
     int try = ResetStatus();
@@ -406,6 +434,17 @@ int CommunicationConnecting(int type)
     else
         return errorConnection;
 }
+
+//*****************************************************************************
+//
+// CommunicationLog is the final function of this layer. Communicate with the server
+// sending a log for each successful access
+// \param none
+// The function try three times the post access request if it was some problems with
+// the communication
+// \return OK or errorConnection.
+//
+//*****************************************************************************
 
 int CommunicationLog()
 {
