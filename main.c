@@ -62,7 +62,6 @@
 #include "driverlib/adc.h"
 #include "driverlib/algorithm.h"
 #include "driverlib/pin_map.h"
-#include "driverlib/g711.h"
 #include "driverlib/gpio.h"
 #include "driverlib/Hardware.h"
 #include "driverlib/interrupt.h"
@@ -124,8 +123,8 @@ void ISR_ADC0() {
     }
 
     if (indiceAmostra <= NUM_AMOSTRAS + DELAY_MAX - 1) {
-      bufferConversao[indiceAmostra] = (uint8_t)ALaw_Encode(bufferCapture[0]);
-      bufferDatabase[indiceAmostra] = (uint8_t)ALaw_Encode(bufferCapture[0]);
+      bufferConversao[indiceAmostra] = (uint8_t) bufferCapture[0];
+      bufferDatabase[indiceAmostra] = (uint8_t) bufferCapture[0];
       indiceAmostra++;
     } else {
       MAP_TimerDisable(TIMER0_BASE, TIMER_A);
@@ -265,7 +264,6 @@ void SysTickIntHandler(void) {
 int
 main(void)
 {
-  /* //tempIndex = 0;
     led3s = 0;
     ledConv = 0;
     indiceAmostra = DELAY_MAX;
@@ -284,7 +282,7 @@ main(void)
     MAP_TimerEnable(TIMER0_BASE, TIMER_A); // Timer ADC
 
     //// TESTES
-    /*tWavFile wavTeste;
+    /* tWavFile wavTeste;
 
     WavOpen("Default.wav", &wavTeste);
     WavRead(&wavTeste, bufferDatabase, 144000/6);
@@ -293,7 +291,7 @@ main(void)
 
     //  HardwareInit();
 
-   /* while (1) {
+    while (1) {
             // AGUARDA VERIFICACAO DO RFID
             //MAP_TimerEnable(TIMER2_BASE, TIMER_A); // Timer 10s
             // tem 10 segundos pra enviar o cÃ›digo RFID e comeÃ�ar a receber os dados
@@ -306,12 +304,12 @@ main(void)
         	    /*if (validate()) { // Verificar a senha
                     // ABRIR A PORTA
                     //MAP_TimerEnable(TIMER1_BASE, TIMER_A); // Timer 5s
-                    // 5s pra abrir a porta, se passar o tempo tranca de novo...
+                    // 5s pra abrir a porta, se passar o tempo tranca de novo... */
                 } else {
                     // MENSAGEM DE ERRO
-                } */
-              //  conversionEnd = 0;
-          //}
+                }
+                conversionEnd = 0;
+          }
      // }
 
  /*
@@ -398,7 +396,7 @@ main(void)
         CommunicationLog();
 
     HardwareInit();*/
-
+/*
     int status;
 
         //
@@ -477,7 +475,7 @@ main(void)
         }
 
         if (status == 1)
-            CommunicationLog();
+            CommunicationLog(); */
 
 }
 

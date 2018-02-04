@@ -31,41 +31,6 @@ int _max(int n, uint8_t vector[]) {
 	return maior;						// Retorna o maior valor
 }
 
-/*
-// Retornar o maior valor positivo de um vetor de float
-float _maxFloat(int n, float vector[]) {
-	int i;
-	float maior = 0;
-
-	for (i=0; i<n; i++) { // Roda o vetor
-		if (vector[i] > maior) {		// Se for maior que o maior armazenado, troca
-			maior = vector[i];
-		}
-	}
-
-	return maior;						// Retorna o maior valor
-}
-
-// Efetua a escala dos valores dos vetores armazenados (divide todos os valores pelo maior de cada)
-void _normalizar() {
-	uint32_t maxValue = 0;
-	int i;
-
-	maxValue = _maxFloat(NUM_AMOSTRAS + 2*DELAY_MAX, bufferDatabase);		// Obter o maior valor do vetor DB
-
-	for (i=0; i<NUM_AMOSTRAS + 2*DELAY_MAX; i++) {				// Roda os valores
-		bufferDatabase[i] = (bufferDatabase[i])/(maxValue);		// Realiza a divisão
-	}
-
-	maxValue = _maxFloat(NUM_AMOSTRAS + 2*DELAY_MAX, bufferConversao);	// Obter o maior valor do vetor AQ
-
-	for (i=0; i<NUM_AMOSTRAS + 2*DELAY_MAX; i++) {				// Roda os valores
-		bufferConversao[i] = (bufferConversao[i])/(maxValue);	// Realiza a divisão
-	}
-
-	return;
-} */
-
 // Retorna o valor central da autocorrelação de um vetor (Rxx[0])
 int autoCorrelate(uint8_t signal[]) {
 	int n;
@@ -93,12 +58,9 @@ int crossCorrelate(uint8_t signal1[], uint8_t signal2[]) {
 }
 
 // Validar se o sinal AQ é parecido com o DB, considerando a tolerância
-bool validate() {
+int validate() {
 	float coefCorrelacao;
-	//float
 	int auto1, auto2, cross12;
-
-	//_normalizar();													// Escala os vetores
 
 	auto1 = autoCorrelate(bufferDatabase);							// Calcula Autocorrelação do sinal DB
 	auto2 = autoCorrelate(bufferConversao);							// Calcula Autocorrelação do sinal AQ
@@ -106,5 +68,5 @@ bool validate() {
 
 	coefCorrelacao = cross12/sqrt(auto1*auto2);						// Calcula o coeficiente de correlação (rho)
 
-	return (coefCorrelacao >= MINIMO_VALIDACAO ? true : false);		// Retorna true se o coeficiente é maior que o mínimo tolerado
+	return (coefCorrelacao >= MINIMO_VALIDACAO ? 1 : 0);		// Retorna true se o coeficiente é maior que o mínimo tolerado
 }
