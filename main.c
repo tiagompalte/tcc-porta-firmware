@@ -75,7 +75,6 @@
 
 #include "utils/wavfile.h"
 
-
 #define GET         0
 #define POST        1
 #define POSTKEY     2
@@ -436,10 +435,7 @@ main(void)
         //
         FlashPBInit(FLASH_PB_START, FLASH_PB_END, 256);
 
-
-
-            ResetUser();
-
+        ResetUser();
 
         //
         // Set the IP address to 0.0.0.0.
@@ -462,8 +458,8 @@ main(void)
         IntPrioritySet(INT_EMAC0, ETHERNET_INT_PRIORITY);
         IntPrioritySet(FAULT_SYSTICK, SYSTICK_INT_PRIORITY);
 
-            EthClientProxySet(0);
-            EthClientInit(EnetEvents);
+        EthClientProxySet(0);
+        EthClientInit(EnetEvents);
 
         //
         // Get the IP address.

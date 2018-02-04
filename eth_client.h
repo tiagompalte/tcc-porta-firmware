@@ -77,8 +77,6 @@ typedef struct
     //
     uint32_t ui32Time;
 
-
-
 }
 tUserReport;
 

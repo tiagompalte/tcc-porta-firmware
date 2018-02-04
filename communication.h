@@ -48,8 +48,8 @@ extern "C"
 #define errorConnect        404
 #define OK                  200
 
-#define VOICE                1
-#define KEY                  2
+#define VOICE                0
+#define KEY                  1
 
 
 //*****************************************************************************
