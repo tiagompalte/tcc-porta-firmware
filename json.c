@@ -665,16 +665,16 @@ int32_t JSONParsePOSTKEY(uint32_t ui32Index, tUserReport *psUserReport,
 
     if (GetField("data", &sBufPtr) != 0)
     {
-        if (GetField("token", &sBufPtr) != 0)
+        if (GetField("mensagem", &sBufPtr) != 0)
         {
-            GetFieldValueString(&sBufPtr, psUserReport->token,
-                                sizeof(psUserReport->token));
+            GetFieldValueString(&sBufPtr, psUserReport->authorization,
+                                sizeof(psUserReport->authorization));
             i32Items++;
             psUserReport->status = 200;
         }
         else
         {
-            psUserReport->token[0] = ' ';
+            psUserReport->authorization[0] = ' ';
             psUserReport->status = 400;
         }
     }

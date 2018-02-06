@@ -84,6 +84,8 @@ typedef struct
 
     char logConnection[32];
 
+    char authorization[32];
+
     //
     // The last time these values were update (GMT Unix time).
     //

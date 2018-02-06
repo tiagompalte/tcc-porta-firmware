@@ -144,7 +144,7 @@ static const char postRequestAcess[] =
         "POST /api/usuarios/confirmacaoAcesso/";
 
 static const char postRequestKey[] =
-        "POST /api/usuarios/autenticacaoSenha/";
+        "POST /api/usuarios/autenticacaoSenha";
 
 
 static char g_cHTTP11[] = " HTTP/1.1\r\n";
@@ -1745,7 +1745,7 @@ int32_t requestPOSTKEY(const char *pcQuery, tUserReport *psUserReport,
     //
 
     i32Idx = MergeRequest(i32Idx, psUserReport->rfid,
-                          sizeof(psUserReport->rfid), false);
+                          sizeof(psUserReport->rfid)+4, false);
 
     //
     // Append the "User" string.
