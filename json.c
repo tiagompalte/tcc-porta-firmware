@@ -401,13 +401,11 @@ int32_t JSONParseGET(uint32_t ui32Index, tUserReport *psUserReport,
             if (ustrncmp(pcCode, "404", 3) == 0)
             {
                 psUserReport->status = 404;
-                ustrncmp(psUserReport->log, "Error 404", 9);//errorConnection
                 return (-1);
             }
             if (ustrncmp(pcCode, "401", 3) == 0)
             {
                 psUserReport->status = 401;
-                ustrncmp(psUserReport->log, "Error 401", 9);//errorConnection
                 return (-1);
             }
         }
@@ -439,22 +437,42 @@ int32_t JSONParseGET(uint32_t ui32Index, tUserReport *psUserReport,
                                 sizeof(psUserReport->audio));
             i32Items++;
             psUserReport->status = 200;
-            ustrncmp(psUserReport->log, "Code 200", 8);//OK
         }
         else
         {
             psUserReport->audio[0] = ' ';
             psUserReport->status = 400;
-            ustrncmp(psUserReport->log, "Error 400", 9);//errorKey/errorToken/errorRfid
             i32Items++;
         }
     }
     else
     {
         psUserReport->status = 404;
-        ustrncmp(psUserReport->log, "Error 404", 9);//errorConnection
     }
     sBufPtr = sBufList;
+
+
+    if (GetField("data", &sBufPtr) != 0)
+        {
+            if (GetField("nome", &sBufPtr) != 0)
+            {
+                GetFieldValueString(&sBufPtr, psUserReport->name,
+                                    sizeof(psUserReport->name));
+                i32Items++;
+                psUserReport->status = 200;
+            }
+            else
+            {
+                psUserReport->name[0] = ' ';
+                psUserReport->status = 400;
+                i32Items++;
+            }
+        }
+        else
+        {
+            psUserReport->status = 404;
+        }
+        sBufPtr = sBufList;
 
     return (i32Items);
 }
@@ -515,13 +533,11 @@ int32_t JSONParsePOST(uint32_t ui32Index, tUserReport *psUserReport,
             if (ustrncmp(pcCode, "404", 3) == 0)
             {
                 psUserReport->status = 404;
-                ustrncmp(psUserReport->log, "Error 404", 9);//errorConnection
                 return (-1);
             }
             if (ustrncmp(pcCode, "401", 3) == 0)
             {
                 psUserReport->status = 401;
-                ustrncmp(psUserReport->log, "Error 401", 9);//errorConnection
                 return (-1);
             }
         }
@@ -550,18 +566,15 @@ int32_t JSONParsePOST(uint32_t ui32Index, tUserReport *psUserReport,
                                 sizeof(psUserReport->token));
             i32Items++;
             psUserReport->status = 200;//OK
-            ustrncmp(psUserReport->log, "Code 200", 8);
         }
         else
         {
             psUserReport->status = 400;//errorKey
-            ustrncmp(psUserReport->log, "Error 400", 9);
         }
     }
     else
     {
         psUserReport->status = 404;
-        ustrncmp(psUserReport->log, "Error 404", 9);//errorConnection
     }
 
     sBufPtr = sBufList;
@@ -731,13 +744,11 @@ int32_t JSONParsePOSTACCESS(uint32_t ui32Index, tUserReport *psUserReport,
             if (ustrncmp(pcCode, "404", 3) == 0)
             {
                 psUserReport->status = 404;
-                ustrncmp(psUserReport->log, "Error 404", 9);//errorConnection
                 return (-1);
             }
             if (ustrncmp(pcCode, "401", 3) == 0)
             {
                 psUserReport->status = 401;
-                ustrncmp(psUserReport->log, "Error 401", 9);//errorConnection
                 return (-1);
             }
         }
@@ -760,23 +771,20 @@ int32_t JSONParsePOSTACCESS(uint32_t ui32Index, tUserReport *psUserReport,
 
     if (GetField("data", &sBufPtr) != 0)
     {
-        if (GetField("hash", &sBufPtr) != 0)
+        if (GetField("mensagem", &sBufPtr) != 0)
         {
             GetFieldValueString(&sBufPtr, psUserReport->log,
                                 sizeof(psUserReport->log));
             i32Items++;
             psUserReport->status = 200;
-            ustrncmp(psUserReport->log, "code 200", 8);//OK
         }
         else
         {
-            ustrncmp(psUserReport->log, "Error 400", 9);//rfid errado
             psUserReport->status = 400;
         }
     }
     else
     {
-        ustrncmp(psUserReport->log, "Error 404", 9);//errorConnection
         psUserReport->status = 404;
     }
     sBufPtr = sBufList;
@@ -919,13 +927,13 @@ int32_t JSONParseGETteste(uint32_t ui32Index, tUserReport *psUserReport,
     {
         GetFieldValueString(&sBufPtr, pcBuffCodigoNovo,
                             sizeof(pcBuffCodigoNovo));
-        psUserReport->codigoNome = pcBuffCodigoNovo;
+        //psUserReport->codigoNome = pcBuffCodigoNovo;
         //psUserReport->status = GetFieldValueInt(&sBufPtr);
         i32Items++;
     }
     else
     {
-        psUserReport->codigoNome = 0;
+        //psUserReport->codigoNome = 0;
     }
 
     return (i32Items);

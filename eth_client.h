@@ -52,11 +52,18 @@ typedef struct
     //
     const char *pcDescription;
 
+    //
+    // User voice.
+    //
     char audio[32];
+
+    //
+    // The current user status.
+    //
 
     int status;
 
-    char *codigoNome;
+    char name[32];
 
     char *data;
 
@@ -68,9 +75,14 @@ typedef struct
 
     char token[512];
 
+    //
+    // The current rfid.
+    //
     char *rfid;
 
     char log[32];
+
+    char logConnection[32];
 
     //
     // The last time these values were update (GMT Unix time).
@@ -104,7 +116,7 @@ void EthClientTCPDisconnect(void);
 
 //*****************************************************************************
 //
-// Exported weather related prototypes.
+// Exported user related prototypes.
 //
 //*****************************************************************************
 extern void userSourceSet();

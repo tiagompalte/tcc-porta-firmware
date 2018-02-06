@@ -391,7 +391,7 @@ int Communication(int request, char* size)
 // Put KEY on the parameter if the user is using access by key
 // The function try three times each request if it was some problems with
 // the communication
-// \return OK OR errorConnection.
+// \return OK or errorConnection.
 //
 //*****************************************************************************
 
@@ -407,7 +407,14 @@ int CommunicationConnecting(int type)
     }
 
     if (try == 3)
+    {
+        ustrncpy(g_psUserInfo.sReport.logConnection, "Error 404", 9);
         return errorConnection;
+    }
+    else
+    {
+        ustrncpy(g_psUserInfo.sReport.logConnection, "Code 200", 8);
+    }
 
     try = ResetStatus();
 
@@ -427,12 +434,16 @@ int CommunicationConnecting(int type)
     }
 
     if (try == 3)
+    {
+        ustrncpy(g_psUserInfo.sReport.logConnection, "Error 404", 9);
         return errorConnection;
-
-    if (g_psUserInfo.sReport.status == 200)
-        return OK;
+    }
     else
-        return errorConnection;
+    {
+        ustrncpy(g_psUserInfo.sReport.logConnection, "Code 200", 8);
+        return OK;
+    }
+
 }
 
 //*****************************************************************************
@@ -459,11 +470,14 @@ int CommunicationLog()
         g_ui32Delay = 500;
     }
     if (try == 3)
+    {
+        ustrncpy(g_psUserInfo.sReport.logConnection, "Error 404", 9);
         return errorConnection;
-
-    if (g_psUserInfo.sReport.status == 200)
-        return OK;
+    }
     else
-        return errorConnection;
+    {
+        ustrncpy(g_psUserInfo.sReport.logConnection, "Code 200", 8);
+        return OK;
+    }
 }
 
