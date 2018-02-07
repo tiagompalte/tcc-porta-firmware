@@ -31,7 +31,7 @@ uint8_t bufferConversao[NUM_AMOSTRAS + 2*DELAY_MAX];
 uint8_t bufferDatabase[NUM_AMOSTRAS + 2*DELAY_MAX];
 
 int rAuto;
-uint8_t rCross[2*DELAY_MAX + 1];
+int rCross[2*DELAY_MAX + 1];
 
 /*extern float autoCorrelate(float *signal);
 extern float crossCorrelate(float *signal1, float *signal2); */

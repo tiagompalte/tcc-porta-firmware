@@ -18,7 +18,7 @@
 #include "driverlib/algorithm.h"
 
 // Retornar o maior valor positivo de um vetor
-int _max(int n, uint8_t vector[]) {
+int _max(int n, int vector[]) {
 	int i;
 	int maior = 0;
 
@@ -54,7 +54,6 @@ int crossCorrelate(uint8_t signal1[], uint8_t signal2[]) {
 	}
 
 	return _max(2*DELAY_MAX + 1, rCross);
-	//return _maxFloat(2*DELAY_MAX + 1, rCross);						// Retorna o maior valor
 }
 
 // Validar se o sinal AQ é parecido com o DB, considerando a tolerância
