@@ -235,9 +235,9 @@ void interruptInit() {
     TimerIntRegister(TIMER1_BASE, TIMER_A, ISR_Timer1A);
     MAP_TimerIntEnable(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
 
-    TimerIntRegister(TIMER0_BASE, TIMER_A, &BuzzerIntHandler);
-    MAP_TimerIntEnable(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
-    MAP_IntEnable(INT_TIMER0A);
+    TimerIntRegister(TIMER4_BASE, TIMER_A, &BuzzerIntHandler);
+    MAP_TimerIntEnable(TIMER4_BASE, TIMER_TIMA_TIMEOUT);
+    MAP_IntEnable(INT_TIMER4A);
     
     TimerIntRegister(TIMER3_BASE, TIMER_A, &LCDIntHandler);
     MAP_TimerIntEnable(TIMER3_BASE, TIMER_TIMA_TIMEOUT);
@@ -280,13 +280,13 @@ void timerInit() {
     MAP_TimerClockSourceSet(TIMER2_BASE, TIMER_CLOCK_PIOSC);
     MAP_TimerLoadSet(TIMER2_BASE, TIMER_A, 145454544);*/
     
-    /*MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER0);
-    while(!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER0));
-    MAP_TimerConfigure(TIMER0_BASE, TIMER_CFG_A_ONE_SHOT);
+    MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER4);
+    while(!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER4));
+    MAP_TimerConfigure(TIMER4_BASE, TIMER_CFG_A_ONE_SHOT);
     MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER3);
     while(!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER3));
     MAP_TimerConfigure(TIMER3_BASE, TIMER_CFG_A_ONE_SHOT);
-    MAP_TimerLoadSet(TIMER3_BASE, TIMER_A, 3 * ui32SysClock);*/
+    MAP_TimerLoadSet(TIMER3_BASE, TIMER_A, 3 * ui32SysClock);
 }
 
 void ADCInit() {
