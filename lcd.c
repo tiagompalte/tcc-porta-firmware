@@ -296,6 +296,17 @@ void LCDAnimation(char *str)
        }
 }
 
+void LCDUserBlocked()
+{
+    LCDClear();
+    LCDWriteString(str_TrancaEletronica);
+
+    LCDMoveCursorToXY(3,2);
+    LCDWriteString(str_serBlocked);
+
+}
+
+
 void LCDNotAllowed()
 {
     LCDClear();
