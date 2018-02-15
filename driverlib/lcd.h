@@ -169,6 +169,7 @@ extern void LCDKeyPassword();
 extern void LCDShowKeyPassword(uint8_t count);
 extern void LCDNotAllowed();
 extern void LCDAllowed();
+extern void LCDUserBlocked();
 extern void LCDError();
 extern void LCDBlinkDisplay(uint16_t time);
 extern uint8_t getAddress();
