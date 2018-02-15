@@ -30,7 +30,8 @@ typedef enum UserStatus
 {
     EntryAllowed,
     EntryNotAllowed,
-    UserNotRegistered
+    UserNotRegistered,
+    UserBlocked
 }UserStatus;
 
 typedef enum UserOptionsStatus
@@ -49,11 +50,9 @@ extern void buscaCadastro();
 extern void HardwareControl();
 extern void HardwarePassWordControl();
 extern void InitConsole();
-extern void InitTimer();
 extern void PasswordValidate();
+extern void VerificaTentativas();
 void LCDIntHandler(void);
 void BuzzerIntHandler(void);
 void KeyBoardIntHandler(void);
-void InitInterrupt(void);
-extern void InitConsole();
 #endif /* HARDWARE_H_ */
