@@ -162,22 +162,67 @@ void systemInit() {
 }
 
 void GPIOInit() {
-    //SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
-    //SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);
+    MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_SSI2);
+    while(!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_SSI2));
+    MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
+    while(!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOB));
+    MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC);
+    while(!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOC));
+    MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);
+    while(!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOD));
     MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);
-    //SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOG);
-    //SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOK);
-    //SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOL);
-    //SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOM);
+    MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
+    while(!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOF));
+    MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOG);
+    while(!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOG));
+    MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOJ);
+    while(!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOJ));
+    MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOK);
+    while(!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOK));
+    MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOL);
+    while(!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOL));
+    MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOM);
+    while(!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOM));
     MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPION);
 
     while (!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_GPION)) {
 
     }
+    MAP_GPIOPinConfigure(GPIO_PD3_SSI2CLK);
+    MAP_GPIOPinConfigure(GPIO_PD0_SSI2XDAT1);
+    MAP_GPIOPinConfigure(GPIO_PD1_SSI2XDAT0); //MOSI
 
+    MAP_GPIOPinTypeSSI(GPIO_PORTD_BASE, GPIO_PIN_1|GPIO_PIN_0|GPIO_PIN_3);
+    
+    MAP_GPIOPinTypeGPIOOutput(GPIO_PORTB_BASE,GPIO_PIN_3|GPIO_PIN_2);
+    MAP_GPIOPinTypeGPIOOutput(GPIO_PORTC_BASE,GPIO_PIN_4);
+    MAP_GPIOPinTypeGPIOOutput(GPIO_PORTG_BASE,GPIO_PIN_0);
+    MAP_GPIOPinTypeGPIOOutput(GPIO_PORTD_BASE,GPIO_PIN_7|GPIO_PIN_2);
+    MAP_GPIOPinTypeGPIOOutput(GPIO_PORTM_BASE, GPIO_PIN_2|GPIO_PIN_1|GPIO_PIN_0);
+    MAP_GPIOPinTypeGPIOOutput(GPIO_PORTK_BASE, GPIO_PIN_7|GPIO_PIN_6|GPIO_PIN_5|GPIO_PIN_4|GPIO_PIN_3|GPIO_PIN_2|GPIO_PIN_1|GPIO_PIN_0);
     MAP_GPIOPinTypeGPIOOutput(GPIO_PORTN_BASE, GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3);
+    
+    MAP_GPIOPinTypeGPIOInput(GPIO_PORTE_BASE, GPIO_PIN_3|GPIO_PIN_2|GPIO_PIN_1|GPIO_PIN_0);
+    MAP_GPIOPinTypeGPIOInput(GPIO_PORTL_BASE, GPIO_PIN_3|GPIO_PIN_2|GPIO_PIN_1|GPIO_PIN_0);
+    MAP_GPIOPinTypeGPIOInput(GPIO_PORTJ_BASE, GPIO_PIN_1|GPIO_PIN_0);
+    
     MAP_GPIOPinTypeADC(GPIO_PORTE_BASE, GPIO_PIN_5);
 }
+
+void SSIInit()
+{
+    uint32_t initialData = 0;
+    MAP_SSIIntClear(SSI2_BASE,SSI_TXEOT);
+    MAP_SSIClockSourceSet(SSI2_BASE, SSI_CLOCK_SYSTEM);
+    MAP_SSIAdvModeSet(SSI2_BASE, SSI_ADV_MODE_LEGACY);
+    MAP_SSIConfigSetExpClk(SSI2_BASE, ui32SysClock, SSI_FRF_MOTO_MODE_0,
+                               SSI_MODE_MASTER, 1000000, 16);
+    MAP_SSIEnable(SSI2_BASE);
+
+    //clear out any initial data that might be present in the RX FIFO
+    while(MAP_SSIDataGetNonBlocking(SSI2_BASE, &initialData));
+}
+
 
 void interruptInit() {
     MAP_ADCIntDisable(ADC0_BASE, 3);
@@ -190,6 +235,14 @@ void interruptInit() {
     TimerIntRegister(TIMER1_BASE, TIMER_A, ISR_Timer1A);
     MAP_TimerIntEnable(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
 
+    TimerIntRegister(TIMER0_BASE, TIMER_A, &BuzzerIntHandler);
+    MAP_TimerIntEnable(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
+    MAP_IntEnable(INT_TIMER0A);
+    
+    TimerIntRegister(TIMER3_BASE, TIMER_A, &LCDIntHandler);
+    MAP_TimerIntEnable(TIMER3_BASE, TIMER_TIMA_TIMEOUT);
+    MAP_IntEnable(INT_TIMER3A);
+    
     MAP_IntMasterEnable();
 }
 
@@ -226,6 +279,14 @@ void timerInit() {
     TimerUpdateMode(TIMER2_BASE, TIMER_BOTH, TIMER_UP_LOAD_IMMEDIATE);
     MAP_TimerClockSourceSet(TIMER2_BASE, TIMER_CLOCK_PIOSC);
     MAP_TimerLoadSet(TIMER2_BASE, TIMER_A, 145454544);*/
+    
+    /*MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER0);
+    while(!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER0));
+    MAP_TimerConfigure(TIMER0_BASE, TIMER_CFG_A_ONE_SHOT);
+    MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER3);
+    while(!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER3));
+    MAP_TimerConfigure(TIMER3_BASE, TIMER_CFG_A_ONE_SHOT);
+    MAP_TimerLoadSet(TIMER3_BASE, TIMER_A, 3 * ui32SysClock);*/
 }
 
 void ADCInit() {
@@ -273,7 +334,7 @@ main(void)
     // Inicializar sistema
     systemInit();
     GPIOInit();
-
+    SSIInit();
     // Inicializar perifÃˆricos
     ADCInit();
     timerInit();
