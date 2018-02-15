@@ -101,7 +101,7 @@ void LCDIntHandler(void)
 
 void BuzzerIntHandler(void)
 {
-  MAP_TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
+  MAP_TimerIntClear(TIMER4_BASE, TIMER_TIMA_TIMEOUT);
   BuzzerDeactivate();
 
 }
@@ -245,8 +245,8 @@ void HardwareControl()
         AcionarTrava();
         BuzzerActivate();
         MAP_GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_2, 0x04);
-        MAP_TimerLoadSet(TIMER0_BASE, TIMER_A, 0.5 * ui32SysClock);
-        MAP_TimerEnable(TIMER0_BASE, TIMER_A);
+        MAP_TimerLoadSet(TIMER4_BASE, TIMER_A, 0.5 * ui32SysClock);
+        MAP_TimerEnable(TIMER4_BASE, TIMER_A);
         MAP_TimerEnable(TIMER3_BASE, TIMER_A);
         CardVerifFlag = false;
         g_bIntFlag = false;
@@ -257,8 +257,8 @@ void HardwareControl()
         g_bIntFlag = false;
         LCDNotAllowed();
         BuzzerActivate();
-        MAP_TimerLoadSet(TIMER0_BASE, TIMER_A, 1 * ui32SysClock);
-        MAP_TimerEnable(TIMER0_BASE, TIMER_A);
+        MAP_TimerLoadSet(TIMER4_BASE, TIMER_A, 1 * ui32SysClock);
+        MAP_TimerEnable(TIMER4_BASE, TIMER_A);
         MAP_TimerEnable(TIMER3_BASE, TIMER_A);
         CardVerifFlag = false;
         //userStatus = EntryNotAllowed;
@@ -268,8 +268,8 @@ void HardwareControl()
         g_bIntFlag = false;
         LCDNotRegister();
         BuzzerActivate();
-        MAP_TimerLoadSet(TIMER0_BASE, TIMER_A, 1 * ui32SysClock);
-        MAP_TimerEnable(TIMER0_BASE, TIMER_A);
+        MAP_TimerLoadSet(TIMER4_BASE, TIMER_A, 1 * ui32SysClock);
+        MAP_TimerEnable(TIMER4_BASE, TIMER_A);
         MAP_TimerEnable(TIMER3_BASE, TIMER_A);
         CardVerifFlag = false;
         //userStatus = UserNotRegistered;
@@ -279,8 +279,8 @@ void HardwareControl()
         g_bIntFlag = false;
         LCDUserBlocked();
         BuzzerActivate();
-        MAP_TimerLoadSet(TIMER0_BASE, TIMER_A, 1 * ui32SysClock);
-        MAP_TimerEnable(TIMER0_BASE, TIMER_A);
+        MAP_TimerLoadSet(TIMER4_BASE, TIMER_A, 1 * ui32SysClock);
+        MAP_TimerEnable(TIMER4_BASE, TIMER_A);
         MAP_TimerEnable(TIMER3_BASE, TIMER_A);
         CardVerifFlag = false;
     }
