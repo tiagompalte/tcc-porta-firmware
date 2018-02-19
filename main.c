@@ -71,7 +71,7 @@
 #include "driverlib/rom_map.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/timer.h"
-
+#include "driverlib/ssi.h"
 #include "utils/wavfile.h"
 
 #define GET         0
