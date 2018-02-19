@@ -48,6 +48,7 @@ char *str_Gravando = " GRAVANDO";
 char *str_apaga = "                    ";
 char *str_Aguarde = "Aguarde...";
 char *str_TypePassWord = "Digite a Senha:";
+char *str_serBlocked = "Usuario Bloqueado";
 
 // Inicializa display
 void LCDInit()
