@@ -43,13 +43,14 @@ unsigned char LastRFIDCardPassWord[5];
 unsigned char RFIDCardPassWord1[] = {3, 67, 147, 229, 54};
 unsigned char RFIDCardPassWord2[] = {117, 224, 6, 136, 27};
 unsigned char RFIDCardPassWord3[] = {201, 66, 106, 123, 54};
+unsigned char RFIDCardPassWord4[] = {3, 67, 147, 229, 54}; //Não autorizado
 unsigned char PassWord[] = {0,0,0,0,0,'\0'};
 unsigned char PassWord1[] = {1,1,1,1,1,'\0'};
 uint8_t PassWordCount = 0;
 uint8_t NumTentativas = 0;
 CardStatus cardStatus = CardNotDetected;
 UserStatus userStatus = EntryNotAllowed;
-UserOptionsStatus userOptionsStatus = VoicePassWord;
+UserOptionsStatus userOptionsStatus = none;
 static volatile bool g_bIntFlag = true;
 static volatile bool TestFlag = false;
 static volatile bool ExternIntFlag = false;
