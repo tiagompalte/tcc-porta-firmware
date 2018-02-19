@@ -37,7 +37,8 @@ typedef enum UserStatus
 typedef enum UserOptionsStatus
 {
     KeyPassWord,
-    VoicePassWord
+    VoicePassWord,
+    none
 }UserOptionsStatus;
 
 #include "stdint.h"
