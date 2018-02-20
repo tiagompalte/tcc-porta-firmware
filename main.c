@@ -325,11 +325,11 @@ void SysTickIntHandler(void) {
 int
 main(void)
 {
-    led3s = 0;
+    /*led3s = 0;
     ledConv = 0;
     indiceAmostra = DELAY_MAX;
     conversionEnd = 0;
-    int status;
+
 
     // Inicializar sistema
     systemInit();
@@ -343,12 +343,12 @@ main(void)
     MAP_TimerEnable(TIMER0_BASE, TIMER_A); // Timer ADC
 
     //// TESTES
-    /* tWavFile wavTeste;
+     tWavFile wavTeste;
 
     WavOpen("Default.wav", &wavTeste);
     WavRead(&wavTeste, bufferDatabase, 144000/6);
     WavClose(&wavTeste);
-     */
+
 
     //  HardwareInit();
 
@@ -362,10 +362,10 @@ main(void)
 
           if (conversionEnd == 1) { // Quando terminar de fazer a conversâ€žo
                 validate();
-        	    /*if (validate()) { // Verificar a senha
+        	    if (validate()) { // Verificar a senha
                     // ABRIR A PORTA
                     //MAP_TimerEnable(TIMER1_BASE, TIMER_A); // Timer 5s
-                    // 5s pra abrir a porta, se passar o tempo tranca de novo... */
+                    // 5s pra abrir a porta, se passar o tempo tranca de novo...
                 } else {
                     // MENSAGEM DE ERRO
                 }
@@ -373,56 +373,56 @@ main(void)
           }
      // }
 
- /*
-
+ */
+    int status;
     //
     // Make sure the main oscillator is enabled because this is required by
     // the PHY.  The system must have a 25MHz crystal attached to the OSC
     // pins.  The SYSCTL_MOSC_HIGHFREQ parameter is used when the crystal
     // frequency is 10MHz or higher.
     //
-    SysCtlMOSCConfigSet(SYSCTL_MOSC_HIGHFREQ);
+    //SysCtlMOSCConfigSet(SYSCTL_MOSC_HIGHFREQ);
 
     //
     // Run from the PLL at 120 MHz.
     //
-    g_ui32SysClock = MAP_SysCtlClockFreqSet((SYSCTL_XTAL_25MHZ |
+    /*g_ui32SysClock = MAP_SysCtlClockFreqSet((SYSCTL_XTAL_25MHZ |
                 SYSCTL_OSC_MAIN |
                 SYSCTL_USE_PLL |
-                SYSCTL_CFG_VCO_480), 120000000);
+                SYSCTL_CFG_VCO_480), 120000000);*/
 
     //
     // Configure the device pins.
     //
-    PinoutSet(true, false);
+    //PinoutSet(true, false);
 
 
     //
     // Configure SysTick for a periodic interrupt at 10ms.
     //
-    SysTickPeriodSet((g_ui32SysClock / 1000) * SYSTEM_TICK_MS);
-    SysTickEnable();
-    SysTickIntEnable();
+    //SysTickPeriodSet((g_ui32SysClock / 1000) * SYSTEM_TICK_MS);
+    //SysTickEnable();
+    //SysTickIntEnable();
 
     //
     // Initialized the flash program block and read the current settings.
     //
-    FlashPBInit(FLASH_PB_START, FLASH_PB_END, 256);
+    //FlashPBInit(FLASH_PB_START, FLASH_PB_END, 256);
 
 
 
-        ResetUser(0);
+        //ResetUser(0);
 
 
     //
     // Set the IP address to 0.0.0.0.
     //
-    UpdateIPAddress(g_pcIPAddr, 0);
+    //UpdateIPAddress(g_pcIPAddr, 0);
 
     //
     // Enable processor interrupts.
     //
-    IntMasterEnable();
+    //IntMasterEnable();
 
     //
     // Set the interrupt priorities.  We set the SysTick interrupt to a higher
@@ -431,34 +431,19 @@ main(void)
     // processed.  This is very likely since all the TCP/IP and HTTP work is
     // done in the context of the Ethernet interrupt.
     //
-    IntPriorityGroupingSet(4);
-    IntPrioritySet(INT_EMAC0, ETHERNET_INT_PRIORITY);
-    IntPrioritySet(FAULT_SYSTICK, SYSTICK_INT_PRIORITY);
+    //IntPriorityGroupingSet(4);
+    //IntPrioritySet(INT_EMAC0, ETHERNET_INT_PRIORITY);
+    //IntPrioritySet(FAULT_SYSTICK, SYSTICK_INT_PRIORITY);
 
-        EthClientProxySet(0);
-        EthClientInit(EnetEvents);
+        //EthClientProxySet(0);
+        //EthClientInit(EnetEvents);
 
     //
     // Get the IP address.
     //
-    g_ui32IPaddr = EthClientAddrGet();
+    //g_ui32IPaddr = EthClientAddrGet();
 
-    g_psUserInfo.sReport.idBoard = "11";
-    g_psUserInfo.sReport.keyBoard = "1234";
-    g_psUserInfo.sReport.rfid = "12345678";
-
-    if (CommunicationVoice() == errorConnection){
-        status = -1;
-    } else {
-        status = 1;
-    }
-
-    if (status == 1)
-        CommunicationLog();
-
-    HardwareInit();*/
-/*
-    int status;
+    //HardwareInit();
 
         //
         // Make sure the main oscillator is enabled because this is required by
@@ -536,7 +521,7 @@ main(void)
         }
 
         if (status == 1)
-            CommunicationLog(); */
+            CommunicationLog();
 
 }
 

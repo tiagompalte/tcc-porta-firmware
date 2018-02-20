@@ -37,6 +37,7 @@
 #include "driverlib/MyString.h"
 #include "driverlib/trava_eletrica.h"
 #include "driverlib/keyboard.h"
+#include "communication.h"
 
 unsigned char RFIDCardPassWord[5];
 unsigned char LastRFIDCardPassWord[5];
@@ -139,7 +140,7 @@ void HardwareLoop()
     {
         cardStatus = CardDetected;
         status = MFRC522Anticoll(str);
-        memcpy(RFIDCardPassWord, str, 5);
+        memcpy(g_psUserInfo.sReport.rfid, str, 5);
         if (status == MI_OK)
         {
                 /*UARTprintf("Card Detected\n");
