@@ -27,6 +27,8 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/debug.h"
 #include "driverlib/gpio.h"
+#include"driverlib/pin_map.h"
+#include "driverlib/rom_map.h"
 //#include "delay.h"
 void BuzzerActivate()
 {
