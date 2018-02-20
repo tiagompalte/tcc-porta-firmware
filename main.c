@@ -144,7 +144,7 @@ void ISR_ADC0() {
  * Funï¿½ï¿½es Auxiliares
  */
 void systemInit() {
-    MAP_SysCtlClockFreqSet((SYSCTL_XTAL_25MHZ | SYSCTL_OSC_MAIN | SYSCTL_USE_PLL | SYSCTL_CFG_VCO_480), 120000000);
+	g_ui32SysClock = MAP_SysCtlClockFreqSet((SYSCTL_XTAL_25MHZ | SYSCTL_OSC_MAIN | SYSCTL_USE_PLL | SYSCTL_CFG_VCO_480), 120000000);
 
     //SysCtlPeripheralPowerOn(SYSCTL_PERIPH_GPIOB);
     //SysCtlPeripheralPowerOn(SYSCTL_PERIPH_GPIOD);
@@ -325,7 +325,8 @@ void SysTickIntHandler(void) {
 int
 main(void)
 {
-    /*led3s = 0;
+    int status;
+    led3s = 0;
     ledConv = 0;
     indiceAmostra = DELAY_MAX;
     conversionEnd = 0;
@@ -342,15 +343,49 @@ main(void)
 
     MAP_TimerEnable(TIMER0_BASE, TIMER_A); // Timer ADC
 
+    /*
     //// TESTES
      tWavFile wavTeste;
 
     WavOpen("Default.wav", &wavTeste);
     WavRead(&wavTeste, bufferDatabase, 144000/6);
-    WavClose(&wavTeste);
+    WavClose(&wavTeste); */
 
 
-    //  HardwareInit();
+    HardwareInit();
+
+	PinoutSet(true, false);
+
+	SysTickPeriodSet((g_ui32SysClock / 1000) * SYSTEM_TICK_MS);
+	SysTickEnable();
+	SysTickIntEnable();
+	FlashPBInit(FLASH_PB_START, FLASH_PB_END, 256);
+
+	ResetUser();
+
+	UpdateIPAddress(g_pcIPAddr, 0);
+
+	IntPriorityGroupingSet(4);
+	IntPrioritySet(INT_EMAC0, ETHERNET_INT_PRIORITY);
+	IntPrioritySet(FAULT_SYSTICK, SYSTICK_INT_PRIORITY);
+
+	EthClientProxySet(0);
+	EthClientInit(EnetEvents);
+
+	g_ui32IPaddr = EthClientAddrGet();
+	g_psUserInfo.sReport.userKey = "1234";
+	g_psUserInfo.sReport.idBoard = IDBOARD;
+	g_psUserInfo.sReport.keyBoard = KEYBOARD;
+	g_psUserInfo.sReport.rfid = "12345678";
+
+	if (CommunicationConnecting(VOICE) == errorConnection) {
+		status = -1;
+	} else {
+		status = 1;
+	}
+
+	if (status == 1)
+		CommunicationLog();
 
     while (1) {
             // AGUARDA VERIFICACAO DO RFID
@@ -371,157 +406,6 @@ main(void)
                 }
                 conversionEnd = 0;
           }
-     // }
-
- */
-    int status;
-    //
-    // Make sure the main oscillator is enabled because this is required by
-    // the PHY.  The system must have a 25MHz crystal attached to the OSC
-    // pins.  The SYSCTL_MOSC_HIGHFREQ parameter is used when the crystal
-    // frequency is 10MHz or higher.
-    //
-    //SysCtlMOSCConfigSet(SYSCTL_MOSC_HIGHFREQ);
-
-    //
-    // Run from the PLL at 120 MHz.
-    //
-    /*g_ui32SysClock = MAP_SysCtlClockFreqSet((SYSCTL_XTAL_25MHZ |
-                SYSCTL_OSC_MAIN |
-                SYSCTL_USE_PLL |
-                SYSCTL_CFG_VCO_480), 120000000);*/
-
-    //
-    // Configure the device pins.
-    //
-    //PinoutSet(true, false);
-
-
-    //
-    // Configure SysTick for a periodic interrupt at 10ms.
-    //
-    //SysTickPeriodSet((g_ui32SysClock / 1000) * SYSTEM_TICK_MS);
-    //SysTickEnable();
-    //SysTickIntEnable();
-
-    //
-    // Initialized the flash program block and read the current settings.
-    //
-    //FlashPBInit(FLASH_PB_START, FLASH_PB_END, 256);
-
-
-
-        //ResetUser(0);
-
-
-    //
-    // Set the IP address to 0.0.0.0.
-    //
-    //UpdateIPAddress(g_pcIPAddr, 0);
-
-    //
-    // Enable processor interrupts.
-    //
-    //IntMasterEnable();
-
-    //
-    // Set the interrupt priorities.  We set the SysTick interrupt to a higher
-    // priority than the Ethernet interrupt to ensure that the file system
-    // tick is processed if SysTick occurs while the Ethernet handler is being
-    // processed.  This is very likely since all the TCP/IP and HTTP work is
-    // done in the context of the Ethernet interrupt.
-    //
-    //IntPriorityGroupingSet(4);
-    //IntPrioritySet(INT_EMAC0, ETHERNET_INT_PRIORITY);
-    //IntPrioritySet(FAULT_SYSTICK, SYSTICK_INT_PRIORITY);
-
-        //EthClientProxySet(0);
-        //EthClientInit(EnetEvents);
-
-    //
-    // Get the IP address.
-    //
-    //g_ui32IPaddr = EthClientAddrGet();
-
-    //HardwareInit();
-
-        //
-        // Make sure the main oscillator is enabled because this is required by
-        // the PHY.  The system must have a 25MHz crystal attached to the OSC
-        // pins.  The SYSCTL_MOSC_HIGHFREQ parameter is used when the crystal
-        // frequency is 10MHz or higher.
-        //
-        SysCtlMOSCConfigSet(SYSCTL_MOSC_HIGHFREQ);
-
-        //
-        // Run from the PLL at 120 MHz.
-        //
-        g_ui32SysClock = MAP_SysCtlClockFreqSet((SYSCTL_XTAL_25MHZ |
-                    SYSCTL_OSC_MAIN |
-                    SYSCTL_USE_PLL |
-                    SYSCTL_CFG_VCO_480), 120000000);
-
-        //
-        // Configure the device pins.
-        //
-        PinoutSet(true, false);
-
-
-        //
-        // Configure SysTick for a periodic interrupt at 10ms.
-        //
-        SysTickPeriodSet((g_ui32SysClock / 1000) * SYSTEM_TICK_MS);
-        SysTickEnable();
-        SysTickIntEnable();
-
-        //
-        // Initialized the flash program block and read the current settings.
-        //
-        FlashPBInit(FLASH_PB_START, FLASH_PB_END, 256);
-
-        ResetUser();
-
-        //
-        // Set the IP address to 0.0.0.0.
-        //
-        UpdateIPAddress(g_pcIPAddr, 0);
-
-        //
-        // Enable processor interrupts.
-        //
-        IntMasterEnable();
-
-        //
-        // Set the interrupt priorities.  We set the SysTick interrupt to a higher
-        // priority than the Ethernet interrupt to ensure that the file system
-        // tick is processed if SysTick occurs while the Ethernet handler is being
-        // processed.  This is very likely since all the TCP/IP and HTTP work is
-        // done in the context of the Ethernet interrupt.
-        //
-        IntPriorityGroupingSet(4);
-        IntPrioritySet(INT_EMAC0, ETHERNET_INT_PRIORITY);
-        IntPrioritySet(FAULT_SYSTICK, SYSTICK_INT_PRIORITY);
-
-        EthClientProxySet(0);
-        EthClientInit(EnetEvents);
-
-        //
-        // Get the IP address.
-        //
-        g_ui32IPaddr = EthClientAddrGet();
-        g_psUserInfo.sReport.userKey = "1234";
-        g_psUserInfo.sReport.idBoard = IDBOARD;
-        g_psUserInfo.sReport.keyBoard = KEYBOARD;
-        g_psUserInfo.sReport.rfid = "12345678";
-
-        if (CommunicationConnecting(VOICE) == errorConnection){
-            status = -1;
-        } else {
-            status = 1;
-        }
-
-        if (status == 1)
-            CommunicationLog();
-
+    }
 }
 
