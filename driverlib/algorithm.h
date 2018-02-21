@@ -17,8 +17,8 @@
 #ifndef DRIVERLIB_ALGORITHM_H_
 #define DRIVERLIB_ALGORITHM_H_
 
-#define NUM_AMOSTRAS 48000
-#define DELAY_MAX 75
+#define NUM_AMOSTRAS 32000
+#define DELAY_MAX 1600
 #define MINIMO_VALIDACAO 0.9
 
 #include <stdint.h>

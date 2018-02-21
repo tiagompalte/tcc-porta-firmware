@@ -146,19 +146,19 @@ void ISR_ADC0() {
 void systemInit() {
 	g_ui32SysClock = MAP_SysCtlClockFreqSet((SYSCTL_XTAL_25MHZ | SYSCTL_OSC_MAIN | SYSCTL_USE_PLL | SYSCTL_CFG_VCO_480), 120000000);
 
-    //SysCtlPeripheralPowerOn(SYSCTL_PERIPH_GPIOB);
-    //SysCtlPeripheralPowerOn(SYSCTL_PERIPH_GPIOD);
+	MAP_SysCtlPeripheralPowerOn(SYSCTL_PERIPH_GPIOB);
+	MAP_SysCtlPeripheralPowerOn(SYSCTL_PERIPH_GPIOD);
     MAP_SysCtlPeripheralPowerOn(SYSCTL_PERIPH_GPIOE);
-    //SysCtlPeripheralPowerOn(SYSCTL_PERIPH_GPIOG);
-    //SysCtlPeripheralPowerOn(SYSCTL_PERIPH_GPIOK);
-    //SysCtlPeripheralPowerOn(SYSCTL_PERIPH_GPIOL);
-    //SysCtlPeripheralPowerOn(SYSCTL_PERIPH_GPIOM);
+    MAP_SysCtlPeripheralPowerOn(SYSCTL_PERIPH_GPIOG);
+    MAP_SysCtlPeripheralPowerOn(SYSCTL_PERIPH_GPIOK);
+    MAP_SysCtlPeripheralPowerOn(SYSCTL_PERIPH_GPIOL);
+    MAP_SysCtlPeripheralPowerOn(SYSCTL_PERIPH_GPIOM);
     MAP_SysCtlPeripheralPowerOn(SYSCTL_PERIPH_GPION);
 
     MAP_SysCtlPeripheralPowerOn(SYSCTL_PERIPH_TIMER0);
     MAP_SysCtlPeripheralPowerOn(SYSCTL_PERIPH_TIMER1);
     MAP_SysCtlPeripheralPowerOn(SYSCTL_PERIPH_ADC0);
-    //SysCtlPeripheralPowerOn(SYSCTL_PERIPH_SSI2);
+    MAP_SysCtlPeripheralPowerOn(SYSCTL_PERIPH_SSI2);
 }
 
 void GPIOInit() {
@@ -256,7 +256,7 @@ void timerInit() {
     MAP_TimerConfigure(TIMER0_BASE, TIMER_CFG_A_PERIODIC_UP);
     TimerUpdateMode(TIMER0_BASE, TIMER_A, TIMER_UP_LOAD_IMMEDIATE);
     MAP_TimerClockSourceSet(TIMER0_BASE, TIMER_CLOCK_PIOSC);
-    MAP_TimerLoadSet(TIMER0_BASE, TIMER_A, 337);
+    MAP_TimerLoadSet(TIMER0_BASE, TIMER_A, 1011);
     MAP_TimerADCEventSet(TIMER0_BASE, TIMER_ADC_TIMEOUT_A);
     MAP_TimerControlTrigger(TIMER0_BASE, TIMER_A, true);
 
@@ -269,7 +269,7 @@ void timerInit() {
     MAP_TimerConfigure(TIMER1_BASE, TIMER_CFG_PERIODIC_UP);
     TimerUpdateMode(TIMER1_BASE, TIMER_BOTH, TIMER_UP_LOAD_IMMEDIATE);
     MAP_TimerClockSourceSet(TIMER1_BASE, TIMER_CLOCK_PIOSC);
-    MAP_TimerLoadSet(TIMER1_BASE, TIMER_A, 72727272);
+    MAP_TimerLoadSet(TIMER1_BASE, TIMER_A, 48484848);
 
 /*    while (!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER2)) {
 
