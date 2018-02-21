@@ -378,6 +378,8 @@ main(void)
 	g_psUserInfo.sReport.keyBoard = KEYBOARD;
 	g_psUserInfo.sReport.rfid = "12345678";
 
+	HardwareLoop();
+
 	if (CommunicationConnecting(VOICE) == errorConnection) {
 		status = -1;
 	} else {

@@ -45,14 +45,11 @@ typedef enum UserOptionsStatus
 uint32_t ui32SysClock;
 uint32_t ulDelayms;
 extern void HardwareInit();
-extern void HardwareLoop();
+extern uint8_t HardwareLoop();
 extern void HardwareRFID();
-extern void buscaCadastro();
 extern void HardwareControl();
 extern void HardwarePassWordControl();
-extern void InitConsole();
-extern void PasswordValidate();
-extern void VerificaTentativas();
+extern uint8_t VerificaTentativas();
 void LCDIntHandler(void);
 void BuzzerIntHandler(void);
 void KeyBoardIntHandler(void);

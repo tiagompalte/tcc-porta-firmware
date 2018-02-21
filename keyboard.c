@@ -21,6 +21,8 @@
 #include "inc/hw_gpio.h"
 #include "inc/hw_ints.h"
 #include "inc/hw_memmap.h"
+#include"driverlib/pin_map.h"
+#include "driverlib/rom_map.h"
 #include "inc/hw_sysctl.h"
 #include "driverlib/gpio.h"
 #include "driverlib/sysctl.h"
@@ -32,10 +34,6 @@ uint8_t key = 0xFF;
 uint8_t lastKey = 0xFF;
 uint32_t DebouncerDelay = 500;
 uint32_t DebouncerDelayCount = 0;
-void KeyboardInit()
-{
-
-}
 
 uint8_t KeyboardGetKey()
 {

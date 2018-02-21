@@ -21,7 +21,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-extern void KeyboardInit();
 extern uint8_t KeyboardGetKey();
 extern bool KeyboardIsPressed();
 extern void testeTeclado();

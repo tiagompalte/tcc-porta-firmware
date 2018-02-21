@@ -20,10 +20,7 @@
 #ifndef BUZZER_H_
 #define BUZZER_H_
 
-extern void BuzzerInit();
-extern void BuzzerEnable();
-extern void BuzzerDisable();
-extern void BuzzerEntradaPermitida();
-extern void BuzzerNaoPermitida();
+extern void BuzzerActivate();
+extern void BuzzerDeactivate();
 
 #endif /* BUZZER_H_ */

@@ -63,8 +63,6 @@ void HardwareInit()
     ulDelayms = (40000);
     uint32_t initialData = 0;
 
-    InitConsole();
-
     MAP_GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_2, 0x00);
     MAP_GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0x04);
     MAP_GPIOPinWrite(GPIO_PORTG_BASE, GPIO_PIN_0, 1);
@@ -82,23 +80,14 @@ void HardwareInit()
 void LCDIntHandler(void)
 {
   MAP_TimerIntClear(TIMER3_BASE, TIMER_TIMA_TIMEOUT);
-
-  //MAP_GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_0, 0);
-  //
-  // Set a flag to indicate that the interrupt occurred.
-  //
-  //MAP_SysCtlDelay(1000*ulDelayms);
-  //MAP_GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_0, 1);
   LCDClear();
   LCDInicio();
   DesacionarTrava();
   MAP_GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_1|GPIO_PIN_0, 2);
   MAP_GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_2, 0x00);
-  //cardStatus = CardNotDetected;
-  //userStatus = EntryNotAllowed;
+
   g_bIntFlag = true;
   cardStatus = CardNotDetected;
-  //MAP_TimerEnable(TIMER3_BASE, TIMER_A);
 }
 
 void BuzzerIntHandler(void)
@@ -110,7 +99,6 @@ void BuzzerIntHandler(void)
 uint8_t teste = 0x04;
 void KeyBoardIntHandler(void)
 {
-    //if (MAP_GPIOIntStatus(GPIO_PORTL_BASE, false) & (GPIO_PIN_3|GPIO_PIN_2|GPIO_PIN_1|GPIO_PIN_0)) {
         MAP_GPIOIntClear(GPIO_PORTL_BASE, GPIO_PIN_0);
 
         teste = ~teste;
@@ -126,46 +114,36 @@ void KeyBoardIntHandler(void)
 
         PassWord[PassWordCount] = KeyboardGetKey();
 
-    //MAP_IntEnable(INT_GPIOJ);
         PassWordCount++;
-   // }
 }
 
-void HardwareLoop()
+uint8_t HardwareLoop()
 {
     unsigned char status;
     unsigned char str[MAX_LEN];
 
-    if (MFRC522IsCard() && cardStatus == CardNotDetected)
+    while(1)
     {
-        cardStatus = CardDetected;
-        status = MFRC522Anticoll(str);
-        memcpy(g_psUserInfo.sReport.rfid, str, 5);
-        if (status == MI_OK)
+        if (MFRC522IsCard() && cardStatus == CardNotDetected)
         {
-                /*UARTprintf("Card Detected\n");
-                    UARTprintf("\n The card's number is  : ");
-                    UARTprintf("%d", RFIDCardPassWord[0]);
-                    UARTprintf(" , ");
-                    UARTprintf("%d", RFIDCardPassWord[1]);
-                    UARTprintf(" , ");
-                    UARTprintf("%d", RFIDCardPassWord[2]);
-                    UARTprintf(" , ");
-                    UARTprintf("%d", RFIDCardPassWord[3]);
-                    UARTprintf(" , ");
-                    UARTprintf("%d", RFIDCardPassWord[4]);
-                    UARTprintf(" ");
-                    MAP_SysCtlDelay(1000*ulDelayms);*/
-            buscaCadastro();
+            cardStatus = CardDetected;
+            status = MFRC522Anticoll(str);
+            memcpy(g_psUserInfo.sReport.rfid, str, 5);
         }
-        VerificaTentativas();
+
+        if (status == MI_OK && cardStatus == CardDetected)
+        {
+            return 1;
+        }
+        /*VerificaTentativas();
         HardwarePassWordControl();
-        HardwareControl();
+        HardwareControl();*/
+        MFRC522Halt();
     }
-    MFRC522Halt();
+    return 0;
 }
 
-void VerificaTentativas()
+uint8_t VerificaTentativas()
 {
     if(!StrCompare(LastRFIDCardPassWord, RFIDCardPassWord, 5))
     {
@@ -178,12 +156,13 @@ void VerificaTentativas()
         NumTentativas++;
     }
 
-    if(NumTentativas > 3)
+   /* if(NumTentativas > 3)
     {
         userStatus = UserBlocked;
         userOptionsStatus = none;
     }
-
+    */
+    return NumTentativas;
 }
 uint8_t keyPass = 0x00;
 void HardwarePassWordControl()
@@ -206,7 +185,7 @@ void HardwarePassWordControl()
                 MAP_SysCtlDelay(500*ulDelayms);
             }
         }
-        PasswordValidate();
+        //PasswordValidate();
         keyPass = 0x00;
         CardVerifFlag = true;
         userOptionsStatus = none;
@@ -294,52 +273,3 @@ void HardwareControl()
     //cardStatus = CardNotDetected;
 }
 
-void buscaCadastro()
-{
-    if(StrCompare(RFIDCardPassWord,RFIDCardPassWord1, 5))
-    {
-        userOptionsStatus = VoicePassWord;
-    }
-    else if(StrCompare(RFIDCardPassWord,RFIDCardPassWord2, 5))
-    {
-        userOptionsStatus = KeyPassWord;
-    }
-    else if(StrCompare(RFIDCardPassWord,RFIDCardPassWord4, 5))
-    {
-        userOptionsStatus = none;
-        userStatus = EntryNotAllowed;
-    }
-    else
-    {
-        userOptionsStatus = none;
-        userStatus = UserNotRegistered;
-    }
-}
-
-void PasswordValidate()
-{
-    if(StrCompare(PassWord,PassWord1, 5))
-    {
-        userStatus = EntryAllowed;
-    }
-    else
-    {
-        userStatus = EntryNotAllowed;
-    }
-}
-
-void InitConsole()
-{
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
-
-    GPIOPinConfigure(GPIO_PA0_U0RX);
-    GPIOPinConfigure(GPIO_PA1_U0TX);
-
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_UART0);
-
-    UARTClockSourceSet(UART0_BASE, UART_CLOCK_PIOSC);
-
-    GPIOPinTypeUART(GPIO_PORTA_BASE, GPIO_PIN_0 | GPIO_PIN_1);
-
-    UARTStdioConfig(0, 115200, 16000000);
-}
