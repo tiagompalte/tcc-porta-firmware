@@ -85,7 +85,7 @@ int ResetUser()
     g_psUserInfo.sReport.pcDescription = 0;
     g_psUserInfo.sReport.audio[0] = ' ';
     g_psUserInfo.sReport.status = 0;
-    g_psUserInfo.sReport.rfid = 0;
+    g_psUserInfo.sReport.rfid[0] = ' ';
     g_psUserInfo.ui32LastUpdate = 0;
 
     return OK;

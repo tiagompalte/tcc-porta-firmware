@@ -366,7 +366,7 @@ main(void)
     WavClose(&wavTeste); */
 
 
-    HardwareInit();
+    //HardwareInit();
 
 	PinoutSet(true, false);
 
@@ -391,7 +391,7 @@ main(void)
 	g_psUserInfo.sReport.idBoard = IDBOARD;
 	g_psUserInfo.sReport.keyBoard = KEYBOARD;
 	//g_psUserInfo.sReport.rfid = "12345678";
-	g_psUserInfo.sReport.rfid = "201066106123154";
+	strcpy(g_psUserInfo.sReport.rfid, "201066106123154");
 	//HardwareLoop();
 
 	if (CommunicationConnecting(VOICE) == errorConnection) {
