@@ -53,4 +53,5 @@ extern uint8_t VerificaTentativas();
 void LCDIntHandler(void);
 void BuzzerIntHandler(void);
 void KeyBoardIntHandler(void);
+void PasswordIntHandler(void);
 #endif /* HARDWARE_H_ */

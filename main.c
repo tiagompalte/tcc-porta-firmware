@@ -215,12 +215,15 @@ void SSIInit()
     MAP_SSIIntClear(SSI2_BASE,SSI_TXEOT);
     MAP_SSIClockSourceSet(SSI2_BASE, SSI_CLOCK_SYSTEM);
     MAP_SSIAdvModeSet(SSI2_BASE, SSI_ADV_MODE_LEGACY);
-    MAP_SSIConfigSetExpClk(SSI2_BASE, ui32SysClock, SSI_FRF_MOTO_MODE_0,
+    MAP_SSIConfigSetExpClk(SSI2_BASE, g_ui32SysClock, SSI_FRF_MOTO_MODE_0,
                                SSI_MODE_MASTER, 1000000, 16);
     MAP_SSIEnable(SSI2_BASE);
 
     //clear out any initial data that might be present in the RX FIFO
-    while(MAP_SSIDataGetNonBlocking(SSI2_BASE, &initialData));
+    while(MAP_SSIDataGetNonBlocking(SSI2_BASE, &initialData))
+    {
+
+    }
 }
 
 
@@ -243,6 +246,10 @@ void interruptInit() {
     MAP_TimerIntEnable(TIMER3_BASE, TIMER_TIMA_TIMEOUT);
     MAP_IntEnable(INT_TIMER3A);
     
+    TimerIntRegister(TIMER5_BASE, TIMER_A, &PasswordIntHandler);
+    MAP_TimerIntEnable(TIMER5_BASE, TIMER_TIMA_TIMEOUT);
+    MAP_IntEnable(INT_TIMER5A);
+
     MAP_IntMasterEnable();
 }
 
@@ -286,7 +293,14 @@ void timerInit() {
     MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER3);
     while(!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER3));
     MAP_TimerConfigure(TIMER3_BASE, TIMER_CFG_A_ONE_SHOT);
-    MAP_TimerLoadSet(TIMER3_BASE, TIMER_A, 3 * ui32SysClock);
+    MAP_TimerLoadSet(TIMER3_BASE, TIMER_A, 3 * g_ui32SysClock);
+
+    MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER5);
+    while(!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER5));
+
+    MAP_TimerConfigure(TIMER5_BASE, TIMER_CFG_A_ONE_SHOT);
+    MAP_TimerLoadSet(TIMER5_BASE, TIMER_A, 10 * ui32SysClock);
+
 }
 
 void ADCInit() {
@@ -376,9 +390,9 @@ main(void)
 	g_psUserInfo.sReport.userKey = "1234";
 	g_psUserInfo.sReport.idBoard = IDBOARD;
 	g_psUserInfo.sReport.keyBoard = KEYBOARD;
-	g_psUserInfo.sReport.rfid = "12345678";
-
-	HardwareLoop();
+	//g_psUserInfo.sReport.rfid = "12345678";
+	g_psUserInfo.sReport.rfid = "201066106123154";
+	//HardwareLoop();
 
 	if (CommunicationConnecting(VOICE) == errorConnection) {
 		status = -1;

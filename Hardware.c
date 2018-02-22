@@ -15,7 +15,7 @@
  * v1.0
  * 2017
  * ************************************************************** */
-
+#include "stdlib.h"
 #include "driverlib/Hardware.h"
 #include "string.h"
 #include "inc/hw_memmap.h"
@@ -96,42 +96,39 @@ void BuzzerIntHandler(void)
   BuzzerDeactivate();
 
 }
-uint8_t teste = 0x04;
-void KeyBoardIntHandler(void)
+
+void PasswordIntHandler(void)
 {
-        MAP_GPIOIntClear(GPIO_PORTL_BASE, GPIO_PIN_0);
-
-        teste = ~teste;
-        MAP_GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_2, teste);
-        if(ExternIntFlag == false)
-        {
-            PassWordCount = 0;
-            LCDKeyPassword();
-        }
-        ExternIntFlag = true;
-        LCDWriteData('*');
-        MAP_SysCtlDelay(500*ulDelayms);
-
-        PassWord[PassWordCount] = KeyboardGetKey();
-
-        PassWordCount++;
+    MAP_TimerIntClear(TIMER5_BASE, TIMER_TIMA_TIMEOUT);
+    PassWordCount = 5;
+    unsigned char PassWordDefaut[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, '\0'};
+    memcpy(PassWord,PassWordDefaut, 5);
 }
 
 uint8_t HardwareLoop()
 {
-    unsigned char status;
+    unsigned char RFIDstatus;
     unsigned char str[MAX_LEN];
-
+    unsigned char str2[6] = {0,0,0,0,0,'\0'};
+    //unsigned char *str3;
+    //g_psUserInfo.sReport.rfid = (char*)malloc(5*sizeof(char));
     while(1)
     {
         if (MFRC522IsCard() && cardStatus == CardNotDetected)
         {
             cardStatus = CardDetected;
-            status = MFRC522Anticoll(str);
-            memcpy(g_psUserInfo.sReport.rfid, str, 5);
+            RFIDstatus = MFRC522Anticoll(str);
+            //memcpy(g_psUserInfo.sReport.rfid, str, 5);
+            memcpy(str2, str, 5);
+            //str3 = str;
+            //memcpy(g_psUserInfo.sReport.rfid, str3, 5);
+
+            //g_psUserInfo.sReport.rfid = (char*)str2;
+
         }
 
-        if (status == MI_OK && cardStatus == CardDetected)
+        //if (status == MI_OK && cardStatus == CardDetected)
+        if (cardStatus == CardDetected && RFIDstatus == MI_OK)
         {
             return 1;
         }
@@ -181,7 +178,7 @@ void HardwarePassWordControl()
                 PassWord[PassWordCount] = (unsigned char)keyPass;
                 PassWordCount++;
                 LCDWriteData('*');
-                UARTprintf(" %d ", keyPass);
+                //UARTprintf(" %d ", keyPass);
                 MAP_SysCtlDelay(500*ulDelayms);
             }
         }
@@ -226,7 +223,7 @@ void HardwareControl()
         AcionarTrava();
         BuzzerActivate();
         MAP_GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_2, 0x04);
-        MAP_TimerLoadSet(TIMER4_BASE, TIMER_A, 0.5 * ui32SysClock);
+        MAP_TimerLoadSet(TIMER4_BASE, TIMER_A, 0.5 * g_ui32SysClock);
         MAP_TimerEnable(TIMER4_BASE, TIMER_A);
         MAP_TimerEnable(TIMER3_BASE, TIMER_A);
         CardVerifFlag = false;
@@ -238,7 +235,7 @@ void HardwareControl()
         g_bIntFlag = false;
         LCDNotAllowed();
         BuzzerActivate();
-        MAP_TimerLoadSet(TIMER4_BASE, TIMER_A, 1 * ui32SysClock);
+        MAP_TimerLoadSet(TIMER4_BASE, TIMER_A, 1 * g_ui32SysClock);
         MAP_TimerEnable(TIMER4_BASE, TIMER_A);
         MAP_TimerEnable(TIMER3_BASE, TIMER_A);
         CardVerifFlag = false;
@@ -249,7 +246,7 @@ void HardwareControl()
         g_bIntFlag = false;
         LCDNotRegister();
         BuzzerActivate();
-        MAP_TimerLoadSet(TIMER4_BASE, TIMER_A, 1 * ui32SysClock);
+        MAP_TimerLoadSet(TIMER4_BASE, TIMER_A, 1 * g_ui32SysClock);
         MAP_TimerEnable(TIMER4_BASE, TIMER_A);
         MAP_TimerEnable(TIMER3_BASE, TIMER_A);
         CardVerifFlag = false;
@@ -260,7 +257,7 @@ void HardwareControl()
         g_bIntFlag = false;
         LCDUserBlocked();
         BuzzerActivate();
-        MAP_TimerLoadSet(TIMER4_BASE, TIMER_A, 1 * ui32SysClock);
+        MAP_TimerLoadSet(TIMER4_BASE, TIMER_A, 1 * g_ui32SysClock);
         MAP_TimerEnable(TIMER4_BASE, TIMER_A);
         MAP_TimerEnable(TIMER3_BASE, TIMER_A);
         CardVerifFlag = false;
