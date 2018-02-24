@@ -88,6 +88,7 @@
 int led3s, ledConv;
 int i, tempIndex;
 int conversionEnd;
+int status;
 
 /*
  * ISRs
@@ -339,7 +340,7 @@ void SysTickIntHandler(void) {
 int
 main(void)
 {
-    int status;
+
     led3s = 0;
     ledConv = 0;
     indiceAmostra = DELAY_MAX;
@@ -391,7 +392,7 @@ main(void)
 	g_psUserInfo.sReport.idBoard = IDBOARD;
 	g_psUserInfo.sReport.keyBoard = KEYBOARD;
 	//g_psUserInfo.sReport.rfid = "12345678";
-	strcpy(g_psUserInfo.sReport.rfid, "201066106123154");
+	strcpy(g_psUserInfo.sReport.rfid, "12345678");
 	//HardwareLoop();
 
 	if (CommunicationConnecting(VOICE) == errorConnection) {

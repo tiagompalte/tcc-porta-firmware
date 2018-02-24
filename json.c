@@ -431,10 +431,11 @@ int32_t JSONParseGET(uint32_t ui32Index, tUserReport *psUserReport,
 
     if (GetField("data", &sBufPtr) != 0)
     {
-        if (GetField("hash", &sBufPtr) != 0)
+        if (GetField("audio", &sBufPtr) != 0)
         {
-            GetFieldValueString(&sBufPtr, psUserReport->audio,
-                                sizeof(psUserReport->audio));
+            GetFieldValueInt(&sBufPtr);
+            //GetFieldValueString(&sBufPtr, psUserReport->audio,
+              //                  sizeof(psUserReport->audio));
             i32Items++;
             psUserReport->status = 200;
         }

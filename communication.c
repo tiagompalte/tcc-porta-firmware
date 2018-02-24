@@ -467,7 +467,7 @@ int CommunicationLog()
         Communication(POSTACCESS, "38");
         g_psUserInfo.t_error[2][try] = g_psUserInfo.sReport.status;
         try++;
-        g_ui32Delay = 500;
+        g_ui32Delay = 1000;
     }
     if (try == 3)
     {

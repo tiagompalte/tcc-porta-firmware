@@ -69,7 +69,7 @@
 //*****************************************************************************
 //#define MEM_LIBC_MALLOC                 0
 #define MEM_ALIGNMENT                     4
-#define MEM_SIZE                          (32 * 1024)
+#define MEM_SIZE                          (64 * 1024)
 //#define MEMP_OVERFLOW_CHECK             0
 //#define MEMP_SANITY_CHECK               0
 //#define MEM_USE_POOLS                   0
@@ -80,10 +80,10 @@
 // ---------- Internal Memory Pool Sizes ----------
 //
 //*****************************************************************************
-#define MEMP_NUM_PBUF                     16    // Default 16, was 16
+#define MEMP_NUM_PBUF                     40   // Default 16, was 16
 //#define MEMP_NUM_RAW_PCB                4
 //#define MEMP_NUM_UDP_PCB                4
-#define MEMP_NUM_TCP_PCB                  16
+#define MEMP_NUM_TCP_PCB                  32
 //#define MEMP_NUM_TCP_PCB_LISTEN         8
 //#define MEMP_NUM_TCP_SEG                16
 //#define MEMP_NUM_REASSDATA              5
@@ -94,7 +94,7 @@
 //#define MEMP_NUM_NETCONN                4
 //#define MEMP_NUM_TCPIP_MSG_API          8
 //#define MEMP_NUM_TCPIP_MSG_INPKT        8
-#define PBUF_POOL_SIZE                    16    // Default 16
+#define PBUF_POOL_SIZE                    42    // Default 16
 
 //*****************************************************************************
 //
@@ -216,11 +216,11 @@
 //*****************************************************************************
 #define LWIP_TCP                        1
 //#define TCP_TTL                         (IP_DEFAULT_TTL)
-#define TCP_WND                         4096   // default is 2048
+#define TCP_WND                         0xffff   // default is 2048
 //#define TCP_MAXRTX                      12
 //#define TCP_SYNMAXRTX                   6
 //#define TCP_QUEUE_OOSEQ                 1
-#define TCP_MSS                        1500        // default is 128
+#define TCP_MSS                        0xfffe        // default is 128
 //#define TCP_CALCULATE_EFF_SEND_MSS      1
 #define TCP_SND_BUF                     (4 * TCP_MSS)
                                                     // default is 256, was 6 *
@@ -243,7 +243,7 @@
 //
 //*****************************************************************************
 #define PBUF_LINK_HLEN                  16          // default is 14
-#define PBUF_POOL_BUFSIZE               512
+#define PBUF_POOL_BUFSIZE               2048
                                                     // default is LWIP_MEM_ALIGN_SIZE(TCP_MSS+40+PBUF_LINK_HLEN)
 #define ETH_PAD_SIZE                    0           // default is 0
 
