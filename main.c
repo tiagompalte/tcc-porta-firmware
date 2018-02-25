@@ -399,10 +399,9 @@ main(void)
 		status = -1;
 	} else {
 		status = 1;
+        CommunicationLog();
 	}
 
-	if (status == 1)
-		CommunicationLog();
 
     while (1) {
             // AGUARDA VERIFICACAO DO RFID

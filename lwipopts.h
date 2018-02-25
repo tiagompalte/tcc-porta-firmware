@@ -94,7 +94,7 @@
 //#define MEMP_NUM_NETCONN                4
 //#define MEMP_NUM_TCPIP_MSG_API          8
 //#define MEMP_NUM_TCPIP_MSG_INPKT        8
-#define PBUF_POOL_SIZE                    42    // Default 16
+#define PBUF_POOL_SIZE                    28    // Default 16
 
 //*****************************************************************************
 //
@@ -216,11 +216,11 @@
 //*****************************************************************************
 #define LWIP_TCP                        1
 //#define TCP_TTL                         (IP_DEFAULT_TTL)
-#define TCP_WND                         0xffff   // default is 2048
+#define TCP_WND                         0xcfff   // default is 2048
 //#define TCP_MAXRTX                      12
 //#define TCP_SYNMAXRTX                   6
 //#define TCP_QUEUE_OOSEQ                 1
-#define TCP_MSS                        0xfffe        // default is 128
+#define TCP_MSS                        0xcffe        // default is 128
 //#define TCP_CALCULATE_EFF_SEND_MSS      1
 #define TCP_SND_BUF                     (4 * TCP_MSS)
                                                     // default is 256, was 6 *

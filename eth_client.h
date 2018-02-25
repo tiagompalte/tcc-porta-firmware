@@ -17,6 +17,8 @@
 #ifndef ETH_CLIENT_H_
 #define ETH_CLIENT_H_
 
+#include "driverlib/algorithm.h"
+
 //*****************************************************************************
 //
 // If building with a C++ compiler, make all of the definitions in this header
@@ -55,8 +57,7 @@ typedef struct
     //
     // User voice.
     //
-    //char audio[32];
-    //bufferDatabase
+    char audio[NUM_AMOSTRAS + 2*DELAY_MAX];
 
     //
     // The current user status.

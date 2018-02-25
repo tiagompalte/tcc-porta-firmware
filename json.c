@@ -434,14 +434,14 @@ int32_t JSONParseGET(uint32_t ui32Index, tUserReport *psUserReport,
         if (GetField("audio", &sBufPtr) != 0)
         {
             //Ainda vou arrumar para int por strtoint()
-            GetFieldValueString(&sBufPtr, bufferDatabase,
-                                sizeof(bufferDatabase));
+            GetFieldValueString(&sBufPtr,psUserReport->audio,
+                                sizeof(psUserReport->audio));
             i32Items++;
             psUserReport->status = 200;
         }
         else
         {
-            bufferDatabase[0] = ' ';
+            psUserReport->audio[0] = ' ';
             psUserReport->status = 400;
             i32Items++;
         }
@@ -882,8 +882,8 @@ int32_t JSONParseGETteste(uint32_t ui32Index, tUserReport *psUserReport,
     {
         if (GetField("hash", &sBufPtr) != 0)
         {
-            //GetFieldValueString(&sBufPtr, psUserReport->audio,
-            //                    sizeof(psUserReport->audio));
+            GetFieldValueString(&sBufPtr, psUserReport->audio,
+                                sizeof(psUserReport->audio));
             i32Items++;
             psUserReport->status = 200;
         }
