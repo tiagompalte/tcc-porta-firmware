@@ -1275,6 +1275,197 @@ ustrtoul(const char * restrict nptr, const char ** restrict endptr, int base)
     return(ulNeg ? (0 - ulRet) : ulRet);
 }
 
+
+//*****************************************************************************
+//
+//! Converts a string into its numeric equivalent.
+//!
+//! \param nptr is a pointer to the string containing the integer.
+//! \param endptr is a pointer that will be set to the first character past
+//! the integer in the string.
+//! \param base is the radix to use for the conversion; can be zero to
+//! auto-select the radix or between 2 and 16 to explicitly specify the radix.
+//!
+//! This function is very similar to the C library <tt>strtoul()</tt> function.
+//! It scans a string for the first token (that is, non-white space) and
+//! converts the value at that location in the string into an integer value.
+//!
+//! \return Returns the result of the conversion.
+//
+//*****************************************************************************
+uint8_t
+strtoint(const char * restrict nptr, const char ** restrict endptr, int base)
+{
+    uint8_t ulRet, ulDigit, ulValid;
+    const char *pcPtr;
+
+    //
+    // Check the arguments.
+    //
+    ASSERT(nptr);
+    ASSERT((base == 0) || ((base > 1) && (base <= 16)));
+
+    //
+    // Initially, the result is zero.
+    //
+    ulRet = 0;
+    ulValid = 0;
+
+    //
+    // Skip past any leading white space.
+    //
+    pcPtr = nptr;
+    while((*pcPtr == ' ') || (*pcPtr == '\t'))
+    {
+        pcPtr++;
+    }
+
+    //
+    // Take a leading + or - from the value.
+    //
+    if(*pcPtr == '-')
+    {
+        pcPtr++;
+    }
+    else if(*pcPtr == '+')
+    {
+        pcPtr++;
+    }
+
+    //
+    // See if the radix was not specified, or is 16, and the value starts with
+    // "0x" or "0X" (to indicate a hex value).
+    //
+    if(((base == 0) || (base == 16)) && (*pcPtr == '0') &&
+       ((pcPtr[1] == 'x') || (pcPtr[1] == 'X')))
+    {
+        //
+        // Skip the leading "0x".
+        //
+        pcPtr += 2;
+
+        //
+        // Set the radix to 16.
+        //
+        base = 16;
+    }
+
+    //
+    // See if the radix was not specified.
+    //
+    if(base == 0)
+    {
+        //
+        // See if the value starts with "0".
+        //
+        if(*pcPtr == '0')
+        {
+            //
+            // Values that start with "0" are assumed to be radix 8.
+            //
+            base = 8;
+        }
+        else
+        {
+            //
+            // Otherwise, the values are assumed to be radix 10.
+            //
+            base = 10;
+        }
+    }
+
+    //
+    // Loop while there are more valid digits to consume.
+    //
+    while(1)
+    {
+        //
+        // See if this character is a number.
+        //
+        if((*pcPtr >= '0') && (*pcPtr <= '9'))
+        {
+            //
+            // Convert the character to its integer equivalent.
+            //
+            ulDigit = *pcPtr++ - '0';
+        }
+
+        //
+        // Otherwise, see if this character is an upper case letter.
+        //
+        else if((*pcPtr >= 'A') && (*pcPtr <= 'Z'))
+        {
+            //
+            // Convert the character to its integer equivalent.
+            //
+            ulDigit = *pcPtr++ - 'A' + 10;
+        }
+
+        //
+        // Otherwise, see if this character is a lower case letter.
+        //
+        else if((*pcPtr >= 'a') && (*pcPtr <= 'z'))
+        {
+            //
+            // Convert the character to its integer equivalent.
+            //
+            ulDigit = *pcPtr++ - 'a' + 10;
+        }
+
+        //
+        // Otherwise, this is not a valid character.
+        //
+        else
+        {
+            //
+            // Stop converting this value.
+            //
+            break;
+        }
+
+        //
+        // See if this digit is valid for the chosen radix.
+        //
+        if(ulDigit >= base)
+        {
+            //
+            // Since this was not a valid digit, move the pointer back to the
+            // character that therefore should not have been consumed.
+            //
+            pcPtr--;
+
+            //
+            // Stop converting this value.
+            //
+            break;
+        }
+
+        //
+        // Add this digit to the converted value.
+        //
+        ulRet *= base;
+        ulRet += ulDigit;
+
+        //
+        // Since a digit has been added, this is now a valid result.
+        //
+        ulValid = 1;
+    }
+
+    //
+    // Set the return string pointer to the first character not consumed.
+    //
+    if(endptr)
+    {
+        *endptr = ulValid ? pcPtr : nptr;
+    }
+
+    //
+    // Return the converted value.
+    //
+    return(ulRet);
+}
+
 //*****************************************************************************
 //
 // An array of the value of ten raised to the power-of-two exponents.  This is

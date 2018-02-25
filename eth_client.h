@@ -55,7 +55,8 @@ typedef struct
     //
     // User voice.
     //
-    char audio[32];
+    //char audio[32];
+    //bufferDatabase
 
     //
     // The current user status.

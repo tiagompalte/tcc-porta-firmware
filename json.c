@@ -22,7 +22,7 @@
 #include "utils/lwiplib.h"
 #include "eth_client.h"
 #include "json.h"
-
+#include "driverlib/algorithm.h"
 //****************************************************************************
 //
 // The locally defined lwIP buffer parsing pointer.
@@ -433,15 +433,15 @@ int32_t JSONParseGET(uint32_t ui32Index, tUserReport *psUserReport,
     {
         if (GetField("audio", &sBufPtr) != 0)
         {
-            GetFieldValueInt(&sBufPtr);
-            //GetFieldValueString(&sBufPtr, psUserReport->audio,
-              //                  sizeof(psUserReport->audio));
+            //Ainda vou arrumar para int por strtoint()
+            GetFieldValueString(&sBufPtr, bufferDatabase,
+                                sizeof(bufferDatabase));
             i32Items++;
             psUserReport->status = 200;
         }
         else
         {
-            psUserReport->audio[0] = ' ';
+            bufferDatabase[0] = ' ';
             psUserReport->status = 400;
             i32Items++;
         }
@@ -882,14 +882,14 @@ int32_t JSONParseGETteste(uint32_t ui32Index, tUserReport *psUserReport,
     {
         if (GetField("hash", &sBufPtr) != 0)
         {
-            GetFieldValueString(&sBufPtr, psUserReport->audio,
-                                sizeof(psUserReport->audio));
+            //GetFieldValueString(&sBufPtr, psUserReport->audio,
+            //                    sizeof(psUserReport->audio));
             i32Items++;
             psUserReport->status = 200;
         }
         else
         {
-            psUserReport->audio[0] = ' ';
+            //psUserReport->audio[0] = ' ';
             psUserReport->status = 200;
         }
     }
