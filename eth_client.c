@@ -1745,7 +1745,7 @@ int32_t requestPOSTKEY(const char *pcQuery, tUserReport *psUserReport,
     //
 
     i32Idx = MergeRequest(i32Idx, psUserReport->rfid,
-                          sizeof(psUserReport->rfid)+4, false);
+                          sizeof(psUserReport->rfid), false);
 
     //
     // Append the "User" string.
@@ -1837,7 +1837,7 @@ int32_t requestPOSTACCESS(const char *pcQuery, tUserReport *psUserReport,
     // Append the rfid string
     //
     i32Idx = MergeRequest(i32Idx, psUserReport->rfid,
-                          sizeof(psUserReport->rfid) + 4, false);
+                          sizeof(psUserReport->rfid), false);
 
     //
     // Append the "HTTP:/1.1" string.

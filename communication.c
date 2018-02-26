@@ -430,7 +430,7 @@ int CommunicationConnecting(int type)
         }
         g_psUserInfo.t_error[1][try] = g_psUserInfo.sReport.status;
         try++;
-        g_ui32Delay = 1000;
+        g_ui32Delay = 1500;
     }
 
     if (try == 3)
@@ -459,7 +459,6 @@ int CommunicationConnecting(int type)
 
 int CommunicationLog()
 {
-
     int try = ResetStatus();
 
     while ((g_psUserInfo.sReport.status != OK) && (try < 3))
@@ -467,7 +466,7 @@ int CommunicationLog()
         Communication(POSTACCESS, "38");
         g_psUserInfo.t_error[2][try] = g_psUserInfo.sReport.status;
         try++;
-        g_ui32Delay = 1000;
+        g_ui32Delay = 500;
     }
     if (try == 3)
     {

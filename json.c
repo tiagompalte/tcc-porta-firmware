@@ -62,6 +62,16 @@ static uint8_t BufData8Get(tBufPtr *psBufPtr)
     return (((uint8_t *) psBufPtr->psBuf->payload)[psBufPtr->ui32Idx]);
 }
 
+//****************************************************************************
+//
+// Get 4 byte from a parsing pointer.
+//
+//****************************************************************************
+static uint32_t BufData32Get(tBufPtr *psBufPtr)
+{
+    return (((uint32_t *) psBufPtr->psBuf->payload)[psBufPtr->ui32Idx]);
+}
+
 //*****************************************************************************
 //
 // Increment a parsing pointer by a given value.
@@ -356,6 +366,8 @@ int32_t JSONParseGET(uint32_t ui32Index, tUserReport *psUserReport,
 {
     tBufPtr sBufPtr, sBufList, sBufTemp;
     char pcCode[4];
+    char pcTemp[4];
+    const char *pEnd;
     int32_t i32Items, i32Code;
 
     //
@@ -434,8 +446,38 @@ int32_t JSONParseGET(uint32_t ui32Index, tUserReport *psUserReport,
         if (GetField("audio", &sBufPtr) != 0)
         {
             //Ainda vou arrumar para int por strtoint()
-            GetFieldValueString(&sBufPtr,psUserReport->audio,
-                                sizeof(psUserReport->audio));
+            int32_t i32OutIdx;
+
+            //
+            // The value should always start with a " char or something went wrong.
+            //
+            if (BufData8Get(&sBufPtr) != '[')
+            {
+                return (-1);
+            }
+
+            //
+            // Skip the initial [ char.
+            //
+            if (BufPtrInc(&sBufPtr, 1) != 1)
+            {
+                return (-1);
+            }
+
+            //for (i32OutIdx = 0; i32OutIdx < sizeof(psUserReport->audio);)
+            //{
+                GetFieldValueString(&sBufPtr, pcTemp, sizeof(pcTemp));
+
+            psUserReport->audio[0] = BufData8Get(pcTemp);
+
+                //if (BufPtrInc(&sBufPtr, 1) != 1)
+                //{
+                 //   return (-1);
+                //}
+            //}
+
+
+
             i32Items++;
             psUserReport->status = 200;
         }
