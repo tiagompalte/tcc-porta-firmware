@@ -62,16 +62,6 @@ static uint8_t BufData8Get(tBufPtr *psBufPtr)
     return (((uint8_t *) psBufPtr->psBuf->payload)[psBufPtr->ui32Idx]);
 }
 
-//****************************************************************************
-//
-// Get 4 byte from a parsing pointer.
-//
-//****************************************************************************
-static uint32_t BufData32Get(tBufPtr *psBufPtr)
-{
-    return (((uint32_t *) psBufPtr->psBuf->payload)[psBufPtr->ui32Idx]);
-}
-
 //*****************************************************************************
 //
 // Increment a parsing pointer by a given value.
@@ -445,11 +435,8 @@ int32_t JSONParseGET(uint32_t ui32Index, tUserReport *psUserReport,
     {
         if (GetField("audio", &sBufPtr) != 0)
         {
-            //Ainda vou arrumar para int por strtoint()
-            int32_t i32OutIdx;
-
             //
-            // The value should always start with a " char or something went wrong.
+            // The value should always start with a [ char or something went wrong.
             //
             if (BufData8Get(&sBufPtr) != '[')
             {
@@ -466,14 +453,15 @@ int32_t JSONParseGET(uint32_t ui32Index, tUserReport *psUserReport,
 
             //for (i32OutIdx = 0; i32OutIdx < sizeof(psUserReport->audio);)
             //{
-                GetFieldValueString(&sBufPtr, pcTemp, sizeof(pcTemp));
+            //GetFieldValueString(&sBufPtr, pcTemp, sizeof(pcTemp));
+            //psUserReport->audio[0] = ustrtoul(pcTemp[0], &pEnd, 10);
+            //Para inteiro
+            psUserReport->audio[0] = GetFieldValueInt(&sBufPtr);
 
-            psUserReport->audio[0] = BufData8Get(pcTemp);
-
-                //if (BufPtrInc(&sBufPtr, 1) != 1)
-                //{
-                 //   return (-1);
-                //}
+            //if (BufPtrInc(&sBufPtr, 1) != 1)
+            //{
+            //   return (-1);
+            //}
             //}
 
 
