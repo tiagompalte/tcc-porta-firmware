@@ -357,7 +357,7 @@ int32_t JSONParseGET(uint32_t ui32Index, tUserReport *psUserReport,
     tBufPtr sBufPtr, sBufList, sBufTemp;
     char pcCode[4];
     char pcTemp[4];
-    const char *pEnd;
+    int i32OutIdx;
     int32_t i32Items, i32Code;
 
     //
@@ -451,20 +451,26 @@ int32_t JSONParseGET(uint32_t ui32Index, tUserReport *psUserReport,
                 return (-1);
             }
 
-            //for (i32OutIdx = 0; i32OutIdx < sizeof(psUserReport->audio);)
-            //{
-            //GetFieldValueString(&sBufPtr, pcTemp, sizeof(pcTemp));
-            //psUserReport->audio[0] = ustrtoul(pcTemp[0], &pEnd, 10);
-            //Para inteiro
-            psUserReport->audio[0] = GetFieldValueInt(&sBufPtr);
+            for (i32OutIdx = 0; i32OutIdx < sizeof(psUserReport->audio);)
+            {
+                //GetFieldValueString(&sBufPtr, pcTemp, sizeof(pcTemp));
+                //psUserReport->audio[0] = ustrtoul(pcTemp[0], &pEnd, 10);
+                psUserReport->audio[i32OutIdx] = GetFieldValueInt(&sBufPtr);
 
-            //if (BufPtrInc(&sBufPtr, 1) != 1)
-            //{
-            //   return (-1);
-            //}
-            //}
+                //
+                // Skip the , char.
+                //
 
+                if (BufData8Get(&sBufPtr) != ',')
+                {
+                    return (-1);
+                }
 
+                if (BufPtrInc(&sBufPtr, 1) != 1)
+                {
+                    return (-1);
+                }
+            }
 
             i32Items++;
             psUserReport->status = 200;
