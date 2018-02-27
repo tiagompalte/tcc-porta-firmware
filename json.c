@@ -451,11 +451,12 @@ int32_t JSONParseGET(uint32_t ui32Index, tUserReport *psUserReport,
                 return (-1);
             }
 
-            for (i32OutIdx = 0; i32OutIdx < sizeof(psUserReport->audio);)
+            for (i32OutIdx = 0; i32OutIdx < sizeof(bufferDatabase);)
             {
                 //GetFieldValueString(&sBufPtr, pcTemp, sizeof(pcTemp));
                 //psUserReport->audio[0] = ustrtoul(pcTemp[0], &pEnd, 10);
-                psUserReport->audio[i32OutIdx] = GetFieldValueInt(&sBufPtr);
+                //psUserReport->audio[i32OutIdx] = GetFieldValueInt(&sBufPtr);
+                bufferDatabase[i32OutIdx] = GetFieldValueInt(&sBufPtr);
 
                 //
                 // Skip the , char.
@@ -477,7 +478,8 @@ int32_t JSONParseGET(uint32_t ui32Index, tUserReport *psUserReport,
         }
         else
         {
-            psUserReport->audio[0] = ' ';
+            //psUserReport->audio[0] = ' ';
+        	bufferDatabase[0] = ' ';
             psUserReport->status = 400;
             i32Items++;
         }
@@ -918,8 +920,10 @@ int32_t JSONParseGETteste(uint32_t ui32Index, tUserReport *psUserReport,
     {
         if (GetField("hash", &sBufPtr) != 0)
         {
-            GetFieldValueString(&sBufPtr, psUserReport->audio,
-                                sizeof(psUserReport->audio));
+           // GetFieldValueString(&sBufPtr, psUserReport->audio,
+           //                     sizeof(psUserReport->audio));
+            GetFieldValueString(&sBufPtr, bufferDatabase,
+                                            sizeof(bufferDatabase));
             i32Items++;
             psUserReport->status = 200;
         }
