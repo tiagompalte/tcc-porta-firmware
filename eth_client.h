@@ -57,7 +57,7 @@ typedef struct
     //
     // User voice.
     //
-    uint8_t audio[NUM_AMOSTRAS + 2*DELAY_MAX];
+    //uint8_t audio[NUM_AMOSTRAS + 2*DELAY_MAX];
 
     //
     // The current user status.
