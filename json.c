@@ -425,11 +425,30 @@ int32_t JSONParseGET(uint32_t ui32Index, tUserReport *psUserReport,
     //
     // Save the list pointer.
     //
+
     sBufList = sBufPtr;
 
-    //
-    // Get the hash.
-    //
+    if (GetField("data", &sBufPtr) != 0)
+            {
+                if (GetField("nome", &sBufPtr) != 0)
+                {
+                    GetFieldValueString(&sBufPtr, psUserReport->name,
+                                        sizeof(psUserReport->name));
+                    i32Items++;
+                    psUserReport->status = 200;
+                }
+                else
+                {
+                    psUserReport->name[0] = ' ';
+                    psUserReport->status = 400;
+                    i32Items++;
+                }
+            }
+            else
+            {
+                psUserReport->status = 404;
+            }
+            sBufPtr = sBufList;
 
     if (GetField("data", &sBufPtr) != 0)
     {
@@ -491,27 +510,7 @@ int32_t JSONParseGET(uint32_t ui32Index, tUserReport *psUserReport,
     sBufPtr = sBufList;
 
 
-    if (GetField("data", &sBufPtr) != 0)
-        {
-            if (GetField("nome", &sBufPtr) != 0)
-            {
-                GetFieldValueString(&sBufPtr, psUserReport->name,
-                                    sizeof(psUserReport->name));
-                i32Items++;
-                psUserReport->status = 200;
-            }
-            else
-            {
-                psUserReport->name[0] = ' ';
-                psUserReport->status = 400;
-                i32Items++;
-            }
-        }
-        else
-        {
-            psUserReport->status = 404;
-        }
-        sBufPtr = sBufList;
+
 
     return (i32Items);
 }
