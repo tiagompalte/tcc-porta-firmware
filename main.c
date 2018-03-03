@@ -358,15 +358,6 @@ main(void)
 
     MAP_TimerEnable(TIMER0_BASE, TIMER_A); // Timer ADC
 
-    /*
-    //// TESTES
-     tWavFile wavTeste;
-
-    WavOpen("Default.wav", &wavTeste);
-    WavRead(&wavTeste, bufferDatabase, 144000/6);
-    WavClose(&wavTeste); */
-
-
     //HardwareInit();
 
 	PinoutSet(true, false);
@@ -423,5 +414,21 @@ main(void)
                 conversionEnd = 0;
           }
     }
+
+	/*
+	 * SEQUENCIA DO LOOP PRINCIPAL
+	 * 1. IDLE
+	 * 2. RFID DETECTADO
+	 * 3. INICIA COMUNICACAO P VERIFICAR SE USUARIO EXISTE
+	 * 4. SE USUARIO NAO ENCONTRADO -> MSG ERRO
+	 * 	  SE USUARIO ENCONTRADO -> INICIAR COLETA DE AUDIO
+	 * 5. PROCESSAR AUDIO
+	 * 6. SE AUDIO CONFIRMADO -> ACIONAR TRANCA
+	 * 	  SE AUDIO NAO CONFIRMADO -> MSG ERRO
+	 * 7. TIMEOUT DE 10SEGS P REACIONAR A TRANCA
+	 * 8. IDLE
+	 *
+	 */
+
 }
 
