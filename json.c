@@ -41,6 +41,8 @@ typedef struct
     uint32_t ui32Idx;
 } tBufPtr;
 
+int i32OutIdx;
+
 //****************************************************************************
 //
 // Initialize a buffer parsing pointer.
@@ -356,8 +358,7 @@ int32_t JSONParseGET(uint32_t ui32Index, tUserReport *psUserReport,
 {
     tBufPtr sBufPtr, sBufList, sBufTemp;
     char pcCode[4];
-    char pcTemp[4];
-    int i32OutIdx;
+    //char pcTemp[4];
     int32_t i32Items, i32Code;
 
     //
@@ -470,7 +471,7 @@ int32_t JSONParseGET(uint32_t ui32Index, tUserReport *psUserReport,
                 return (-1);
             }
 
-            for (i32OutIdx = 0; i32OutIdx < sizeof(bufferDatabase);)
+            for (i32OutIdx = 0; i32OutIdx < sizeof(bufferDatabase);i32OutIdx++)
             {
                 //GetFieldValueString(&sBufPtr, pcTemp, sizeof(pcTemp));
                 //psUserReport->audio[0] = ustrtoul(pcTemp[0], &pEnd, 10);
@@ -921,8 +922,8 @@ int32_t JSONParseGETteste(uint32_t ui32Index, tUserReport *psUserReport,
         {
            // GetFieldValueString(&sBufPtr, psUserReport->audio,
            //                     sizeof(psUserReport->audio));
-            GetFieldValueString(&sBufPtr, bufferDatabase,
-                                            sizeof(bufferDatabase));
+            //GetFieldValueString(&sBufPtr, bufferDatabase,
+             //                               sizeof(bufferDatabase));
             i32Items++;
             psUserReport->status = 200;
         }

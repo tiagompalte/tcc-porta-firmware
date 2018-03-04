@@ -1494,7 +1494,7 @@ int32_t requestPOST(const char *pcQuery, tUserReport *psUserReport,
     i32Idx = MergeRequest(i32Idx, g_Accept, sizeof(g_Accept), false);
 
     //
-    // Append the " Host: localhost:8090" string.
+    // Append the " Host: localhost:portaeletronica-api.herokuapp.com" string.
     //
 
     i32Idx = MergeRequest(i32Idx, g_host, sizeof(g_host), false);
