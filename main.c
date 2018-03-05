@@ -72,7 +72,6 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/timer.h"
 #include "driverlib/ssi.h"
-#include "utils/wavfile.h"
 
 #define GET         0
 #define POST        1
@@ -125,7 +124,7 @@ void ISR_ADC0() {
 
     if (indiceAmostra <= NUM_AMOSTRAS + DELAY_MAX - 1) {
       bufferConversao[indiceAmostra] = (uint8_t) bufferCapture[0];
-      bufferDatabase[indiceAmostra] = (uint8_t) bufferCapture[0];
+      //bufferDatabase[indiceAmostra] = (uint8_t) bufferCapture[0];
       indiceAmostra++;
     } else {
       MAP_TimerDisable(TIMER0_BASE, TIMER_A);
@@ -172,6 +171,7 @@ void GPIOInit() {
     MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);
     while(!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOD));
     MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);
+    while(!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOE));
     MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
     while(!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOF));
     MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOG);
@@ -356,8 +356,6 @@ main(void)
     timerInit();
     interruptInit();
 
-    MAP_TimerEnable(TIMER0_BASE, TIMER_A); // Timer ADC
-
     //HardwareInit();
 
 	PinoutSet(true, false);
@@ -393,6 +391,7 @@ main(void)
         CommunicationLog();
 	}
 
+    MAP_TimerEnable(TIMER0_BASE, TIMER_A); // Timer ADC
 
     while (1) {
             // AGUARDA VERIFICACAO DO RFID
