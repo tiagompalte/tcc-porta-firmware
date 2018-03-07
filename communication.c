@@ -464,10 +464,11 @@ int CommunicationLog()
 
     while ((g_psUserInfo.sReport.status != OK) && (try < 3))
     {
+        g_ui32Delay = 500;
         Communication(POSTACCESS, "38");
         g_psUserInfo.t_error[2][try] = g_psUserInfo.sReport.status;
         try++;
-        g_ui32Delay = 500;
+
     }
     if (try == 3)
     {

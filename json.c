@@ -471,7 +471,7 @@ int32_t JSONParseGET(uint32_t ui32Index, tUserReport *psUserReport,
                 return (-1);
             }
 
-            for (i32OutIdx = DELAY_MAX; i32OutIdx < sizeof(bufferDatabase-(2*DELAY_MAX)); i32OutIdx++)
+            for (i32OutIdx = 0; i32OutIdx < sizeof(bufferDatabase); i32OutIdx++)
             {
                 //GetFieldValueString(&sBufPtr, pcTemp, sizeof(pcTemp));
                 //psUserReport->audio[0] = ustrtoul(pcTemp[0], &pEnd, 10);

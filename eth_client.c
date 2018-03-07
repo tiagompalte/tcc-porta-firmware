@@ -34,7 +34,7 @@
 //
 //*****************************************************************************
 #define n_Port                  80
-#define hostName                "23.23.128.216"
+#define hostName                "portaeletronica-api.herokuapp.com"
 //#define n_Port                  3000
 //#define hostName                "192.168.100.2"
 
