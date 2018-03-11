@@ -41,7 +41,7 @@ typedef struct
     uint32_t ui32Idx;
 } tBufPtr;
 
-int i32OutIdx;
+int i32JSONIdx;
 
 //****************************************************************************
 //
@@ -471,12 +471,18 @@ int32_t JSONParseGET(uint32_t ui32Index, tUserReport *psUserReport,
                 return (-1);
             }
 
-            for (i32OutIdx = 0; i32OutIdx < ((sizeof(bufferDatabase))-DELAY_MAX); i32OutIdx++)
+            int teste;
+            int tam = sizeof(bufferDatabase) - DELAY_MAX;
+            for (i32JSONIdx = 0; i32JSONIdx < tam; i32JSONIdx++)
             {
                 //GetFieldValueString(&sBufPtr, pcTemp, sizeof(pcTemp));
                 //psUserReport->audio[0] = ustrtoul(pcTemp[0], &pEnd, 10);
                 //psUserReport->audio[i32OutIdx] = GetFieldValueInt(&sBufPtr);
-                bufferDatabase[i32OutIdx + DELAY_MAX] = GetFieldValueInt(&sBufPtr);
+                bufferDatabase[i32JSONIdx + DELAY_MAX] = GetFieldValueInt(&sBufPtr);
+                if (i32JSONIdx > 2500) {
+                	teste = bufferDatabase[i32JSONIdx + DELAY_MAX];
+                }
+                //bufferConversao[i32OutIdx + DELAY_MAX] = bufferDatabase[i32OutIdx + DELAY_MAX];
 
                 //
                 // Skip the , char.
