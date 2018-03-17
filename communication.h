@@ -42,7 +42,7 @@ extern "C"
 #define POST                1
 #define POSTKEY             2
 #define POSTACCESS          3
-#define GETteste            4
+#define PostSendAudio       4
 #define errorConnection    -1
 #define errorKey            400
 #define errorConnect        404

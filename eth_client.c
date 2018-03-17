@@ -38,7 +38,6 @@
 //#define n_Port                  3000
 //#define hostName                "192.168.100.2"
 
-
 //*****************************************************************************
 //
 // Flag indexes for g_sEnet.ui32Flags
@@ -60,8 +59,7 @@
 #define GET                     2
 #define POSTKEY                 3
 #define POSTACCESS              4
-#define GETteste                5
-
+#define PostSendAudio           5
 
 //*****************************************************************************
 //
@@ -113,8 +111,7 @@ struct
     unsigned long ulRequest;
 
     tEventFunction pfnEvent;
-}
-g_sEnet;
+} g_sEnet;
 
 //*****************************************************************************
 //
@@ -131,21 +128,15 @@ extern uint32_t g_ui32SysClock;
 //
 //*****************************************************************************
 
-static const char getRequest[] =
-        "GET /api/usuarios/rfid/";//rfid/codigo do usuario
+static const char getRequest[] = "GET /api/usuarios/rfid/"; //rfid/codigo do usuario
 
-static const char getRequestTeste[] =
-        "GET /comments";
+static const char postRequestSendAudio[] = "POST /api/usuarios/audio";
 
-static const char postRequest[] =
-        "POST /token";
+static const char postRequest[] = "POST /token";
 
-static const char postRequestAcess[] =
-        "POST /api/usuarios/confirmacaoAcesso/";
+static const char postRequestAcess[] = "POST /api/usuarios/confirmacaoAcesso/";
 
-static const char postRequestKey[] =
-        "POST /api/usuarios/autenticacaoSenha";
-
+static const char postRequestKey[] = "POST /api/usuarios/autenticacaoSenha";
 
 static char g_cHTTP11[] = " HTTP/1.1\r\n";
 
@@ -205,8 +196,7 @@ struct
     enum
     {
         iFormatJSON
-    }
-    eFormat;
+    } eFormat;
 
     //
     // The application provided callback function.
@@ -227,16 +217,14 @@ struct
     // The number of valid bytes in the request.
     //
     uint32_t ui32RequestSize;
-}
-g_sUser;
+} g_sUser;
 
 //*****************************************************************************
 //
 // Close an active connection.
 //
 //*****************************************************************************
-void
-EthClientReset(void)
+void EthClientReset(void)
 {
     //
     // No longer have a link.
@@ -257,7 +245,7 @@ EthClientReset(void)
     //
     // Deallocate the TCP structure if it was already allocated.
     //
-    if(g_sEnet.psTCP)
+    if (g_sEnet.psTCP)
     {
         //
         // Clear out all of the TCP callbacks.
@@ -287,8 +275,7 @@ EthClientReset(void)
 // \return None.
 //
 //*****************************************************************************
-static void
-TCPError(void *vPArg, err_t iErr)
+static void TCPError(void *vPArg, err_t iErr)
 {
 }
 
@@ -308,18 +295,18 @@ TCPError(void *vPArg, err_t iErr)
 // \return This function will return an lwIP defined error code.
 //
 //*****************************************************************************
-static err_t
-TCPReceive(void *pvArg, struct tcp_pcb *psPcb, struct pbuf *psBuf, err_t iErr)
+static err_t TCPReceive(void *pvArg, struct tcp_pcb *psPcb, struct pbuf *psBuf,
+                        err_t iErr)
 {
     struct pbuf *psBufCur;
     int32_t i32Items;
 
-    if(psBuf == 0)
+    if (psBuf == 0)
     {
         //
         // Tell the application that the connection was closed.
         //
-        if(g_sUser.pfnEvent)
+        if (g_sUser.pfnEvent)
         {
             g_sUser.pfnEvent(ETH_EVENT_CLOSE, 0, 0);
             g_sUser.pfnEvent = 0;
@@ -330,19 +317,19 @@ TCPReceive(void *pvArg, struct tcp_pcb *psPcb, struct pbuf *psBuf, err_t iErr)
         //
         tcp_close(psPcb);
 
-        if(psPcb == g_sEnet.psTCP)
+        if (psPcb == g_sEnet.psTCP)
         {
             g_sEnet.psTCP = 0;
         }
 
         g_sEnet.eState = iEthIdle;
 
-        return(ERR_OK);
+        return (ERR_OK);
     }
 
-    if(g_sEnet.eState == iEthQueryWait)
+    if (g_sEnet.eState == iEthQueryWait)
     {
-        if(g_sEnet.ulRequest == POST)
+        if (g_sEnet.ulRequest == POST)
         {
             //
             // Read items from the buffer.
@@ -352,12 +339,12 @@ TCPReceive(void *pvArg, struct tcp_pcb *psPcb, struct pbuf *psBuf, err_t iErr)
             //
             // Make sure some items were found.
             //
-            if(i32Items > 0)
+            if (i32Items > 0)
             {
-                if(g_sUser.pfnEvent)
+                if (g_sUser.pfnEvent)
                 {
                     g_sUser.pfnEvent(ETH_EVENT_RECEIVE,
-                                        (void *)g_sUser.psUserReport, 0);
+                                     (void *) g_sUser.psUserReport, 0);
 
                     //
                     // Clear the event function and return to the idle state.
@@ -365,9 +352,9 @@ TCPReceive(void *pvArg, struct tcp_pcb *psPcb, struct pbuf *psBuf, err_t iErr)
                     g_sEnet.eState = iEthIdle;
                 }
             }
-            else if(i32Items < 0)
+            else if (i32Items < 0)
             {
-                if(g_sUser.pfnEvent)
+                if (g_sUser.pfnEvent)
                 {
                     //
                     // This was not a valid request.
@@ -381,19 +368,19 @@ TCPReceive(void *pvArg, struct tcp_pcb *psPcb, struct pbuf *psBuf, err_t iErr)
                 }
             }
         }
-        else if(g_sEnet.ulRequest == POSTKEY)
+        else if (g_sEnet.ulRequest == POSTKEY)
         {
             //
             // Read items from the buffer.
             //
             i32Items = JSONParsePOSTKEY(0, g_sUser.psUserReport, psBuf);
 
-            if(i32Items > 0)
+            if (i32Items > 0)
             {
-                if(g_sUser.pfnEvent)
+                if (g_sUser.pfnEvent)
                 {
                     g_sUser.pfnEvent(ETH_EVENT_RECEIVE,
-                                        (void *)g_sUser.psUserReport, 0);
+                                     (void *) g_sUser.psUserReport, 0);
 
                     //
                     // Clear the event function and return to the idle state.
@@ -401,9 +388,9 @@ TCPReceive(void *pvArg, struct tcp_pcb *psPcb, struct pbuf *psBuf, err_t iErr)
                     g_sEnet.eState = iEthIdle;
                 }
             }
-            else if(i32Items < 0)
+            else if (i32Items < 0)
             {
-                if(g_sUser.pfnEvent)
+                if (g_sUser.pfnEvent)
                 {
                     //
                     // This was not a valid request.
@@ -417,19 +404,19 @@ TCPReceive(void *pvArg, struct tcp_pcb *psPcb, struct pbuf *psBuf, err_t iErr)
                 }
             }
         }
-        else if(g_sEnet.ulRequest == POSTACCESS)
+        else if (g_sEnet.ulRequest == POSTACCESS)
         {
             //
             // Read items from the buffer.
             //
             i32Items = JSONParsePOSTACCESS(0, g_sUser.psUserReport, psBuf);
 
-            if(i32Items > 0)
+            if (i32Items > 0)
             {
-                if(g_sUser.pfnEvent)
+                if (g_sUser.pfnEvent)
                 {
                     g_sUser.pfnEvent(ETH_EVENT_RECEIVE,
-                                        (void *)g_sUser.psUserReport, 0);
+                                     (void *) g_sUser.psUserReport, 0);
 
                     //
                     // Clear the event function and return to the idle state.
@@ -437,9 +424,9 @@ TCPReceive(void *pvArg, struct tcp_pcb *psPcb, struct pbuf *psBuf, err_t iErr)
                     g_sEnet.eState = iEthIdle;
                 }
             }
-            else if(i32Items < 0)
+            else if (i32Items < 0)
             {
-                if(g_sUser.pfnEvent)
+                if (g_sUser.pfnEvent)
                 {
                     //
                     // This was not a valid request.
@@ -453,19 +440,19 @@ TCPReceive(void *pvArg, struct tcp_pcb *psPcb, struct pbuf *psBuf, err_t iErr)
                 }
             }
         }
-        else if(g_sEnet.ulRequest == GET)
+        else if (g_sEnet.ulRequest == GET)
         {
             //
             // Read items from the buffer.
             //
             i32Items = JSONParseGET(0, g_sUser.psUserReport, psBuf);
 
-            if(i32Items > 0)
+            if (i32Items > 0)
             {
-                if(g_sUser.pfnEvent)
+                if (g_sUser.pfnEvent)
                 {
                     g_sUser.pfnEvent(ETH_EVENT_RECEIVE,
-                                        (void *)g_sUser.psUserReport, 0);
+                                     (void *) g_sUser.psUserReport, 0);
 
                     //
                     // Clear the event function and return to the idle state.
@@ -473,9 +460,9 @@ TCPReceive(void *pvArg, struct tcp_pcb *psPcb, struct pbuf *psBuf, err_t iErr)
                     g_sEnet.eState = iEthIdle;
                 }
             }
-            else if(i32Items < 0)
+            else if (i32Items < 0)
             {
-                if(g_sUser.pfnEvent)
+                if (g_sUser.pfnEvent)
                 {
                     //
                     // This was not a valid request.
@@ -488,19 +475,20 @@ TCPReceive(void *pvArg, struct tcp_pcb *psPcb, struct pbuf *psBuf, err_t iErr)
                     g_sEnet.eState = iEthIdle;
                 }
             }
-        } else if(g_sEnet.ulRequest == GETteste)
+        }
+        else if (g_sEnet.ulRequest == PostSendAudio)
         {
             //
             // Read items from the buffer.
             //
-            i32Items = JSONParseGETteste(0, g_sUser.psUserReport, psBuf);
+            i32Items = JSONParsePostSendAudio(0, g_sUser.psUserReport, psBuf);
 
-            if(i32Items > 0)
+            if (i32Items > 0)
             {
-                if(g_sUser.pfnEvent)
+                if (g_sUser.pfnEvent)
                 {
                     g_sUser.pfnEvent(ETH_EVENT_RECEIVE,
-                                        (void *)g_sUser.psUserReport, 0);
+                                     (void *) g_sUser.psUserReport, 0);
 
                     //
                     // Clear the event function and return to the idle state.
@@ -508,9 +496,9 @@ TCPReceive(void *pvArg, struct tcp_pcb *psPcb, struct pbuf *psBuf, err_t iErr)
                     g_sEnet.eState = iEthIdle;
                 }
             }
-            else if(i32Items < 0)
+            else if (i32Items < 0)
             {
-                if(g_sUser.pfnEvent)
+                if (g_sUser.pfnEvent)
                 {
                     //
                     // This was not a valid request.
@@ -541,7 +529,7 @@ TCPReceive(void *pvArg, struct tcp_pcb *psPcb, struct pbuf *psBuf, err_t iErr)
     //
     // Free the buffers used since they have been processed.
     //
-    while(psBufCur->len != 0)
+    while (psBufCur->len != 0)
     {
         //
         // Indicate that you have received and processed this set of TCP data.
@@ -556,7 +544,7 @@ TCPReceive(void *pvArg, struct tcp_pcb *psPcb, struct pbuf *psBuf, err_t iErr)
         //
         // Terminate if there are no more buffers.
         //
-        if(psBufCur == 0)
+        if (psBufCur == 0)
         {
             break;
         }
@@ -570,7 +558,7 @@ TCPReceive(void *pvArg, struct tcp_pcb *psPcb, struct pbuf *psBuf, err_t iErr)
     //
     // Return.
     //
-    return(ERR_OK);
+    return (ERR_OK);
 }
 
 //*****************************************************************************
@@ -587,8 +575,7 @@ TCPReceive(void *pvArg, struct tcp_pcb *psPcb, struct pbuf *psBuf, err_t iErr)
 // \return This function will return an lwIP defined error code.
 //
 //*****************************************************************************
-static err_t
-TCPSent(void *pvArg, struct tcp_pcb *psPcb, u16_t ui16Len)
+static err_t TCPSent(void *pvArg, struct tcp_pcb *psPcb, u16_t ui16Len)
 {
     //
     // Return OK.
@@ -610,13 +597,12 @@ TCPSent(void *pvArg, struct tcp_pcb *psPcb, u16_t ui16Len)
 // \return This function will return an lwIP defined error code.
 //
 //*****************************************************************************
-static err_t
-TCPConnected(void *pvArg, struct tcp_pcb *psPcb, err_t iErr)
+static err_t TCPConnected(void *pvArg, struct tcp_pcb *psPcb, err_t iErr)
 {
     //
     // Check if there was a TCP error.
     //
-    if(iErr != ERR_OK)
+    if (iErr != ERR_OK)
     {
         //
         // Clear out all of the TCP callbacks.
@@ -630,7 +616,7 @@ TCPConnected(void *pvArg, struct tcp_pcb *psPcb, err_t iErr)
         //
         tcp_close(psPcb);
 
-        if(psPcb == g_sEnet.psTCP)
+        if (psPcb == g_sEnet.psTCP)
         {
             g_sEnet.psTCP = 0;
         }
@@ -664,7 +650,7 @@ TCPConnected(void *pvArg, struct tcp_pcb *psPcb, err_t iErr)
     //
     // Return a success code.
     //
-    return(ERR_OK);
+    return (ERR_OK);
 }
 
 //*****************************************************************************
@@ -676,8 +662,7 @@ TCPConnected(void *pvArg, struct tcp_pcb *psPcb, err_t iErr)
 // \return None.
 //
 //*****************************************************************************
-err_t
-EthClientTCPConnect(uint32_t ui32Port)
+err_t EthClientTCPConnect(uint32_t ui32Port)
 {
     err_t eTCPReturnCode;
 
@@ -686,7 +671,7 @@ EthClientTCPConnect(uint32_t ui32Port)
     //
     HWREGBITW(&g_sEnet.ui32Flags, FLAG_TIMER_TCP_EN) = 1;
 
-    if(g_sEnet.psTCP)
+    if (g_sEnet.psTCP)
     {
         //
         // Initially clear out all of the TCP callbacks.
@@ -709,7 +694,7 @@ EthClientTCPConnect(uint32_t ui32Port)
     //
     // Check if you need to go through a proxy.
     //
-    if(g_sEnet.pcProxyName != 0)
+    if (g_sEnet.pcProxyName != 0)
     {
         //
         // Attempt to connect through the proxy server.
@@ -726,7 +711,7 @@ EthClientTCPConnect(uint32_t ui32Port)
                                      ui32Port, TCPConnected);
     }
 
-    return(eTCPReturnCode);
+    return (eTCPReturnCode);
 }
 
 //*****************************************************************************
@@ -738,8 +723,7 @@ EthClientTCPConnect(uint32_t ui32Port)
 // \return None.
 //
 //*****************************************************************************
-void
-EthClientTCPDisconnect(void)
+void EthClientTCPDisconnect(void)
 {
     //
     // No longer have a link.
@@ -749,7 +733,7 @@ EthClientTCPDisconnect(void)
     //
     // Deallocate the TCP structure if it was already allocated.
     //
-    if(g_sEnet.psTCP)
+    if (g_sEnet.psTCP)
     {
         //
         // Close the TCP connection.
@@ -774,13 +758,13 @@ EthClientTCPDisconnect(void)
 // \return None.
 //
 //*****************************************************************************
-static void
-DNSServerFound(const char *pcName, struct ip_addr *psIPAddr, void *vpArg)
+static void DNSServerFound(const char *pcName, struct ip_addr *psIPAddr,
+                           void *vpArg)
 {
     //
     // Check if a valid DNS server address was found.
     //
-    if(psIPAddr != NULL)
+    if (psIPAddr != NULL)
     {
         //
         // Copy the returned IP address into a global IP address.
@@ -806,8 +790,7 @@ DNSServerFound(const char *pcName, struct ip_addr *psIPAddr, void *vpArg)
 // Required by lwIP library to support any host-related timer functions.
 //
 //*****************************************************************************
-void
-lwIPHostTimerHandler(void)
+void lwIPHostTimerHandler(void)
 {
 }
 
@@ -824,18 +807,17 @@ lwIPHostTimerHandler(void)
 // \return the lwIP error code.
 //
 //*****************************************************************************
-err_t
-EthClientSend(char *pcRequest, uint32_t ui32Size)
+err_t EthClientSend(char *pcRequest, uint32_t ui32Size)
 {
     err_t eError;
 
     eError = tcp_write(g_sEnet.psTCP, pcRequest, ui32Size,
-                       TCP_WRITE_FLAG_COPY);
+    TCP_WRITE_FLAG_COPY);
 
     //
     //  Write data for sending (but does not send it immediately).
     //
-    if(eError == ERR_OK)
+    if (eError == ERR_OK)
     {
         //
         // Find out what we can send and send it
@@ -843,7 +825,7 @@ EthClientSend(char *pcRequest, uint32_t ui32Size)
         tcp_output(g_sEnet.psTCP);
     }
 
-    return(eError);
+    return (eError);
 }
 
 //*****************************************************************************
@@ -856,13 +838,12 @@ EthClientSend(char *pcRequest, uint32_t ui32Size)
 // \return None.
 //
 //*****************************************************************************
-err_t
-EthClientDHCPConnect(void)
+err_t EthClientDHCPConnect(void)
 {
     //
     // Check if the DHCP has already been started.
     //
-    if(HWREGBITW(&g_sEnet.ui32Flags, FLAG_DHCP_STARTED) == 0)
+    if (HWREGBITW(&g_sEnet.ui32Flags, FLAG_DHCP_STARTED) == 0)
     {
         //
         // Set the DCHP started flag.
@@ -900,14 +881,13 @@ EthClientDHCPConnect(void)
 // \return None.
 //
 //*****************************************************************************
-int32_t
-EthClientDNSResolve(const char *pcName)
+int32_t EthClientDNSResolve(const char *pcName)
 {
     err_t iRet;
 
-    if(HWREGBITW(&g_sEnet.ui32Flags, FLAG_TIMER_DNS_EN))
+    if (HWREGBITW(&g_sEnet.ui32Flags, FLAG_TIMER_DNS_EN))
     {
-        return(ERR_INPROGRESS);
+        return (ERR_INPROGRESS);
     }
 
     //
@@ -930,7 +910,7 @@ EthClientDNSResolve(const char *pcName)
     // ERR_INPROGRESS is returned, the DNS request has been queued and will be
     // sent to the DNS server.
     //
-    if(iRet == ERR_OK)
+    if (iRet == ERR_OK)
     {
         //
         // Stop calling the DNS timer function.
@@ -941,7 +921,7 @@ EthClientDNSResolve(const char *pcName)
     //
     // Return host name not found.
     //
-    return(iRet);
+    return (iRet);
 }
 
 //*****************************************************************************
@@ -954,13 +934,12 @@ EthClientDNSResolve(const char *pcName)
 // \return Returns the assigned IP address for this interface.
 //
 //*****************************************************************************
-uint32_t
-EthClientAddrGet(void)
+uint32_t EthClientAddrGet(void)
 {
     //
     // Return IP.
     //
-    return(lwIPLocalIPAddrGet());
+    return (lwIPLocalIPAddrGet());
 }
 
 //*****************************************************************************
@@ -974,13 +953,12 @@ EthClientAddrGet(void)
 // \return Returns the weather server IP address for this interface.
 //
 //*****************************************************************************
-uint32_t
-EthClientServerAddrGet(void)
+uint32_t EthClientServerAddrGet(void)
 {
     //
     // Return IP.
     //
-    return((uint32_t)g_sEnet.sServerIP.addr);
+    return ((uint32_t) g_sEnet.sServerIP.addr);
 }
 
 //*****************************************************************************
@@ -996,12 +974,11 @@ EthClientServerAddrGet(void)
 // \return Returns the weather server IP address for this interface.
 //
 //*****************************************************************************
-void
-EthClientMACAddrGet(uint8_t *pui8MACAddr)
+void EthClientMACAddrGet(uint8_t *pui8MACAddr)
 {
     int32_t iIdx;
 
-    for(iIdx = 0; iIdx < 6; iIdx++)
+    for (iIdx = 0; iIdx < 6; iIdx++)
     {
         pui8MACAddr[iIdx] = g_sEnet.pui8MACAddr[iIdx];
     }
@@ -1023,8 +1000,7 @@ EthClientMACAddrGet(uint8_t *pui8MACAddr)
 // \return None.
 //
 //*****************************************************************************
-void
-EthClientProxySet(const char *pcProxyName)
+void EthClientProxySet(const char *pcProxyName)
 {
     //
     // Save the new proxy string.
@@ -1047,8 +1023,7 @@ EthClientProxySet(const char *pcProxyName)
 // \return None.
 //
 //*****************************************************************************
-void
-EthClientInit(tEventFunction pfnEvent)
+void EthClientInit(tEventFunction pfnEvent)
 {
     uint32_t ui32User0, ui32User1;
 
@@ -1096,23 +1071,22 @@ EthClientInit(tEventFunction pfnEvent)
 // \return None.
 //
 //*****************************************************************************
-void
-EthClientTick(uint32_t ui32TickMS)
+void EthClientTick(uint32_t ui32TickMS)
 {
     uint32_t ui32IPAddr;
     int32_t i32Ret;
 
-    if(HWREGBITW(&g_sEnet.ui32Flags, FLAG_TIMER_DHCP_EN))
+    if (HWREGBITW(&g_sEnet.ui32Flags, FLAG_TIMER_DHCP_EN))
     {
         lwIPTimer(ui32TickMS);
     }
 
-    if(HWREGBITW(&g_sEnet.ui32Flags, FLAG_TIMER_DNS_EN))
+    if (HWREGBITW(&g_sEnet.ui32Flags, FLAG_TIMER_DNS_EN))
     {
         dns_tmr();
     }
 
-    if(HWREGBITW(&g_sEnet.ui32Flags, FLAG_TIMER_TCP_EN))
+    if (HWREGBITW(&g_sEnet.ui32Flags, FLAG_TIMER_TCP_EN))
     {
         tcp_tmr();
     }
@@ -1120,8 +1094,8 @@ EthClientTick(uint32_t ui32TickMS)
     //
     // Check for loss of link.
     //
-    if((g_sEnet.eState != iEthNoConnection) &&
-       (lwIPLocalIPAddrGet() == 0xffffffff))
+    if ((g_sEnet.eState != iEthNoConnection)
+            && (lwIPLocalIPAddrGet() == 0xffffffff))
     {
         //
         // Reset the connection due to a loss of link.
@@ -1133,19 +1107,19 @@ EthClientTick(uint32_t ui32TickMS)
         //
         g_sEnet.pfnEvent(ETH_EVENT_DISCONNECT, 0, 0);
     }
-    else if(g_sEnet.eState == iEthNoConnection)
+    else if (g_sEnet.eState == iEthNoConnection)
     {
         //
         // Once link is detected start DHCP.
         //
-        if(lwIPLocalIPAddrGet() != 0xffffffff)
+        if (lwIPLocalIPAddrGet() != 0xffffffff)
         {
             EthClientDHCPConnect();
 
             g_sEnet.eState = iEthDHCPWait;
         }
     }
-    else if(g_sEnet.eState == iEthDHCPWait)
+    else if (g_sEnet.eState == iEthDHCPWait)
     {
         //
         // Get IP address.
@@ -1156,7 +1130,7 @@ EthClientTick(uint32_t ui32TickMS)
         // If IP Address has not yet been assigned, update the display
         // accordingly.
         //
-        if((ui32IPAddr != 0xffffffff) && (ui32IPAddr != 0))
+        if ((ui32IPAddr != 0xffffffff) && (ui32IPAddr != 0))
         {
             //
             // Update the DHCP IP address.
@@ -1171,9 +1145,9 @@ EthClientTick(uint32_t ui32TickMS)
             HWREGBITW(&g_sEnet.ui32Flags, FLAG_DHCP_STARTED) = 0;
         }
     }
-    else if(g_sEnet.eState == iEthDHCPComplete)
+    else if (g_sEnet.eState == iEthDHCPComplete)
     {
-        if(g_sEnet.pcProxyName == 0)
+        if (g_sEnet.pcProxyName == 0)
         {
             //
             // Resolve the host by name.
@@ -1188,7 +1162,7 @@ EthClientTick(uint32_t ui32TickMS)
             i32Ret = EthClientDNSResolve(g_sEnet.pcProxyName);
         }
 
-        if(i32Ret == ERR_OK)
+        if (i32Ret == ERR_OK)
         {
             //
             // If the address was already returned then go to idle.
@@ -1200,7 +1174,7 @@ EthClientTick(uint32_t ui32TickMS)
             //
             g_sEnet.pfnEvent(ETH_EVENT_CONNECT, &g_sEnet.sLocalIP.addr, 4);
         }
-        else if(i32Ret == ERR_INPROGRESS)
+        else if (i32Ret == ERR_INPROGRESS)
         {
             //
             // If the request is pending the go to the iEthDNSWait state.
@@ -1208,12 +1182,12 @@ EthClientTick(uint32_t ui32TickMS)
             g_sEnet.eState = iEthDNSWait;
         }
     }
-    else if(g_sEnet.eState == iEthDNSWait)
+    else if (g_sEnet.eState == iEthDNSWait)
     {
         //
         // Check if the host name was resolved.
         //
-        if(HWREGBITW(&g_sEnet.ui32Flags, FLAG_DNS_ADDRFOUND))
+        if (HWREGBITW(&g_sEnet.ui32Flags, FLAG_DNS_ADDRFOUND))
         {
             //
             // Stop calling the DNS timer function.
@@ -1228,19 +1202,18 @@ EthClientTick(uint32_t ui32TickMS)
             g_sEnet.pfnEvent(ETH_EVENT_CONNECT, &g_sEnet.sLocalIP.addr, 4);
         }
     }
-    else if(g_sEnet.eState == iEthTCPConnectWait)
+    else if (g_sEnet.eState == iEthTCPConnectWait)
     {
     }
-    else if(g_sEnet.eState == iEthTCPConnectComplete)
+    else if (g_sEnet.eState == iEthTCPConnectComplete)
     {
         err_t eError;
 
         g_sEnet.eState = iEthTCPOpen;
 
-        eError = EthClientSend(g_sUser.pcRequest,
-                               g_sUser.ui32RequestSize);
+        eError = EthClientSend(g_sUser.pcRequest, g_sUser.ui32RequestSize);
 
-        if(eError == ERR_OK)
+        if (eError == ERR_OK)
         {
             //
             // Waiting on a query response.
@@ -1254,8 +1227,7 @@ EthClientTick(uint32_t ui32TickMS)
     }
 }
 
-void
-userSourceSet()
+void userSourceSet()
 {
 
     g_sUser.eFormat = iFormatJSON;
@@ -1266,20 +1238,20 @@ userSourceSet()
 // Merges strings into the current request ast a given pointer and offset.
 //
 //*****************************************************************************
-static int32_t
-MergeRequest(int32_t i32Offset, const char *pcSrc, int32_t i32Size,
-             bool bReplaceSpace)
+static int32_t MergeRequest(int32_t i32Offset, const char *pcSrc,
+                            int32_t i32Size,
+                            bool bReplaceSpace)
 {
     int32_t i32Idx;
 
     //
     // Copy the base request to the buffer.
     //
-    for(i32Idx = 0; i32Idx < i32Size; i32Idx++)
+    for (i32Idx = 0; i32Idx < i32Size; i32Idx++)
     {
-        if((pcSrc[i32Idx] == ' ') && (bReplaceSpace))
+        if ((pcSrc[i32Idx] == ' ') && (bReplaceSpace))
         {
-            if((i32Offset + 3) >= sizeof(g_sUser.pcRequest))
+            if ((i32Offset + 3) >= sizeof(g_sUser.pcRequest))
             {
                 break;
             }
@@ -1292,8 +1264,7 @@ MergeRequest(int32_t i32Offset, const char *pcSrc, int32_t i32Size,
             g_sUser.pcRequest[i32Offset] = pcSrc[i32Idx];
         }
 
-        if((i32Offset >= sizeof(g_sUser.pcRequest)) ||
-           (pcSrc[i32Idx] == 0))
+        if ((i32Offset >= sizeof(g_sUser.pcRequest)) || (pcSrc[i32Idx] == 0))
         {
             break;
         }
@@ -1301,7 +1272,7 @@ MergeRequest(int32_t i32Offset, const char *pcSrc, int32_t i32Size,
         i32Offset++;
     }
 
-    return(i32Offset);
+    return (i32Offset);
 }
 
 //*****************************************************************************
@@ -1359,7 +1330,7 @@ int32_t requestGET(const char *pcQuery, tUserReport *psUserReport,
     // Append the "Cache-Control: no-cache" string.
     //
     i32Idx = MergeRequest(i32Idx, g_ControlCache, sizeof(g_ControlCache),
-                          false);
+    false);
 
     //
     // Append the "zone: UTC-3" string.
@@ -1370,7 +1341,7 @@ int32_t requestGET(const char *pcQuery, tUserReport *psUserReport,
     // Append the "Authorization: Bearer token" string.
     //
     i32Idx = MergeRequest(i32Idx, g_Authorization, sizeof(g_Authorization),
-                          false);
+    false);
 
     //
     // Append the token
@@ -1402,7 +1373,7 @@ int32_t requestGET(const char *pcQuery, tUserReport *psUserReport,
     // Append the "accept-encoding: gzip, deflate" string.
     //
     i32Idx = MergeRequest(i32Idx, g_AcceptEncoding, sizeof(g_AcceptEncoding),
-                          false);
+    false);
 
     //
     // Append the "Connection: keep-alive" string.
@@ -1473,7 +1444,7 @@ int32_t requestPOST(const char *pcQuery, tUserReport *psUserReport,
     // Append the g_ControlCache.
     //
     i32Idx = MergeRequest(i32Idx, g_ControlCache, sizeof(g_ControlCache),
-                          false);
+    false);
 
     //
     // Append the "Content-Type: application/json" string.
@@ -1504,14 +1475,14 @@ int32_t requestPOST(const char *pcQuery, tUserReport *psUserReport,
     //
 
     i32Idx = MergeRequest(i32Idx, g_AcceptEncoding, sizeof(g_AcceptEncoding),
-                          false);
+    false);
 
     //
     // Append the " Content-Length: " string.
     //
 
     i32Idx = MergeRequest(i32Idx, g_ContentLength, sizeof(g_ContentLength),
-                          false);
+    false);
 
     //
     // Append the size of the string.
@@ -1648,7 +1619,7 @@ int32_t requestPOSTKEY(const char *pcQuery, tUserReport *psUserReport,
     // Append the g_ControlCache.
     //
     i32Idx = MergeRequest(i32Idx, g_ControlCache, sizeof(g_ControlCache),
-                          false);
+    false);
 
     //
     // Append the "zone: UTC-3" string.
@@ -1659,7 +1630,7 @@ int32_t requestPOSTKEY(const char *pcQuery, tUserReport *psUserReport,
     // Append the "Authorization: Bearer token" string.
     //
     i32Idx = MergeRequest(i32Idx, g_Authorization, sizeof(g_Authorization),
-                          false);
+    false);
 
     //
     // Append the token
@@ -1701,14 +1672,14 @@ int32_t requestPOSTKEY(const char *pcQuery, tUserReport *psUserReport,
     //
 
     i32Idx = MergeRequest(i32Idx, g_AcceptEncoding, sizeof(g_AcceptEncoding),
-                          false);
+    false);
 
     //
     // Append the " Content-Length: " string.
     //
 
     i32Idx = MergeRequest(i32Idx, g_ContentLength, sizeof(g_ContentLength),
-                          false);
+    false);
 
     //
     // Append the size of the string.
@@ -1848,7 +1819,7 @@ int32_t requestPOSTACCESS(const char *pcQuery, tUserReport *psUserReport,
     // Append the "Cache-Control: no-cache" string.
     //
     i32Idx = MergeRequest(i32Idx, g_ControlCache, sizeof(g_ControlCache),
-                          false);
+    false);
 
     //
     // Append the "zone: UTC-3" string.
@@ -1859,7 +1830,7 @@ int32_t requestPOSTACCESS(const char *pcQuery, tUserReport *psUserReport,
     // Append the "Authorization: Bearer token" string.
     //
     i32Idx = MergeRequest(i32Idx, g_Authorization, sizeof(g_Authorization),
-                          false);
+    false);
 
     //
     // Append the token
@@ -1891,7 +1862,7 @@ int32_t requestPOSTACCESS(const char *pcQuery, tUserReport *psUserReport,
     // Append the "accept-encoding: gzip, deflate" string.
     //
     i32Idx = MergeRequest(i32Idx, g_AcceptEncoding, sizeof(g_AcceptEncoding),
-                          false);
+    false);
 
     //
     // Append the "Connection: keep-alive" string.
@@ -1915,7 +1886,7 @@ int32_t requestPOSTACCESS(const char *pcQuery, tUserReport *psUserReport,
 
 //*****************************************************************************
 //
-// Function requestGETteste
+// Function requestPostSendAudio
 //
 // \param pcQuery is the name of the current user.
 // \param psUserReport contains all about the current user.
@@ -1927,8 +1898,8 @@ int32_t requestPOSTACCESS(const char *pcQuery, tUserReport *psUserReport,
 //
 //*****************************************************************************
 
-int32_t requestGETteste(const char *pcQuery, tUserReport *psUserReport,
-                        tEventFunction pfnEvent)
+int32_t requestPostSendAudio(const char *pcQuery, tUserReport *psUserReport,
+                             tEventFunction pfnEvent)
 {
     int32_t i32Idx;
 
@@ -1950,9 +1921,10 @@ int32_t requestGETteste(const char *pcQuery, tUserReport *psUserReport,
     g_sEnet.eState = iEthTCPConnectWait;
 
     //
-    // Copy the base forecast request to the buffer. This buffer is the buffer sent
+    // Append the POST /api/usuarios/audio
     //
-    i32Idx = MergeRequest(0, getRequestTeste, sizeof(getRequestTeste), false);
+    i32Idx = MergeRequest(0, postRequestSendAudio, sizeof(postRequestSendAudio),
+    false);
 
     //
     // Append the "HTTP:/1.1" string.
@@ -1964,6 +1936,28 @@ int32_t requestGETteste(const char *pcQuery, tUserReport *psUserReport,
     //
     i32Idx = MergeRequest(i32Idx, g_ControlCacheTeste,
                           sizeof(g_ControlCacheTeste), false);
+
+    //
+    // Append the "zone: UTC-3" string.
+    //
+    i32Idx = MergeRequest(i32Idx, g_Zone, sizeof(g_Zone), false);
+
+    //
+    // Append the "Authorization: Bearer token" string.
+    //
+    i32Idx = MergeRequest(i32Idx, g_Authorization, sizeof(g_Authorization),
+    false);
+
+    //
+    // Append the token
+    //
+    i32Idx = MergeRequest(i32Idx, psUserReport->token,
+                          sizeof(psUserReport->token), false);
+
+    //
+    // Break line
+    //
+    i32Idx = MergeRequest(i32Idx, g_AfterLength, sizeof(g_AfterLength), false);
 
     //
     // Append the "UserAgent: Placa1 Version 1.0" string.
@@ -1978,7 +1972,7 @@ int32_t requestGETteste(const char *pcQuery, tUserReport *psUserReport,
     //
     // Append the "Host: localhost:8090" string.
     //
-    i32Idx = MergeRequest(i32Idx, g_hostTeste, sizeof(g_hostTeste), false);
+    i32Idx = MergeRequest(i32Idx, g_host, sizeof(g_host), false);
 
     //
     // Append the "accept-encoding: gzip, deflate" string.
@@ -1991,7 +1985,57 @@ int32_t requestGETteste(const char *pcQuery, tUserReport *psUserReport,
     //
     i32Idx = MergeRequest(i32Idx, g_Conncection, sizeof(g_Conncection), false);
 
-    g_sEnet.ulRequest = GETteste;
+    //
+    // Append the "User" string.
+    //
+
+    i32Idx = MergeRequest(i32Idx, g_Open, sizeof(g_Open), false);
+
+    //
+    // Append the "User" string.
+    //
+
+    i32Idx = MergeRequest(i32Idx, g_Code1, sizeof(g_Code1), false);
+
+    //
+    // Append the "User" string.
+    //
+
+    i32Idx = MergeRequest(i32Idx, psUserReport->idBoard,
+                          sizeof(psUserReport->idBoard), false);
+
+    //
+    // Append the "User" string.
+    //
+
+    i32Idx = MergeRequest(i32Idx, g_Code2, sizeof(g_Code2), false);
+
+    //
+    // Append the "User" string.
+    //
+
+    i32Idx = MergeRequest(i32Idx, g_Key1, sizeof(g_Key1), false);
+
+    //
+    // Append the "User" string.
+    //
+
+    i32Idx = MergeRequest(i32Idx, psUserReport->keyBoard,
+                          sizeof(psUserReport->keyBoard), false);
+
+    //
+    // Append the "User" string.
+    //
+
+    i32Idx = MergeRequest(i32Idx, g_Key2, sizeof(g_Key2), false);
+
+    //
+    // Append the "User" string.
+    //
+
+    i32Idx = MergeRequest(i32Idx, g_Close, sizeof(g_Close), false);
+
+    g_sEnet.ulRequest = PostSendAudio;
 
     if (EthClientTCPConnect(n_Port) != ERR_OK)
     {

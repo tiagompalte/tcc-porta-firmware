@@ -377,10 +377,9 @@ main(void)
 	EthClientInit(EnetEvents);
 
 	g_ui32IPaddr = EthClientAddrGet();
-	g_psUserInfo.sReport.userKey = "1234";
-	g_psUserInfo.sReport.idBoard = IDBOARD;
-	g_psUserInfo.sReport.keyBoard = KEYBOARD;
-	//g_psUserInfo.sReport.rfid = "12345678";
+	strcpy(g_psUserInfo.sReport.userKey, "1234");
+	strcpy(g_psUserInfo.sReport.idBoard, IDBOARD);
+	strcpy(g_psUserInfo.sReport.keyBoard, KEYBOARD);
 	strcpy(g_psUserInfo.sReport.rfid, "12345678");
 	//HardwareLoop();
 

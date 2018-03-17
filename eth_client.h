@@ -69,11 +69,11 @@ typedef struct
 
     char *data;
 
-    char *keyBoard;
+    char keyBoard[8];
 
-    char *userKey;//TODO ver quantos caracteres é o máximo
+    char userKey[8];
 
-    char *idBoard;
+    char idBoard[2];
 
     char token[512];
 
@@ -128,7 +128,7 @@ extern void userSourceSet();
 extern int32_t requestGET(     const char *pcQuery,
                                tUserReport *psUser,
                                tEventFunction pfnEvent);
-extern int32_t requestGETteste(const char *pcQuery,
+extern int32_t requestPostSendAudio(const char *pcQuery,
                                tUserReport *psUser,
                                tEventFunction pfnEvent);
 extern int32_t requestPOST(    const char *pcQuery,

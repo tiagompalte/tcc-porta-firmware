@@ -25,7 +25,7 @@
 extern int32_t JSONParseGET(uint32_t ui32Index,
                                  tUserReport *psUserReport,
                                  struct pbuf *psBuf);
-extern int32_t JSONParseGETteste(uint32_t ui32Index,
+extern int32_t JSONParsePostSendAudio(uint32_t ui32Index,
                                  tUserReport *psUserReport,
                                  struct pbuf *psBuf);
 extern int32_t JSONParsePOST(uint32_t ui32Index,

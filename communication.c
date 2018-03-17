@@ -223,7 +223,7 @@ int Communication(int request, char* size)
         eRequestPOST,
         eRequestPOSTKEY,
         eRequestPOSTACCESS,
-        eRequestGETteste,
+        eRequestPostSendAudio,
         eRequestComplete,
     } iRequest;
     iRequest = eRequestIdle;
@@ -256,12 +256,12 @@ int Communication(int request, char* size)
                 {
                     iRequest = eRequestPOSTACCESS;
                 }
-                else if (request == GETteste)
+                else if (request == PostSendAudio)
                 {
-                    iRequest = eRequestGETteste;
+                    iRequest = eRequestPostSendAudio;
                 }
             }
-            else if (iRequest == eRequestGETteste)
+            else if (iRequest == eRequestPostSendAudio)
             {
                 g_iState = STATE_WAIT_DATA;
 
@@ -270,7 +270,7 @@ int Communication(int request, char* size)
                 //
                 g_ui32Delay = 100;
 
-                requestGETteste(g_psUserInfo.pcName, &g_psUserInfo.sReport,
+                requestPostSendAudio(g_psUserInfo.pcName, &g_psUserInfo.sReport,
                                 CommunicationEvent);
 
                 iRequest = eRequestUpdate;
@@ -423,7 +423,7 @@ int CommunicationConnecting(int type)
     {
         if (type == VOICE)
         {
-            Communication(GET, "38");
+            Communication(PostSendAudio, "38");
         }
         else if (type == KEY)
         {
