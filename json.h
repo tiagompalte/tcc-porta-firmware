@@ -37,6 +37,9 @@ extern int32_t JSONParsePOSTKEY(uint32_t ui32Index,
 extern int32_t JSONParsePOSTACCESS(uint32_t ui32Index,
                                  tUserReport *psUserReport,
                                  struct pbuf *psBuf);
+extern int32_t ParseIntToVectorJson(uint32_t ui32Index,
+                                 tUserReport *psUserReport,
+                                 struct pbuf *psBuf);
 #endif
 
 #endif

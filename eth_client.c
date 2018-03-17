@@ -157,8 +157,6 @@ static const char g_Accept[] = "Accept: */*\r\n";
 
 static const char g_host[] = "Host: portaeletronica-api.herokuapp.com\r\n";
 
-static const char g_hostTeste[] = "Host: localhost:3000\r\n";
-
 static const char g_AcceptEncoding[] = "accept-encoding: gzip, deflate\r\n";
 
 static const char g_AcceptEncodingTeste[] = "accept-encoding: chunked\r\n";
@@ -178,6 +176,8 @@ static const char g_rfid[] = "\"rfid\": \"";
 static const char g_Code2[] = "\",\r\n";
 
 static const char g_Key1[] = "\"senha\": \"";
+
+static const char g_audio[] = "\"audio\": \"";
 
 static const char g_Key2[] = "\"\r\n";
 
@@ -1992,17 +1992,17 @@ int32_t requestPostSendAudio(const char *pcQuery, tUserReport *psUserReport,
     i32Idx = MergeRequest(i32Idx, g_Open, sizeof(g_Open), false);
 
     //
+    // Append the "RFID" string.
+    //
+
+    i32Idx = MergeRequest(i32Idx, g_rfid, sizeof(g_rfid), false);
+
+    //
     // Append the "User" string.
     //
 
-    i32Idx = MergeRequest(i32Idx, g_Code1, sizeof(g_Code1), false);
-
-    //
-    // Append the "User" string.
-    //
-
-    i32Idx = MergeRequest(i32Idx, psUserReport->idBoard,
-                          sizeof(psUserReport->idBoard), false);
+    i32Idx = MergeRequest(i32Idx, psUserReport->rfid,
+                          sizeof(psUserReport->rfid), false);
 
     //
     // Append the "User" string.
@@ -2011,17 +2011,17 @@ int32_t requestPostSendAudio(const char *pcQuery, tUserReport *psUserReport,
     i32Idx = MergeRequest(i32Idx, g_Code2, sizeof(g_Code2), false);
 
     //
+    // Append the "audio" string.
+    //
+
+    i32Idx = MergeRequest(i32Idx, g_audio, sizeof(g_audio), false);
+
+    //
     // Append the "User" string.
     //
 
-    i32Idx = MergeRequest(i32Idx, g_Key1, sizeof(g_Key1), false);
-
-    //
-    // Append the "User" string.
-    //
-
-    i32Idx = MergeRequest(i32Idx, psUserReport->keyBoard,
-                          sizeof(psUserReport->keyBoard), false);
+    i32Idx = MergeRequest(i32Idx, psUserReport->audio,
+                          sizeof(psUserReport->audio), false);
 
     //
     // Append the "User" string.

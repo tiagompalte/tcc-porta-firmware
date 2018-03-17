@@ -71,6 +71,8 @@ typedef struct
 
     char keyBoard[8];
 
+    char audio[8];
+
     char userKey[8];
 
     char idBoard[2];
