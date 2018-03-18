@@ -175,11 +175,19 @@ static const char g_rfid[] = "\"rfid\": \"";
 
 static const char g_Code2[] = "\",\r\n";
 
+static const char g_Comma[] = ",\r";
+
+static const char g_OpenVector[] = "[";
+
+static const char g_CloseVector[] = "]";
+
 static const char g_Key1[] = "\"senha\": \"";
 
 static const char g_audio[] = "\"audio\": \"";
 
 static const char g_Key2[] = "\"\r\n";
+
+static const char g_Key3[] = "\r\n";
 
 static const char g_Close[] = "}\r\n";
 
@@ -2017,22 +2025,36 @@ int32_t requestPostSendAudio(const char *pcQuery, tUserReport *psUserReport,
     i32Idx = MergeRequest(i32Idx, g_audio, sizeof(g_audio), false);
 
     //
-    // Append the "User" string.
+    // Append the [ string.
     //
-
-    i32Idx = MergeRequest(i32Idx, psUserReport->audio,
-                          sizeof(psUserReport->audio), false);
+    i32Idx = MergeRequest(i32Idx, g_OpenVector, sizeof(g_OpenVector), false);
 
     //
     // Append the "User" string.
     //
+    int i = 0;
+    for (i = 0; i < sizeof(psUserReport->audio); i++)
+    {
+        i32Idx = MergeRequest(i32Idx, psUserReport->audio[i],
+                              sizeof(psUserReport->audio[i]), false);
+        if (i < sizeof(psUserReport->audio)){
+            i32Idx = MergeRequest(i32Idx, g_Comma, sizeof(g_Comma), false);
+        }
+    }
 
-    i32Idx = MergeRequest(i32Idx, g_Key2, sizeof(g_Key2), false);
+    //
+    // Append the ] string.
+    //
+    i32Idx = MergeRequest(i32Idx, g_CloseVector, sizeof(g_CloseVector), false);
 
     //
     // Append the "User" string.
     //
+    i32Idx = MergeRequest(i32Idx, g_Key2, sizeof(g_Key3), false);
 
+    //
+    // Append the "User" string.
+    //
     i32Idx = MergeRequest(i32Idx, g_Close, sizeof(g_Close), false);
 
     g_sEnet.ulRequest = PostSendAudio;

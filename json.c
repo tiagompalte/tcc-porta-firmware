@@ -972,17 +972,3 @@ int32_t JSONParsePostSendAudio(uint32_t ui32Index, tUserReport *psUserReport,
 
     return (i32Items);
 }
-
-
-//*****************************************************************************
-//
-// Fill out the psUserReport structure from data returned from the JSON
-// query for POST.
-//
-//*****************************************************************************
-int32_t ParseIntToVectorJson(uint32_t ui32Index, tUserReport *psUserReport,
-                               struct pbuf *psBuf)
-{
-
-
-}
