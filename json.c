@@ -22,7 +22,7 @@
 #include "utils/lwiplib.h"
 #include "eth_client.h"
 #include "json.h"
-#include "driverlib/algorithm.h"
+#include "driverlib/audioSample.h"
 //****************************************************************************
 //
 // The locally defined lwIP buffer parsing pointer.
@@ -470,21 +470,20 @@ int32_t JSONParseGET(uint32_t ui32Index, tUserReport *psUserReport,
             {
                 return (-1);
             }
-
+/*
             int teste;
-            int tam = sizeof(bufferDatabase) - DELAY_MAX;
+            int tam = sizeof(bufferDatabase);
             for (i32JSONIdx = 0; i32JSONIdx < tam; i32JSONIdx++)
             {
                 //GetFieldValueString(&sBufPtr, pcTemp, sizeof(pcTemp));
                 //psUserReport->audio[0] = ustrtoul(pcTemp[0], &pEnd, 10);
                 //psUserReport->audio[i32OutIdx] = GetFieldValueInt(&sBufPtr);
-                bufferDatabase[i32JSONIdx + DELAY_MAX] = GetFieldValueInt(
-                        &sBufPtr);
+                //bufferDatabase[i32JSONIdx] = GetFieldValueInt(&sBufPtr);
                 if (i32JSONIdx > 2500)
                 {
-                    teste = bufferDatabase[i32JSONIdx + DELAY_MAX];
+                    teste = bufferDatabase[i32JSONIdx];
                 }
-                //bufferConversao[i32OutIdx + DELAY_MAX] = bufferDatabase[i32OutIdx + DELAY_MAX];
+                bufferConversao[i32OutIdx + DELAY_MAX] = bufferDatabase[i32OutIdx + DELAY_MAX]; */
 
                 //
                 // Skip the , char.
@@ -499,7 +498,7 @@ int32_t JSONParseGET(uint32_t ui32Index, tUserReport *psUserReport,
                 {
                     return (-1);
                 }
-            }
+      //      }
 
             i32Items++;
             psUserReport->status = 200;
@@ -507,7 +506,7 @@ int32_t JSONParseGET(uint32_t ui32Index, tUserReport *psUserReport,
         else
         {
             //psUserReport->audio[0] = ' ';
-            bufferDatabase[DELAY_MAX] = ' ';
+            //bufferDatabase[0] = ' ';
             psUserReport->status = 400;
             i32Items++;
         }

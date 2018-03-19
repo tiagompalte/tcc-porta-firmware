@@ -17,7 +17,7 @@
 #ifndef ETH_CLIENT_H_
 #define ETH_CLIENT_H_
 
-#include "driverlib/algorithm.h"
+#include "driverlib/audioSample.h"
 
 //*****************************************************************************
 //

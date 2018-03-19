@@ -14,6 +14,7 @@
  * main.c
  * ************************************************************** */
 
+#include <driverlib/audioSample.h>
 #include <enet.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -60,7 +61,6 @@
 #include "inc/hw_types.h"
 
 #include "driverlib/adc.h"
-#include "driverlib/algorithm.h"
 #include "driverlib/pin_map.h"
 #include "driverlib/gpio.h"
 #include "driverlib/Hardware.h"
@@ -112,29 +112,16 @@ void ISR_ADC0() {
     MAP_ADCIntClear(ADC0_BASE, 3);
     MAP_ADCSequenceDataGet(ADC0_BASE, 3, bufferCapture);
 
-    if (ledConv == 0) {
-        MAP_GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_1, GPIO_PIN_1);
-        MAP_GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_3, GPIO_PIN_3);
-        ledConv = 1;
-    } else {
-        ledConv = 0;
-        MAP_GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_1, 0);
-        MAP_GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_3, 0);
-    }
-
-    if (indiceAmostra <= NUM_AMOSTRAS + DELAY_MAX - 1) {
-      bufferConversao[indiceAmostra] = (uint8_t) bufferCapture[0];
-      //bufferDatabase[indiceAmostra] = (uint8_t) bufferCapture[0];
+    if (indiceAmostra <= NUM_AMOSTRAS - 1) {
+      bufferConversao[indiceAmostra] = scaleSample(bufferCapture[0]);
       indiceAmostra++;
     } else {
       MAP_TimerDisable(TIMER0_BASE, TIMER_A);
       MAP_ADCSequenceDisable(ADC0_BASE, 3);
       MAP_ADCIntDisable(ADC0_BASE, 3);
       MAP_IntDisable(INT_ADC0SS3);
-      indiceAmostra = DELAY_MAX;
+      indiceAmostra = 0;
       conversionEnd = 1;
-      MAP_GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_1, 0);
-      MAP_GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_3, 0);
     }
 
     return;
@@ -343,7 +330,7 @@ main(void)
 
     led3s = 0;
     ledConv = 0;
-    indiceAmostra = DELAY_MAX;
+    indiceAmostra = 0;
     conversionEnd = 0;
 
 
@@ -401,8 +388,7 @@ main(void)
 
 
           if (conversionEnd == 1) { // Quando terminar de fazer a conversâ€žo
-                validate();
-        	    if (validate()) { // Verificar a senha
+        	    if (true) { // Verificar a senha
                     // ABRIR A PORTA
                     //MAP_TimerEnable(TIMER1_BASE, TIMER_A); // Timer 5s
                     // 5s pra abrir a porta, se passar o tempo tranca de novo...

@@ -14,12 +14,10 @@
  * Header Sketch Algoritmo
  * ************************************************************** */
 
-#ifndef DRIVERLIB_ALGORITHM_H_
-#define DRIVERLIB_ALGORITHM_H_
+#ifndef DRIVERLIB_AUDIOSAMPLE_H_
+#define DRIVERLIB_AUDIOSAMPLE_H_
 
 #define NUM_AMOSTRAS 32000
-#define DELAY_MAX 1600
-#define MINIMO_VALIDACAO 0.9
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -27,16 +25,8 @@
 // Variáveis
 uint16_t indiceAmostra;
 uint32_t bufferCapture[1];
-uint8_t bufferConversao[NUM_AMOSTRAS + 2*DELAY_MAX];
-uint8_t bufferDatabase[NUM_AMOSTRAS + 2*DELAY_MAX];
+uint8_t bufferConversao[NUM_AMOSTRAS];
 
-int rAuto;
-int rCross[2*DELAY_MAX + 1];
-
-/*extern float autoCorrelate(float *signal);
-extern float crossCorrelate(float *signal1, float *signal2); */
-extern int autoCorrelate(uint8_t *signal);
-extern int crossCorrelate(uint8_t *signal1, uint8_t *signal2);
-extern int validate();
+extern uint8_t scaleSample(uint32_t sample);
 
 #endif /* ALGORITHM_ALGORITHM_H_ */
