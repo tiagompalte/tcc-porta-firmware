@@ -69,7 +69,7 @@
 //*****************************************************************************
 //#define MEM_LIBC_MALLOC                 0
 #define MEM_ALIGNMENT                     4
-#define MEM_SIZE                          (64 * 1024)
+#define MEM_SIZE                          (32 * 1024)
 //#define MEMP_OVERFLOW_CHECK             0
 //#define MEMP_SANITY_CHECK               0
 //#define MEM_USE_POOLS                   0
@@ -80,7 +80,7 @@
 // ---------- Internal Memory Pool Sizes ----------
 //
 //*****************************************************************************
-#define MEMP_NUM_PBUF                     40   // Default 16, was 16
+#define MEMP_NUM_PBUF                     32   // Default 16, was 16
 //#define MEMP_NUM_RAW_PCB                4
 //#define MEMP_NUM_UDP_PCB                4
 #define MEMP_NUM_TCP_PCB                  32
@@ -94,7 +94,7 @@
 //#define MEMP_NUM_NETCONN                4
 //#define MEMP_NUM_TCPIP_MSG_API          8
 //#define MEMP_NUM_TCPIP_MSG_INPKT        8
-#define PBUF_POOL_SIZE                    42    // Default 16
+#define PBUF_POOL_SIZE                    36    // Default 16
 
 //*****************************************************************************
 //
