@@ -175,7 +175,7 @@ static const char g_rfid[] = "\"rfid\": \"";
 
 static const char g_Code2[] = "\",\r\n";
 
-static const char g_Comma[] = ",\r";
+static const char g_Comma[] = ", ";
 
 static const char g_OpenVector[] = "[";
 
