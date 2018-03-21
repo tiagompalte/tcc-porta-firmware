@@ -935,7 +935,7 @@ int32_t JSONParsePostSendAudio(uint32_t ui32Index, tUserReport *psUserReport,
     }
     else
     {
-        psUserReport->token[0] = ' ';
+        //psUserReport->token[0] = ' ';
         psUserReport->status = 400;
     }
 

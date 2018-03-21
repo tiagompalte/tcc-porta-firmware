@@ -118,7 +118,7 @@ struct
 // Maximum size of an weather request.
 //
 //*****************************************************************************
-#define MAX_REQUEST             97000
+#define MAX_REQUEST             1024//97000
 
 extern uint32_t g_ui32SysClock;
 
@@ -175,7 +175,7 @@ static const char g_rfid[] = "\"rfid\": \"";
 
 static const char g_Code2[] = "\",\r\n";
 
-static const char g_Comma[] = ", ";
+static const char g_Comma[] = ",";
 
 static const char g_OpenVector[] = "[";
 
@@ -183,7 +183,7 @@ static const char g_CloseVector[] = "]";
 
 static const char g_Key1[] = "\"senha\": \"";
 
-static const char g_audio[] = "\"audio\": \"";
+static const char g_audio[] = "\"audio\": ";
 
 static const char g_Key2[] = "\"\r\n";
 
@@ -1246,6 +1246,54 @@ void userSourceSet()
 // Merges strings into the current request ast a given pointer and offset.
 //
 //*****************************************************************************
+static int32_t MergeRequestVectorInt(int32_t i32Offset, const char *pcSrc,
+                            int32_t i32Size,
+                            bool bReplaceSpace)
+{
+    int32_t i32Idx;
+    int32_t i32IdxCont = 0;
+
+    //
+    // Copy the base request to the buffer.
+    //
+    for (i32Idx = 0; i32Idx < i32Size; i32Idx++)
+    {
+        if ((pcSrc[i32Idx] == ' ') && (bReplaceSpace))
+        {
+            if ((i32Offset + 3) >= sizeof(g_sUser.pcRequest))
+            {
+                break;
+            }
+            g_sUser.pcRequest[i32Offset++] = '%';
+            g_sUser.pcRequest[i32Offset++] = '2';
+            g_sUser.pcRequest[i32Offset] = '0';
+        }
+        else
+        {
+            g_sUser.pcRequest[i32Offset] = pcSrc[i32Idx];
+        }
+
+        if ((i32Offset >= sizeof(g_sUser.pcRequest)) || (pcSrc[i32Idx] == 0))
+        {
+            break;
+        }
+
+        i32Offset++;
+        i32IdxCont++;
+        if (i32IdxCont < i32Size) {
+        g_sUser.pcRequest[i32Offset] = ',';
+        i32Offset++;
+        }
+    }
+
+    return (i32Offset);
+}
+
+//*****************************************************************************
+//
+// Merges strings into the current request ast a given pointer and offset.
+//
+//*****************************************************************************
 static int32_t MergeRequest(int32_t i32Offset, const char *pcSrc,
                             int32_t i32Size,
                             bool bReplaceSpace)
@@ -1946,9 +1994,9 @@ int32_t requestPostSendAudio(const char *pcQuery, tUserReport *psUserReport,
                           sizeof(g_ControlCacheTeste), false);
 
     //
-    // Append the "zone: UTC-3" string.
+    // Append the "Content-Type: application/json" string.
     //
-    i32Idx = MergeRequest(i32Idx, g_Zone, sizeof(g_Zone), false);
+    i32Idx = MergeRequest(i32Idx, g_ContentType, sizeof(g_ContentType), false);
 
     //
     // Append the "Authorization: Bearer token" string.
@@ -1966,6 +2014,12 @@ int32_t requestPostSendAudio(const char *pcQuery, tUserReport *psUserReport,
     // Break line
     //
     i32Idx = MergeRequest(i32Idx, g_AfterLength, sizeof(g_AfterLength), false);
+
+
+    //
+    // Append the "zone: UTC-3" string.
+    //
+    i32Idx = MergeRequest(i32Idx, g_Zone, sizeof(g_Zone), false);
 
     //
     // Append the "UserAgent: Placa1 Version 1.0" string.
@@ -2032,15 +2086,8 @@ int32_t requestPostSendAudio(const char *pcQuery, tUserReport *psUserReport,
     //
     // Append the "User" string.
     //
-    int i = 0;
-    for (i = 0; i < sizeof(psUserReport->audio); i++)
-    {
-        i32Idx = MergeRequest(i32Idx, psUserReport->audio[i],
-                              sizeof(psUserReport->audio[i]), false);
-        if (i < sizeof(psUserReport->audio)){
-            i32Idx = MergeRequest(i32Idx, g_Comma, sizeof(g_Comma), false);
-        }
-    }
+    i32Idx = MergeRequestVectorInt(i32Idx, psUserReport->audio,
+                              sizeof(psUserReport->audio), false);
 
     //
     // Append the ] string.
