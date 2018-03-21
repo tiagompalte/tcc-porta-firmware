@@ -132,11 +132,10 @@ extern int32_t requestGET(     const char *pcQuery,
                                tEventFunction pfnEvent);
 extern int32_t requestPostSendAudio(const char *pcQuery,
                                tUserReport *psUser,
-                               tEventFunction pfnEvent);
+                               tEventFunction pfnEvent, char* size);
 extern int32_t requestPOST(    const char *pcQuery,
                                tUserReport *psUser,
                                tEventFunction pfnEvent, char* size);
-
 extern int32_t requestPOSTKEY( const char *pcQuery,
                                tUserReport *psUser,
                                tEventFunction pfnEvent, char* size);

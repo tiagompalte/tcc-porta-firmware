@@ -85,7 +85,7 @@ int ResetUser()
     g_psUserInfo.sReport.pcDescription = 0;
     //g_psUserInfo.sReport.audio[0] = ' ';
     g_psUserInfo.sReport.status = 0;
-    g_psUserInfo.sReport.rfid[0] = ' ';
+    //g_psUserInfo.sReport.rfid[0] = ' ';
     g_psUserInfo.ui32LastUpdate = 0;
 
     return OK;
@@ -271,7 +271,7 @@ int Communication(int request, char* size)
                 g_ui32Delay = 100;
 
                 requestPostSendAudio(g_psUserInfo.pcName, &g_psUserInfo.sReport,
-                                CommunicationEvent);
+                                CommunicationEvent, size);
 
                 iRequest = eRequestUpdate;
             }
@@ -417,13 +417,13 @@ int CommunicationConnecting(int type)
     }
 
     try = ResetStatus();
-    g_ui32Delay = 500;
+    g_ui32Delay = 1000;
 
     while ((g_psUserInfo.sReport.status != OK) && (try < 3))
     {
         if (type == VOICE)
         {
-            Communication(PostSendAudio, "38");
+            Communication(PostSendAudio, "50");
         }
         else if (type == KEY)
         {

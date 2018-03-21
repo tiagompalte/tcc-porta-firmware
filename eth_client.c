@@ -183,7 +183,7 @@ static const char g_CloseVector[] = "]";
 
 static const char g_Key1[] = "\"senha\": \"";
 
-static const char g_audio[] = "\"audio\": ";
+static const char g_audio[] = "\"audio\":";
 
 static const char g_Key2[] = "\"\r\n";
 
@@ -1247,8 +1247,8 @@ void userSourceSet()
 //
 //*****************************************************************************
 static int32_t MergeRequestVectorInt(int32_t i32Offset, const char *pcSrc,
-                            int32_t i32Size,
-                            bool bReplaceSpace)
+                                     int32_t i32Size,
+                                     bool bReplaceSpace)
 {
     int32_t i32Idx;
     int32_t i32IdxCont = 0;
@@ -1280,9 +1280,10 @@ static int32_t MergeRequestVectorInt(int32_t i32Offset, const char *pcSrc,
 
         i32Offset++;
         i32IdxCont++;
-        if (i32IdxCont < i32Size) {
-        g_sUser.pcRequest[i32Offset] = ',';
-        i32Offset++;
+        if (i32IdxCont < i32Size)
+        {
+            g_sUser.pcRequest[i32Offset] = ',';
+            i32Offset++;
         }
     }
 
@@ -1955,7 +1956,7 @@ int32_t requestPOSTACCESS(const char *pcQuery, tUserReport *psUserReport,
 //*****************************************************************************
 
 int32_t requestPostSendAudio(const char *pcQuery, tUserReport *psUserReport,
-                             tEventFunction pfnEvent)
+                             tEventFunction pfnEvent, char* size)
 {
     int32_t i32Idx;
 
@@ -1988,15 +1989,15 @@ int32_t requestPostSendAudio(const char *pcQuery, tUserReport *psUserReport,
     i32Idx = MergeRequest(i32Idx, g_cHTTP11, sizeof(g_cHTTP11), false);
 
     //
-    // Append the "Cache-Control: no-cache" string.
+    // Append the g_ControlCache.
     //
-    i32Idx = MergeRequest(i32Idx, g_ControlCacheTeste,
-                          sizeof(g_ControlCacheTeste), false);
+    i32Idx = MergeRequest(i32Idx, g_ControlCache, sizeof(g_ControlCache),
+    false);
 
     //
-    // Append the "Content-Type: application/json" string.
+    // Append the "zone: UTC-3" string.
     //
-    i32Idx = MergeRequest(i32Idx, g_ContentType, sizeof(g_ContentType), false);
+    i32Idx = MergeRequest(i32Idx, g_Zone, sizeof(g_Zone), false);
 
     //
     // Append the "Authorization: Bearer token" string.
@@ -2015,36 +2016,60 @@ int32_t requestPostSendAudio(const char *pcQuery, tUserReport *psUserReport,
     //
     i32Idx = MergeRequest(i32Idx, g_AfterLength, sizeof(g_AfterLength), false);
 
+    //
+    // Append the "Content-Type: application/json" string.
+    //
+
+    i32Idx = MergeRequest(i32Idx, g_ContentType, sizeof(g_ContentType), false);
 
     //
-    // Append the "zone: UTC-3" string.
+    // Append the " User-Agent: Placa1 Version/1.0d" string.
     //
-    i32Idx = MergeRequest(i32Idx, g_Zone, sizeof(g_Zone), false);
 
-    //
-    // Append the "UserAgent: Placa1 Version 1.0" string.
-    //
     i32Idx = MergeRequest(i32Idx, g_UserAgent, sizeof(g_UserAgent), false);
 
     //
-    // Append the "Accept: * /*" string.
+    // Append the " g_Accept"string.
     //
+
     i32Idx = MergeRequest(i32Idx, g_Accept, sizeof(g_Accept), false);
 
     //
-    // Append the "Host: localhost:8090" string.
+    // Append the " Host: localhost:8090" string.
     //
+
     i32Idx = MergeRequest(i32Idx, g_host, sizeof(g_host), false);
 
     //
-    // Append the "accept-encoding: gzip, deflate" string.
+    // Append the " Accept-Encoding:  gzip, deflate" string.
     //
-    i32Idx = MergeRequest(i32Idx, g_AcceptEncodingTeste,
-                          sizeof(g_AcceptEncodingTeste), false);
+
+    i32Idx = MergeRequest(i32Idx, g_AcceptEncoding, sizeof(g_AcceptEncoding),
+    false);
 
     //
-    // Append the "Connection: keep-alive" string.
+    // Append the " Content-Length: " string.
     //
+
+    i32Idx = MergeRequest(i32Idx, g_ContentLength, sizeof(g_ContentLength),
+    false);
+
+    //
+    // Append the size of the string.
+    //
+
+    i32Idx = MergeRequest(i32Idx, size, sizeof(size), false);
+
+    //
+    // Append the break line.
+    //
+
+    i32Idx = MergeRequest(i32Idx, g_AfterLength, sizeof(g_AfterLength), false);
+
+    //
+    // Append the " Connection: Keep-Alive" string.
+    //
+
     i32Idx = MergeRequest(i32Idx, g_Conncection, sizeof(g_Conncection), false);
 
     //
@@ -2054,7 +2079,7 @@ int32_t requestPostSendAudio(const char *pcQuery, tUserReport *psUserReport,
     i32Idx = MergeRequest(i32Idx, g_Open, sizeof(g_Open), false);
 
     //
-    // Append the "RFID" string.
+    // Append the "User" string.
     //
 
     i32Idx = MergeRequest(i32Idx, g_rfid, sizeof(g_rfid), false);
@@ -2087,7 +2112,7 @@ int32_t requestPostSendAudio(const char *pcQuery, tUserReport *psUserReport,
     // Append the "User" string.
     //
     i32Idx = MergeRequestVectorInt(i32Idx, psUserReport->audio,
-                              sizeof(psUserReport->audio), false);
+                                   sizeof(psUserReport->audio), false);
 
     //
     // Append the ] string.
@@ -2097,7 +2122,7 @@ int32_t requestPostSendAudio(const char *pcQuery, tUserReport *psUserReport,
     //
     // Append the "User" string.
     //
-    i32Idx = MergeRequest(i32Idx, g_Key2, sizeof(g_Key3), false);
+    i32Idx = MergeRequest(i32Idx, g_Key3, sizeof(g_Key3), false);
 
     //
     // Append the "User" string.
