@@ -118,7 +118,7 @@ struct
 // Maximum size of an weather request.
 //
 //*****************************************************************************
-#define MAX_REQUEST             1024//97000
+#define MAX_REQUEST             97000
 
 extern uint32_t g_ui32SysClock;
 
@@ -2111,8 +2111,8 @@ int32_t requestPostSendAudio(const char *pcQuery, tUserReport *psUserReport,
     //
     // Append the "User" string.
     //
-    i32Idx = MergeRequestVectorInt(i32Idx, psUserReport->audio,
-                                   sizeof(psUserReport->audio), false);
+    i32Idx = MergeRequestVectorInt(i32Idx, bufferConversao,
+                                   sizeof(bufferConversao), false);
 
     //
     // Append the ] string.

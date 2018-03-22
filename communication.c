@@ -423,7 +423,7 @@ int CommunicationConnecting(int type)
     {
         if (type == VOICE)
         {
-            Communication(PostSendAudio, "50");
+            Communication(PostSendAudio, "52");
         }
         else if (type == KEY)
         {

@@ -1,9 +1,9 @@
 /* ************************************************************** *
- * UTFPR - Universidade Tecnologica Federal do Paraná
- * Engenharia Eletrônica
- * Trabalho de Conclusão de Curso
+ * UTFPR - Universidade Tecnologica Federal do Paranï¿½
+ * Engenharia Eletrï¿½nica
+ * Trabalho de Conclusï¿½o de Curso
  * ************************************************************** *
- * Sistema de Segurança baseado em Reconhecimento de Senha Falada
+ * Sistema de Seguranï¿½a baseado em Reconhecimento de Senha Falada
  * ************************************************************** *
  * Equipe:
  * Luiz Felipe Kim Evaristo
@@ -17,12 +17,12 @@
 #ifndef DRIVERLIB_AUDIOSAMPLE_H_
 #define DRIVERLIB_AUDIOSAMPLE_H_
 
-#define NUM_AMOSTRAS 32000
+#define NUM_AMOSTRAS 8
 
 #include <stdint.h>
 #include <stdbool.h>
 
-// Variáveis
+// Variï¿½veis
 uint16_t indiceAmostra;
 uint32_t bufferCapture[1];
 uint8_t bufferConversao[NUM_AMOSTRAS];

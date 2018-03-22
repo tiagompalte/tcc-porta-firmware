@@ -368,15 +368,12 @@ main(void)
 	strcpy(g_psUserInfo.sReport.idBoard, IDBOARD);
 	strcpy(g_psUserInfo.sReport.keyBoard, KEYBOARD);
 	strcpy(g_psUserInfo.sReport.rfid, "12345678");
-	strcpy(g_psUserInfo.sReport.audio, "123456");
+	strcpy(bufferConversao, "12345678912");
 	strcpy(g_psUserInfo.sReport.userKey, "1234");
 	//HardwareLoop();
 
 	if (CommunicationConnecting(VOICE) == errorConnection) {
 		status = -1;
-	} else {
-		status = 1;
-        CommunicationLog();
 	}
 
     MAP_TimerEnable(TIMER0_BASE, TIMER_A); // Timer ADC
