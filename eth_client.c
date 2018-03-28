@@ -161,7 +161,7 @@ static const char g_AcceptEncoding[] = "accept-encoding: gzip, deflate\r\n";
 
 static const char g_AcceptEncodingTeste[] = "accept-encoding: chunked\r\n";
 
-static const char g_ContentLength[] = "Content-Length: ";
+static const char g_ContentLength[] = "Content-Length:";
 
 static const char g_AfterLength[] = "\r\n";
 
@@ -2058,7 +2058,7 @@ int32_t requestPostSendAudio(const char *pcQuery, tUserReport *psUserReport,
     // Append the size of the string.
     //
 
-    i32Idx = MergeRequest(i32Idx, size, sizeof(size), false);
+    i32Idx = MergeRequest(i32Idx, size, sizeof(size)+1, false);
 
     //
     // Append the break line.

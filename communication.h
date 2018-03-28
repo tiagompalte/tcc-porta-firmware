@@ -34,7 +34,7 @@ extern "C"
 // Defines for setting up the system tick clock.
 //
 //*****************************************************************************
-#define SYSTEM_TICK_MS          10
+#define SYSTEM_TICK_MS          100
 #define SYSTEM_TICK_S           100
 
 
