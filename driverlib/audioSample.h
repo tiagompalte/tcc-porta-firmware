@@ -17,7 +17,7 @@
 #ifndef DRIVERLIB_AUDIOSAMPLE_H_
 #define DRIVERLIB_AUDIOSAMPLE_H_
 
-#define NUM_AMOSTRAS 10000
+#define NUM_AMOSTRAS 20000
 
 #include <stdint.h>
 #include <stdbool.h>
