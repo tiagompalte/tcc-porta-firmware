@@ -347,7 +347,7 @@ main(void)
 
 	PinoutSet(true, false);
 
-	SysTickPeriodSet((g_ui32SysClock / 1000) * SYSTEM_TICK_MS);
+	SysTickPeriodSet((g_ui32SysClock / 1000) * SYSTEM_TICK_MMS);
 	SysTickEnable();
 	SysTickIntEnable();
 	FlashPBInit(FLASH_PB_START, FLASH_PB_END, 256);
