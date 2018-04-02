@@ -194,11 +194,11 @@
 //*****************************************************************************
 #define LWIP_DNS                        1
 #define DNS_TABLE_SIZE                  4
-#define DNS_MAX_NAME_LENGTH             256
+#define DNS_MAX_NAME_LENGTH             512
 #define DNS_MAX_SERVERS                 2
 #define DNS_DOES_NAME_CHECK             1
 #define DNS_USES_STATIC_BUF             1
-#define DNS_MSG_SIZE                    512
+#define DNS_MSG_SIZE                    1024
 
 //*****************************************************************************
 //
@@ -243,7 +243,7 @@
 //
 //*****************************************************************************
 #define PBUF_LINK_HLEN                  16          // default is 14
-#define PBUF_POOL_BUFSIZE               2048
+#define PBUF_POOL_BUFSIZE               4096
                                                     // default is LWIP_MEM_ALIGN_SIZE(TCP_MSS+40+PBUF_LINK_HLEN)
 #define ETH_PAD_SIZE                    0           // default is 0
 

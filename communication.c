@@ -422,7 +422,7 @@ int CommunicationConnecting(int type)
     {
         if (type == VOICE)
         {
-            Communication(PostSendAudio, "20037");//29 + sizeof rfid + sizeof audio
+            Communication(PostSendAudio, "22037");//29 + sizeof rfid + sizeof audio
         }
         else if (type == KEY)
         {
