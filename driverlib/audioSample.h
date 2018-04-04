@@ -11,7 +11,7 @@
  * Tiago Henrique Faxina
  * Tiago Mariani Palte
  * ************************************************************** *
- * Header Sketch Algoritmo
+ * Header Sketch Amostrador de Audio
  * ************************************************************** */
 
 #ifndef DRIVERLIB_AUDIOSAMPLE_H_

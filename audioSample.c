@@ -11,7 +11,7 @@
  * Tiago Henrique Faxina
  * Tiago Mariani Palte
  * ************************************************************** *
- * Sketch do Algoritmo
+ * Sketch do Amostrador de Audio
  * ************************************************************** */
 
 #include <driverlib/audioSample.h>

@@ -33,10 +33,10 @@
 // Port number and Host name
 //
 //*****************************************************************************
-#define n_Port                  80
-#define hostName                "portaeletronica-api.herokuapp.com"
-//#define n_Port                  3000
-//#define hostName                "192.168.100.2"
+//#define n_Port                  80
+//#define hostName                "portaeletronica-api.herokuapp.com"
+#define n_Port                  8080
+#define hostName                "192.168.25.55"
 
 //*****************************************************************************
 //
@@ -128,15 +128,15 @@ extern uint32_t g_ui32SysClock;
 //
 //*****************************************************************************
 
-static const char getRequest[] = "GET /api/usuarios/rfid/"; //rfid/codigo do usuario
+static const char getRequest[] = "GET porta-api/api/usuarios/rfid/"; //rfid/codigo do usuario
 
-static const char postRequestSendAudio[] = "POST /api/usuarios/audio";
+static const char postRequestSendAudio[] = "POST porta-api//api/usuarios/audio";
 
 static const char postRequest[] = "POST /token";
 
-static const char postRequestAcess[] = "POST /api/usuarios/confirmacaoAcesso/";
+static const char postRequestAcess[] = "POST porta-api//api/usuarios/confirmacaoAcesso/";
 
-static const char postRequestKey[] = "POST /api/usuarios/autenticacaoSenha";
+static const char postRequestKey[] = "POST porta-api//api/usuarios/autenticacaoSenha";
 
 static char g_cHTTP11[] = " HTTP/1.1\r\n";
 
