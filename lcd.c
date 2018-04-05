@@ -234,7 +234,7 @@ void LCDInicio()
 
 void LCDWriteRFID()
 {
-    char *str = " Pass RFID card ";
+    char *str = " Passe RFID cartao ";
     LCDWriteString(str);
 }
 
@@ -326,7 +326,7 @@ void LCDNotAllowed()
 
     //MAP_SysCtlDelay(1000*ContDelayMS);
 }
-void LCDAllowed()
+void LCDAllowed(char *str_TrancaEletronica, char *str_permitida)
 {
     LCDClear();
 

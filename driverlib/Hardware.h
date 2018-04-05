@@ -47,7 +47,7 @@ uint32_t ulDelayms;
 extern void HardwareInit();
 extern uint8_t HardwareLoop();
 extern void HardwareRFID();
-extern void HardwareControl();
+extern void HardwareControl(char *str_TrancaEletronica);
 extern void HardwarePassWordControl();
 extern uint8_t VerificaTentativas();
 void LCDIntHandler(void);

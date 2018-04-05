@@ -118,10 +118,10 @@ uint8_t HardwareLoop()
         {
             cardStatus = CardDetected;
             RFIDstatus = MFRC522Anticoll(str);
-            //memcpy(g_psUserInfo.sReport.rfid, str, 5);
-            memcpy(str2, str, 5);
+            strcpy(g_psUserInfo.sReport.rfid, str);
+            //memcpy(str2, str, 5);
             //str3 = str;
-            //memcpy(g_psUserInfo.sReport.rfid, str3, 5);
+            //memcpy(g_psUserInfo.sReport.rfid, str, 5);
 
             //g_psUserInfo.sReport.rfid = (char*)str2;
 
@@ -130,13 +130,14 @@ uint8_t HardwareLoop()
         //if (status == MI_OK && cardStatus == CardDetected)
         if (cardStatus == CardDetected && RFIDstatus == MI_OK)
         {
-            return 1;
+            return str;
         }
         /*VerificaTentativas();
         HardwarePassWordControl();
         HardwareControl();*/
         MFRC522Halt();
     }
+    strcpy(g_psUserInfo.sReport.rfid, "Erro");
     return 0;
 }
 
@@ -186,6 +187,7 @@ void HardwarePassWordControl()
         keyPass = 0x00;
         CardVerifFlag = true;
         userOptionsStatus = none;
+        strcpy(g_psUserInfo.sReport.userKey,PassWord);
     }
     else if(userOptionsStatus == VoicePassWord && userStatus != UserBlocked)
     {
@@ -205,7 +207,7 @@ void HardwarePassWordControl()
             LCDWriteData(176);
             t++;
         }
-
+        //Leitura da voz
         MAP_SysCtlDelay(1000*ulDelayms);
     }
     else if(userOptionsStatus == none)
@@ -215,11 +217,11 @@ void HardwarePassWordControl()
     }
 }
 
-void HardwareControl()
+void HardwareControl(char *str_TrancaEletronica)
 {
     if(userStatus == EntryAllowed && CardVerifFlag == true && g_bIntFlag == true)
     {
-        LCDAllowed();
+        LCDAllowed(str_TrancaEletronica);
         AcionarTrava();
         BuzzerActivate();
         MAP_GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_2, 0x04);
@@ -268,5 +270,25 @@ void HardwareControl()
         //userStatus = EntryNotAllowed;
     }
     //cardStatus = CardNotDetected;
+}
+
+int hardwareVoiceKey()
+{
+    int cont = 0;
+    PassWordCount = 0;
+    LCDClear();
+    LCDKeyPassword();
+
+    while (keyPass != 0 &&  keyPass != 1 && cont < 10000)
+    {
+        keyPass = KeyboardGetKey();
+        if (keyPass != 0xFF)
+        {
+
+            return keyPass;
+        }
+        cont++;
+    }
+    return -1;
 }
 
