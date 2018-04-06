@@ -33,10 +33,13 @@
 // Port number and Host name
 //
 //*****************************************************************************
-//#define n_Port                  80
-//#define hostName                "portaeletronica-api.herokuapp.com"
-#define n_Port                  8080
-#define hostName                "192.168.25.55"
+#define n_Port                  80
+//#define n_Port                  8090
+#define hostName                "portaeletronica-api.herokuapp.com"
+//#define hostName                "10.3.2.158"
+//#define n_Port                  3000
+//#define hostName                "192.168.100.2"
+
 
 //*****************************************************************************
 //
@@ -128,15 +131,17 @@ extern uint32_t g_ui32SysClock;
 //
 //*****************************************************************************
 
-static const char getRequest[] = "GET porta-api/api/usuarios/rfid/"; //rfid/codigo do usuario
 
-static const char postRequestSendAudio[] = "POST porta-api//api/usuarios/audio";
+static const char getRequest[] = "GET /api/usuarios/rfid/"; //rfid/codigo do usuario
+
+static const char postRequestSendAudio[] = "POST /api/usuarios/audio";
 
 static const char postRequest[] = "POST /token";
+//static const char postRequest[] = "POST porta-api/token";
 
-static const char postRequestAcess[] = "POST porta-api//api/usuarios/confirmacaoAcesso/";
+static const char postRequestAcess[] = "POST /api/usuarios/confirmacaoAcesso/";
 
-static const char postRequestKey[] = "POST porta-api//api/usuarios/autenticacaoSenha";
+static const char postRequestKey[] = "POST /api/usuarios/autenticacaoSenha";
 
 static char g_cHTTP11[] = " HTTP/1.1\r\n";
 
@@ -146,7 +151,6 @@ static const char g_ControlCacheTeste[] = "cache-control: no-cache\r\n";
 
 static const char g_Zone[] = "zone: UTC-3\r\n";
 
-//static const char g_Authorization[] = "Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwicm9sZSI6IlJPTEVfVkFMSURBQ0FPIiwiY3JlYXRlZCI6MTUwOTU5MjE3ODE2OCwiZXhwIjoxNTEwMTk2OTc4fQ._qa6qgADYfvikm00mVosmO0EwVkMb3q3-ley4oqHHU79NCdrR4aeJoeXEJMHdbtnz1XtSzCKHONdZ-FFDH5CYA\r\n";
 static const char g_Authorization[] = "Authorization: Bearer ";
 
 static const char g_ContentType[] = "Content-Type: application/json\r\n";
@@ -156,6 +160,7 @@ static const char g_UserAgent[] = "User-Agent: Placa1 Version/1.0\r\n";
 static const char g_Accept[] = "Accept: */*\r\n";
 
 static const char g_host[] = "Host: portaeletronica-api.herokuapp.com\r\n";
+//static const char g_host[] = "Host: 10.3.2.158:8090\r\n";
 
 static const char g_AcceptEncoding[] = "accept-encoding: gzip, deflate\r\n";
 
