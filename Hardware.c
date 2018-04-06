@@ -128,8 +128,7 @@ uint8_t HardwareLoop()
             //g_psUserInfo.sReport.rfid = (char*)str2;
 
         }
-        printf("Não detectou \n");
-        //if (status == MI_OK && cardStatus == CardDetected)
+        printf("\n RFID nao detectado");
         if (cardStatus == CardDetected && RFIDstatus == MI_OK)
         {
             return str;

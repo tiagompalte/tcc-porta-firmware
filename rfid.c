@@ -131,7 +131,7 @@ void MFRC522ClearBitMask(unsigned char reg, unsigned char mask)
  */
 bool MFRC522IsCard()
 {
-    unsigned char status;
+    unsigned char status = false;
     unsigned char str[MAX_LEN];
 
     status = MFRC522Request(PICC_REQIDL, str);
@@ -346,7 +346,7 @@ unsigned char  MFRC522Request(unsigned char reqMode, unsigned char *TagType)
  */
 unsigned char MFRC522Anticoll(unsigned char *serNum)
 {
-    unsigned char status;
+    unsigned char status = MI_ERR;
     unsigned char i;
     unsigned char serNumCheck=0;
     unsigned int unLen;

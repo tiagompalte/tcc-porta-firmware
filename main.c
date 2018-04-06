@@ -344,7 +344,7 @@ main(void)
     timerInit();
     interruptInit();
 
-    //HardwareInit();
+    HardwareInit();
 
 	PinoutSet(true, false);
 
@@ -382,16 +382,15 @@ main(void)
 
 
 
-    //MAP_TimerEnable(TIMER0_BASE, TIMER_A); // Timer ADC
+    MAP_TimerEnable(TIMER0_BASE, TIMER_A); // Timer ADC
 
 
     //Ligando o equipamento, inicia o display
-    //LCDInit();
     while (1) {
-        //HardwareLoop();//adquire o rfid
-        strcpy(g_psUserInfo.sReport.rfid, "12345678");
+        HardwareLoop();//adquire o rfid
+        //strcpy(g_psUserInfo.sReport.rfid, "12345678");
         // Vai ser voz ou senha?
-        //status = hardwareVoiceKey();
+       // status = hardwareVoiceKey();
         //if (status == -1)
         //{
             //Não digitou nada
