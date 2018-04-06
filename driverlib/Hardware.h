@@ -54,4 +54,5 @@ void LCDIntHandler(void);
 void BuzzerIntHandler(void);
 void KeyBoardIntHandler(void);
 void PasswordIntHandler(void);
+int hardwareVoiceKey();
 #endif /* HARDWARE_H_ */

@@ -110,15 +110,17 @@ uint8_t HardwareLoop()
     unsigned char RFIDstatus;
     unsigned char str[MAX_LEN];
     unsigned char str2[6] = {0,0,0,0,0,'\0'};
+    cardStatus = CardNotDetected;
     //unsigned char *str3;
     //g_psUserInfo.sReport.rfid = (char*)malloc(5*sizeof(char));
     while(1)
     {
-        if (MFRC522IsCard() && cardStatus == CardNotDetected)
+        if (MFRC522IsCard())
         {
             cardStatus = CardDetected;
             RFIDstatus = MFRC522Anticoll(str);
             strcpy(g_psUserInfo.sReport.rfid, str);
+            printf("\n RFID: %s", str);
             //memcpy(str2, str, 5);
             //str3 = str;
             //memcpy(g_psUserInfo.sReport.rfid, str, 5);
@@ -126,7 +128,7 @@ uint8_t HardwareLoop()
             //g_psUserInfo.sReport.rfid = (char*)str2;
 
         }
-
+        printf("Não detectou \n");
         //if (status == MI_OK && cardStatus == CardDetected)
         if (cardStatus == CardDetected && RFIDstatus == MI_OK)
         {
@@ -221,7 +223,7 @@ void HardwareControl(char *str_TrancaEletronica)
 {
     if(userStatus == EntryAllowed && CardVerifFlag == true && g_bIntFlag == true)
     {
-        LCDAllowed(str_TrancaEletronica);
+        LCDAllowed(str_TrancaEletronica, "NOME");
         AcionarTrava();
         BuzzerActivate();
         MAP_GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_2, 0x04);

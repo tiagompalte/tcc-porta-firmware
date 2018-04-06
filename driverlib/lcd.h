@@ -168,7 +168,7 @@ extern void LCDPassword();
 extern void LCDKeyPassword();
 extern void LCDShowKeyPassword(uint8_t count);
 extern void LCDNotAllowed();
-extern void LCDAllowed(char *str_TrancaEletronica);
+extern void LCDAllowed(char *str_TrancaEletronica, char *str_permitida);
 extern void LCDUserBlocked();
 extern void LCDError();
 extern void LCDBlinkDisplay(uint16_t time);

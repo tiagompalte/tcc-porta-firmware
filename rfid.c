@@ -131,7 +131,7 @@ void MFRC522ClearBitMask(unsigned char reg, unsigned char mask)
  */
 bool MFRC522IsCard()
 {
-    unsigned char status;
+    unsigned char status = MI_ERR;
     unsigned char str[MAX_LEN];
 
     status = MFRC522Request(PICC_REQIDL, str);
@@ -322,7 +322,7 @@ unsigned char MFRC522ToCard(unsigned char command, unsigned char *sendData, unsi
  */
 unsigned char  MFRC522Request(unsigned char reqMode, unsigned char *TagType)
 {
-    unsigned char status;
+    unsigned char status = MI_ERR;
     unsigned int backBits;
 
     MFRC522Write(BitFramingReg, 0x07);      //TxLastBists = BitFramingReg[2..0]
@@ -360,7 +360,7 @@ unsigned char MFRC522Anticoll(unsigned char *serNum)
     if (status == MI_OK)
     {
         //Verifica o número de série do cartão
-        for (i=0; i<4; i++)
+        for (i=0; i<10; i++)
         {
             serNumCheck ^= serNum[i];
         }

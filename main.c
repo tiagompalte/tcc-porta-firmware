@@ -344,7 +344,7 @@ main(void)
     timerInit();
     interruptInit();
 
-    //HardwareInit();
+    HardwareInit();
 
 	PinoutSet(true, false);
 
@@ -368,8 +368,8 @@ main(void)
 
 	strcpy(g_psUserInfo.sReport.idBoard, IDBOARD);
 	strcpy(g_psUserInfo.sReport.keyBoard, KEYBOARD);
-    strcpy(g_psUserInfo.sReport.rfid, "123456");
-    strcpy(g_psUserInfo.sReport.rfid, "12345678");
+    //strcpy(g_psUserInfo.sReport.rfid, "123456");
+	//strcpy(g_psUserInfo.sReport.rfid, "12345678");
 
     //20k amostras
     int j;
@@ -386,7 +386,7 @@ main(void)
 
 
     //Ligando o equipamento, inicia o display
-    LCDInicio();
+    LCDInit();
     while (1) {
         HardwareLoop();//adquire o rfid
         // Vai ser voz ou senha?
@@ -404,10 +404,7 @@ main(void)
             {
                 //erro
             }
-            else (CommunicationConnecting(status) == errorConnection)
-            {
-                //erro
-            }
+
         }
 
 
