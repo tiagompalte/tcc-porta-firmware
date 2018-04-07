@@ -385,17 +385,14 @@ int Communication(int request, char* size)
 //*****************************************************************************
 //
 // CommunicationConnecting is the final function of this layer. Communicate with
-// the server
-// \param type is the int used set whether is voice or key.
-// Put VOICE on the parameter if the user is using access by voice
-// Put KEY on the parameter if the user is using access by key
-// The function try three times each request if it was some problems with
+// the server. Get the token to use for the next request
+// The function try three times request if it was some problems with
 // the communication
 // \return OK or errorConnection.
 //
 //*****************************************************************************
 
-int CommunicationConnecting(int type)
+int CommunicationConnecting()
 {
     int try = ResetStatus();
     while ((g_psUserInfo.sReport.status != OK) && (try < 3))
@@ -413,10 +410,26 @@ int CommunicationConnecting(int type)
     else
     {
         ustrncpy(g_psUserInfo.sReport.logConnection, "Code 200", 8);
+        return OK;
     }
+}
 
-    try = ResetStatus();
-    g_ui32Delay = 200;
+//*****************************************************************************
+//
+// CommunicationSending is the final function of this layer. Communicate with
+// the server. Send the voice or key.
+// \param type is the int used set whether is voice or key.
+// Put VOICE on the parameter if the user is using access by voice
+// Put KEY on the parameter if the user is using access by key
+// The function try three times request if it was some problems with
+// the communication
+// \return OK or errorConnection.
+//
+//
+
+int CommunicationSending(int type)
+    {
+    int try = ResetStatus();
 
     while ((g_psUserInfo.sReport.status != OK) && (try < 3))
     {

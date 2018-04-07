@@ -134,7 +134,8 @@ extern void CommunicationEvent(uint32_t ui32Event, void* pvData, uint32_t ui32Pa
 extern void SysTickIntHandler(void);
 extern void EnetEvents(uint32_t ui32Event, void *pvData, uint32_t ui32Param);
 extern int Communication(int request, char* size);
-extern int CommunicationConnecting(int type);
+extern int CommunicationConnecting();
+extern int CommunicationSending(int type);
 extern int CommunicationLog();
 
 

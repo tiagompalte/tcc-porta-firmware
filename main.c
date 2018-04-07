@@ -400,7 +400,7 @@ main(void)
             //Leitura da voz ou do teclado
           //  HardwarePassWordControl();//Aparece no display
 
-            if (CommunicationConnecting(status) == errorConnection)
+            if (CommunicationConnecting() == errorConnection)
             {
                 //erro
             }
