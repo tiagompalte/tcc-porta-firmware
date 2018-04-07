@@ -450,7 +450,7 @@ main(void)
 
     //Ligando o equipamento, inicia o display
     while (1) {
-
+        PrincipalLoop();
 
 
 
