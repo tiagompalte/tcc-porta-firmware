@@ -75,13 +75,15 @@
 #include "driverlib/timer.h"
 #include "driverlib/ssi.h"
 
-#define GET         0
-#define POST        1
-#define POSTKEY     2
-#define POSTACCESS  3
-#define GETteste    4
-#define errorConnection    -1
-#define OK    200
+#define GET                     0
+#define POST                    1
+#define POSTKEY                 2
+#define POSTACCESS              3
+#define GETteste                4
+#define errorConnection        -1
+#define ERROR                  -1
+#define OK                      1
+#define OK_connection         200
 
 #define KEYBOARD       "1234"
 #define IDBOARD         "11"
@@ -325,6 +327,67 @@ void SysTickIntHandler(void) {
     }
 }
 
+/*
+ * SEQUENCIA DO LOOP PRINCIPAL
+ * 1. IDLE
+ * 2. RFID DETECTADO
+ * 3. INICIA COMUNICACAO P VERIFICAR SE USUARIO EXISTE
+ * 4. SE USUARIO NAO ENCONTRADO -> MSG ERRO
+ *    SE USUARIO ENCONTRADO -> INICIAR COLETA DE AUDIO
+ * 5. PROCESSAR AUDIO
+ * 6. SE AUDIO CONFIRMADO -> ACIONAR TRANCA
+ *    SE AUDIO NAO CONFIRMADO -> MSG ERRO
+ * 7. TIMEOUT DE 10SEGS P REACIONAR A TRANCA
+ * 8. IDLE
+ *
+ */
+
+void PrincipalLoop()
+{
+    HardwareLoop(); //adquire o rfid
+    //strcpy(g_psUserInfo.sReport.rfid, "12345678");
+    // Vai ser voz ou senha?
+    // status = hardwareVoiceKey();
+    //if (status == -1)
+    //{
+    //Não digitou nada
+    //}
+    //else
+    // {
+    //Leitura da voz ou do teclado
+    //  HardwarePassWordControl();//Aparece no display
+
+    if (CommunicationConnecting() == errorConnection)
+    {
+        //erro
+    }
+
+    // }
+
+    // AGUARDA VERIFICACAO DO RFID
+    //MAP_TimerEnable(TIMER2_BASE, TIMER_A); // Timer 10s
+    // tem 10 segundos pra enviar o cÃ›digo RFID e comeÃ�ar a receber os dados
+    // Se o RFID deu ok, liberar timer pra comecar a receber a voz, mostrar msgs etc...
+    // verificar se o usuario quer usar o teclado ao inves da voz...
+
+    if (conversionEnd == 1)
+    { // Quando terminar de fazer a conversâ€žo
+        if (true)
+        { // Verificar a senha
+            // ABRIR A PORTA
+            //MAP_TimerEnable(TIMER1_BASE, TIMER_A); // Timer 5s
+            // 5s pra abrir a porta, se passar o tempo tranca de novo...
+        }
+        else
+        {
+            // MENSAGEM DE ERRO
+        }
+        conversionEnd = 0;
+    }
+}
+
+
+
 
 
 int
@@ -387,63 +450,13 @@ main(void)
 
     //Ligando o equipamento, inicia o display
     while (1) {
-        HardwareLoop();//adquire o rfid
-        //strcpy(g_psUserInfo.sReport.rfid, "12345678");
-        // Vai ser voz ou senha?
-       // status = hardwareVoiceKey();
-        //if (status == -1)
-        //{
-            //Não digitou nada
-        //}
-        //else
-       // {
-            //Leitura da voz ou do teclado
-          //  HardwarePassWordControl();//Aparece no display
-
-            if (CommunicationConnecting() == errorConnection)
-            {
-                //erro
-            }
-
-       // }
 
 
 
 
 
-            // AGUARDA VERIFICACAO DO RFID
-            //MAP_TimerEnable(TIMER2_BASE, TIMER_A); // Timer 10s
-            // tem 10 segundos pra enviar o cÃ›digo RFID e comeÃ�ar a receber os dados
-            // Se o RFID deu ok, liberar timer pra comecar a receber a voz, mostrar msgs etc...
-            // verificar se o usuario quer usar o teclado ao inves da voz...
 
-
-          if (conversionEnd == 1) { // Quando terminar de fazer a conversâ€žo
-        	    if (true) { // Verificar a senha
-                    // ABRIR A PORTA
-                    //MAP_TimerEnable(TIMER1_BASE, TIMER_A); // Timer 5s
-                    // 5s pra abrir a porta, se passar o tempo tranca de novo...
-                } else {
-                    // MENSAGEM DE ERRO
-                }
-                conversionEnd = 0;
-          }
     }
-
-	/*
-	 * SEQUENCIA DO LOOP PRINCIPAL
-	 * 1. IDLE
-	 * 2. RFID DETECTADO
-	 * 3. INICIA COMUNICACAO P VERIFICAR SE USUARIO EXISTE
-	 * 4. SE USUARIO NAO ENCONTRADO -> MSG ERRO
-	 * 	  SE USUARIO ENCONTRADO -> INICIAR COLETA DE AUDIO
-	 * 5. PROCESSAR AUDIO
-	 * 6. SE AUDIO CONFIRMADO -> ACIONAR TRANCA
-	 * 	  SE AUDIO NAO CONFIRMADO -> MSG ERRO
-	 * 7. TIMEOUT DE 10SEGS P REACIONAR A TRANCA
-	 * 8. IDLE
-	 *
-	 */
 
 }
 
