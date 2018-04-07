@@ -13,6 +13,7 @@
  * ************************************************************** *
  * communication.c - Prototypes for the driver for the communication.
  * ************************************************************** */
+
 #include "communication.h"
 #include <stdint.h>
 #include <stdbool.h>
@@ -40,7 +41,6 @@
 #include "eth_client.h"
 #include "json.h"
 
-
 //*****************************************************************************
 //
 // Constant strings for status messages.
@@ -49,7 +49,6 @@
 const char g_pcNotFound[] = "User Not Found";
 const char g_pcServerBusy[] = "Server Busy";
 const char g_pcWaitData[] = "Waiting for Data";
-
 
 //*****************************************************************************
 //
@@ -65,8 +64,6 @@ volatile enum
     STATE_UPDATE_USER,
     STATE_WAIT_NICE,
 } g_iState = STATE_NOT_CONNECTED;
-
-
 
 //*****************************************************************************
 //
@@ -425,7 +422,7 @@ int CommunicationConnecting()
 // the communication
 // \return OK or errorConnection.
 //
-//
+//*****************************************************************************
 
 int CommunicationSending(int type)
     {
@@ -455,7 +452,6 @@ int CommunicationSending(int type)
         ustrncpy(g_psUserInfo.sReport.logConnection, "Code 200", 8);
         return OK;
     }
-
 }
 
 //*****************************************************************************
@@ -468,7 +464,6 @@ int CommunicationSending(int type)
 // \return OK or errorConnection.
 //
 //*****************************************************************************
-
 int CommunicationLog()
 {
     int try = ResetStatus();
