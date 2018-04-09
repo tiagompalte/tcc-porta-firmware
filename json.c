@@ -611,12 +611,13 @@ int32_t JSONParsePOST(uint32_t ui32Index, tUserReport *psUserReport,
         }
         else
         {
+            strcpy(psUserReport->log, "Bad credentials");
             psUserReport->status = 400;    //errorKey
         }
     }
     else
     {
-        psUserReport->status = 404;
+        psUserReport->status = 404;     //Erro de conexão
     }
 
     sBufPtr = sBufList;

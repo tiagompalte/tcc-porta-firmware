@@ -357,10 +357,34 @@ void PrincipalLoop()
     //Leitura da voz ou do teclado
     //  HardwarePassWordControl();//Aparece no display
 
-    if (CommunicationConnecting() == errorConnection)
+    if (CommunicationConnecting() == ERROR)
     {
-        //erro
+        if (g_psUserInfo.sReport.status == 400)
+        {
+            //Senha da placa errada Display
+            PrincipalLoop();
+        }
+        else if (g_psUserInfo.sReport.status == 404)
+        {
+            //Erro de conexão Display
+            PrincipalLoop();
+        }
+        else
+        {
+            //erro Display
+            PrincipalLoop();
+        }
     }
+
+    //Display: Digite 0 para voz e 1 para senha
+    //Leitura do teclado
+
+    int status;
+    status = VOICE;
+    if (CommunicationSending(status) == ERROR){
+
+    }
+
 
     // }
 
@@ -443,10 +467,7 @@ main(void)
 
 	strcpy(g_psUserInfo.sReport.userKey, "1234");
 
-
-
     MAP_TimerEnable(TIMER0_BASE, TIMER_A); // Timer ADC
-
 
     //Ligando o equipamento, inicia o display
     while (1) {
