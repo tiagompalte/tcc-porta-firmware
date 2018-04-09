@@ -455,8 +455,7 @@ main(void)
 
 	strcpy(g_psUserInfo.sReport.idBoard, IDBOARD);
 	strcpy(g_psUserInfo.sReport.keyBoard, KEYBOARD);
-    //strcpy(g_psUserInfo.sReport.rfid, "123456");
-	//strcpy(g_psUserInfo.sReport.rfid, "12345678");
+	//strcpy(g_psUserInfo.sReport.rfid, "1234");
 
     //20k amostras
     int j;

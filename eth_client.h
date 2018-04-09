@@ -82,7 +82,7 @@ typedef struct
     //
     // The current rfid.
     //
-    char rfid[32];
+    char rfid[4];
 
     char log[32];
 
