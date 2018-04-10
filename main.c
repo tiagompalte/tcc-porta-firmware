@@ -430,7 +430,7 @@ main(void)
     ADCInit();
     timerInit();
     interruptInit();
-
+    HardwareInit();
 	PinoutSet(true, false);
 
 	SysTickPeriodSet((g_ui32SysClock / 1000) * SYSTEM_TICK_MMS);
@@ -467,7 +467,7 @@ main(void)
     MAP_TimerEnable(TIMER0_BASE, TIMER_A); // Timer ADC
 
     //Ligando o equipamento, inicia o display
-    HardwareInit();
+
     LCDInicio();
     while (1) {
         principalLoop();
