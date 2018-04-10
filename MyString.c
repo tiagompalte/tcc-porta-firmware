@@ -69,11 +69,38 @@ int strSep(unsigned char* strIn, unsigned char* strOut)
     {
         byte1 = (strIn[i]>>4)&0x0F;
         byte2 = (strIn[i])&0x0F;
-        strOut[2*i + j] = byte1;
+        strOut[2*i] = byte1;
+        strOut[2*i + 1] = byte2;
+        /*strOut[2*i + j] = byte1;
         strOut[2*i + j + 1] = byte2;
         strOut[2*i + j + 2] = " ";
-        j++;
+        j++;*/
     }
 
     return 1;
+}
+
+int hex2str(unsigned char* strIn, unsigned char* strOut)
+{
+    int i = 0;
+    unsigned char c;
+    for(i = 0; i < 8; i++)
+    {
+        c = strIn[i];
+        strOut[i] = (c < 10) ? (c+48) : (c+55);
+
+    }
+}
+
+int strInsertSpace(unsigned char* strIn, unsigned char* strOut)
+{
+    int i = 0;
+    int j = 0;
+    for(i = 0; i < strlen(strIn); i++)
+    {
+        strOut[2*i + j] = strIn[2*i];
+        strOut[2*i + j + 1] = strIn[2*i + 1];
+        strOut[2*i + j + 2] = ' ';
+        j++;
+    }
 }

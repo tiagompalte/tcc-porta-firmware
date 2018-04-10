@@ -112,8 +112,10 @@ uint8_t HardwareLoop()
     unsigned char str[MAX_LEN];
     unsigned char *str_UID;
     unsigned char str_UIDRev[5] = {0, 0, 0, 0, '\0'};
-    unsigned char str_UIDExt[12];
-    str_UIDExt[11] = '\0';
+    unsigned char str_UIDExt[9];
+    unsigned char str_UIDFinal[12];
+    str_UIDExt[8] = '\0';
+    str_UIDFinal[11] = '\0';
     int i = 0;
     cardStatus = CardNotDetected;
     while(1)
@@ -125,9 +127,11 @@ uint8_t HardwareLoop()
 
            // memcpy(str_UIDRev, strrev(str_UID), 4);
             strSep(str_UID,str_UIDExt);
+            hex2str(str_UIDExt, str_UIDExt);
+            strInsertSpace(str_UIDExt, str_UIDFinal);
+            memcpy(g_psUserInfo.sReport.rfid, str_UIDFinal, 11);
+            printf("\n %s", g_psUserInfo.sReport.rfid);
             //printString(str_UIDExt);
-
-            memcpy(g_psUserInfo.sReport.rfid, str_UIDExt, 11);
             cardStatus = CardDetected;
         }
         printf("\n RFID nao detectado");

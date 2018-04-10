@@ -455,12 +455,6 @@ main(void)
 	strcpy(g_psUserInfo.sReport.keyBoard, KEYBOARD);
 	//strcpy(g_psUserInfo.sReport.rfid, "1234");
 
-    //20k amostras
-    int j;
-    for (j = 0; j < NUM_AMOSTRAS; j++)
-    {
-        bufferConversao[j] = '1';
-    }
 
 	strcpy(g_psUserInfo.sReport.userKey, "1234");
 

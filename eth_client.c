@@ -2108,6 +2108,13 @@ int32_t requestPostSendAudio(const char *pcQuery, tUserReport *psUserReport,
 
     i32Idx = MergeRequest(i32Idx, g_audio, sizeof(g_audio), false);
 
+    //20k amostras
+    int j;
+    for (j = 0; j < NUM_AMOSTRAS; j++)
+    {
+        bufferConversao[j] = '1';
+    }
+
     //
     // Append the audio streaming string .
     //

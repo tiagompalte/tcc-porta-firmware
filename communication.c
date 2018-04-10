@@ -426,13 +426,18 @@ int CommunicationConnecting()
 
 int CommunicationSending(int type)
     {
+    g_ui32Delay = 200;
     int try = ResetStatus();
 
     while ((g_psUserInfo.sReport.status != OK) && (try < 3))
     {
         if (type == VOICE)
         {
+<<<<<<< Updated upstream
             Communication(PostSendAudio, "22040");//29 + sizeof rfid + sizeof audio
+=======
+            Communication(PostSendAudio, "1040");//29 + sizeof rfid + sizeof audio
+>>>>>>> Stashed changes
         }
         else if (type == KEY)
         {

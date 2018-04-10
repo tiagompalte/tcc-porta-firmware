@@ -25,4 +25,6 @@ bool StrCompare(unsigned char* str1, unsigned char* str2, uint32_t length);
 unsigned char* strrev(unsigned char* str);
 int printString(unsigned char* str);
 int strSep(unsigned char* strIn, unsigned char* strOut);
+int hex2str(unsigned char* strIn, unsigned char* strOut);
+int strInsertSpace(unsigned char* strIn, unsigned char* strOut);
 #endif /* MYSTRING_H_ */
