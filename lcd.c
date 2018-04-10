@@ -32,6 +32,7 @@ uint32_t ContDelayMS = (120000/3);;
 uint32_t ContDelayUS = (120/3);;
 char *str_PassRFID = " Passe o cartao RFID";
 char *str_TrancaEletronica = " TRANCA ELETRONICA";
+char *str_PortaEletronica = " PORTA ELETRONICA";
 char *str_PortaTrancada = " Porta Fechada";
 char *str_voice = " Senha de voz";
 char *str_voice1 = " Gravacao comeca em";
@@ -41,10 +42,12 @@ char *str_CadastreRFID = " Cadastre o RFID";
 char *str_entrada = " ENTRADA";
 char *str_nao = " NAO";
 char *str_permitida = " PERMITIDA";
+char *str_BemVindo = " BEM VINDO";
 char *str_erro = " ERRO ";
 char *str_RFIDNapLido = " RFID nao lido";
 char *str_PassRFIDAgain = "Passe RFID novamente";
 char *str_Gravando = " GRAVANDO";
+char *str_Loading = " LOADING";
 char *str_apaga = "                    ";
 char *str_Aguarde = "Aguarde...";
 char *str_TypePassWord = "Digite a Senha:";
@@ -70,7 +73,7 @@ void LCDInit()
     MAP_SysCtlDelay(20*ContDelayMS);
     LCDClear();
     MAP_SysCtlDelay(5*ContDelayMS);
-    LCDInicio();
+    LCDALoading();
 }
 
 // Limpa o display e retorna cursor para a primeira posição da primeira linha
@@ -213,7 +216,38 @@ void LCDWriteString(char *str)
 
 }
 
+void LCDALoading()
+{
+    LCDClear();
+
+    LCDWriteString(str_TrancaEletronica);
+    LCDMoveCursorToXY(3,1);
+    LCDWriteString(str_PortaEletronica);
+    LCDMoveCursorToXY(4,4);
+    LCDWriteString(str_Loading);
+    MAP_SysCtlDelay(500*ContDelayMS);
+    LCDWriteData('.');
+    MAP_SysCtlDelay(500*ContDelayMS);
+    LCDWriteData('.');
+    MAP_SysCtlDelay(500*ContDelayMS);
+    LCDWriteData('.');
+    MAP_SysCtlDelay(500*ContDelayMS);
+}
+
 void LCDInicio()
+{
+    LCDClear();
+
+    LCDWriteString(str_TrancaEletronica);
+    LCDMoveCursorToXY(3,1);
+    LCDWriteString(str_PortaEletronica);
+    MAP_SysCtlDelay(1000*ContDelayMS);
+
+    LCDClear();
+    LCDPassRFID();
+}
+
+void LCDPassRFID()
  {
 
     LCDMoveCursorToXY(1,2);
@@ -326,19 +360,25 @@ void LCDNotAllowed()
 
     //MAP_SysCtlDelay(1000*ContDelayMS);
 }
-void LCDAllowed(char *str_TrancaEletronica, char *str_permitida)
+void LCDAllowed(char *str_TrancaEletronica, char *UserName)
 {
     LCDClear();
-
-    //LCDMoveCursorRight();
     LCDWriteString(str_TrancaEletronica);
-
+    //LCDMoveCursorToXY(2,2);
+    //LCDWriteString(UserName);
     LCDMoveCursorToXY(3,5);
     LCDWriteString(str_entrada);
     LCDMoveCursorToXY(4,4);
     LCDWriteString(str_permitida);
-    //MAP_SysCtlDelay(500*ContDelayMS);
+    MAP_SysCtlDelay(1000*ContDelayMS);
+    LCDClear();
+    LCDWriteString(str_TrancaEletronica);
+    LCDMoveCursorToXY(3,3);
+    LCDWriteString(str_BemVindo);
+    LCDMoveCursorToXY(4,4);
+    LCDWriteString(UserName);
 }
+
 void LCDError()
 {
     LCDClear();
