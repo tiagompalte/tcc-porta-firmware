@@ -342,7 +342,7 @@ void SysTickIntHandler(void) {
  *
  */
 
-void PrincipalLoop()
+void principalLoop()
 {
     HardwareLoop(); //adquire o rfid
     //strcpy(g_psUserInfo.sReport.rfid, "12345678");
@@ -362,17 +362,17 @@ void PrincipalLoop()
         if (g_psUserInfo.sReport.status == 400)
         {
             //Senha da placa errada Display
-            PrincipalLoop();
+            principalLoop();
         }
         else if (g_psUserInfo.sReport.status == 404)
         {
             //Erro de conexão Display
-            PrincipalLoop();
+            principalLoop();
         }
         else
         {
             //erro Display
-            PrincipalLoop();
+            principalLoop();
         }
     }
 
@@ -470,7 +470,7 @@ main(void)
 
     //Ligando o equipamento, inicia o display
     while (1) {
-        PrincipalLoop();
+        principalLoop();
 
 
 
