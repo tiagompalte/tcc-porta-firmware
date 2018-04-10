@@ -41,7 +41,8 @@ typedef enum UserOptionsStatus
     none
 }UserOptionsStatus;
 
-#include "stdint.h"
+#include <stdint.h>
+#include <stdbool.h>
 uint32_t ui32SysClock;
 uint32_t ulDelayms;
 extern void HardwareInit();
@@ -55,4 +56,5 @@ void BuzzerIntHandler(void);
 void KeyBoardIntHandler(void);
 void PasswordIntHandler(void);
 int hardwareVoiceKey();
+int hardwareCheckUser(bool userRegistered);
 #endif /* HARDWARE_H_ */

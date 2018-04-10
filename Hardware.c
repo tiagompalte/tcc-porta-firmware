@@ -18,6 +18,7 @@
 #include "stdlib.h"
 #include "driverlib/Hardware.h"
 #include "string.h"
+#include "driverlib/MyString.h"
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
 #include "driverlib/gpio.h"
@@ -109,24 +110,25 @@ uint8_t HardwareLoop()
 {
     unsigned char RFIDstatus;
     unsigned char str[MAX_LEN];
-    unsigned char str2[6] = {0,0,0,0,0,'\0'};
+    unsigned char *str_UID;
+    unsigned char str_UIDRev[5] = {0, 0, 0, 0, '\0'};
+    unsigned char str_UIDExt[12];
+    str_UIDExt[11] = '\0';
+    int i = 0;
     cardStatus = CardNotDetected;
-    //unsigned char *str3;
-    //g_psUserInfo.sReport.rfid = (char*)malloc(5*sizeof(char));
     while(1)
     {
         if (MFRC522IsCard())
         {
-            cardStatus = CardDetected;
             RFIDstatus = MFRC522Anticoll(str);
-            strcpy(g_psUserInfo.sReport.rfid, str);
-            printf("\n RFID: %s", str);
-            //memcpy(str2, str, 5);
-            //str3 = str;
-            //memcpy(g_psUserInfo.sReport.rfid, str, 5);
+            memcpy(str_UID, str, 4);
 
-            //g_psUserInfo.sReport.rfid = (char*)str2;
+           // memcpy(str_UIDRev, strrev(str_UID), 4);
+            strSep(str_UID,str_UIDExt);
+            //printString(str_UIDExt);
 
+            memcpy(g_psUserInfo.sReport.rfid, str_UIDExt, 11);
+            cardStatus = CardDetected;
         }
         printf("\n RFID nao detectado");
         if (cardStatus == CardDetected && RFIDstatus == MI_OK)
@@ -292,4 +294,3 @@ int hardwareVoiceKey()
     }
     return -1;
 }
-
