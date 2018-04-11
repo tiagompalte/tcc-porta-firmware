@@ -144,7 +144,7 @@ uint8_t HardwareLoop()
         HardwareControl();*/
         MFRC522Halt();
     }
-    strcpy(g_psUserInfo.sReport.rfid, "Erro");
+    strcpy(g_psUserInfo.sReport.log, "Erro: RFID não cadastrado");
     return 0;
 }
 

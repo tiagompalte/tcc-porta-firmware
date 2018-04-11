@@ -361,19 +361,29 @@ void principalLoop()
     {
         if (g_psUserInfo.sReport.status == 400)
         {
+            strcpy(g_psUserInfo.sReport.log, "Erro 400: Usuário não encontrado");
             //Senha da placa errada Display
+            //imprimir erro de log
             principalLoop();
         }
         else if (g_psUserInfo.sReport.status == 404)
         {
+            strcpy(g_psUserInfo.sReport.log, "Erro 404: Sem conexão");
             //Erro de conexão Display
+            //imprimir erro de log
             principalLoop();
         }
         else
         {
+            strcpy(g_psUserInfo.sReport.log, "Erro");
             //erro Display
+            //imprimir erro de log
             principalLoop();
         }
+    }
+    else
+    {
+        strcpy(g_psUserInfo.sReport.log, "Codigo: 200");
     }
 
     //Display: Digite 0 para voz e 1 para senha
@@ -382,7 +392,9 @@ void principalLoop()
     int status;
     status = VOICE;
     if (CommunicationSending(status) == ERROR){
-
+        strcpy(g_psUserInfo.sReport.log, "Erro: RFID não cadastrado");
+        principalLoop();
+        //imprimir erro de log
     }
 
 
