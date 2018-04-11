@@ -43,13 +43,14 @@ typedef enum UserOptionsStatus
 
 #include <stdint.h>
 #include <stdbool.h>
+
 uint32_t ui32SysClock;
 uint32_t ulDelayms;
 extern void HardwareInit();
 extern uint8_t HardwareLoop();
 extern void HardwareRFID();
-extern void HardwareControl(char *str_TrancaEletronica);
-extern void HardwarePassWordControl();
+extern void HardwareControl(UserStatus userStatus);
+extern void HardwarePassWordControl(int status);
 extern uint8_t VerificaTentativas();
 void LCDIntHandler(void);
 void BuzzerIntHandler(void);

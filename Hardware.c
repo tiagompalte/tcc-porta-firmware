@@ -170,15 +170,15 @@ uint8_t VerificaTentativas()
     return NumTentativas;
 }
 uint8_t keyPass = 0x00;
-void HardwarePassWordControl()
+void HardwarePassWordControl(int status)
 {
-    if(userOptionsStatus == KeyPassWord && userStatus != UserBlocked)
+    if(status == KEY && userStatus != UserBlocked)
     {
         PassWordCount = 0;
         LCDClear();
         LCDKeyPassword();
 
-        while(PassWordCount < 5)
+        while(PassWordCount < 8)
         {
             keyPass = KeyboardGetKey();
             if(keyPass != 0xFF)
@@ -196,13 +196,13 @@ void HardwarePassWordControl()
         userOptionsStatus = none;
         strcpy(g_psUserInfo.sReport.userKey,PassWord);
     }
-    else if(userOptionsStatus == VoicePassWord && userStatus != UserBlocked)
+    else if(status == VOICE && userStatus != UserBlocked)
     {
         uint8_t t = 0;
         LCDRecordingSound();
         CardVerifFlag = true;
         userOptionsStatus = none;
-        userStatus = EntryAllowed;
+        //userStatus = EntryAllowed;
         LCDMoveCursorToXY(3,14);
         //LCDWriteData(t+48);
         LCDWriteData('|');
@@ -217,18 +217,18 @@ void HardwarePassWordControl()
         //Leitura da voz
         MAP_SysCtlDelay(1000*ulDelayms);
     }
-    else if(userOptionsStatus == none)
+    else if(status == NONE)
     {
         CardVerifFlag = true;
         //userOptionsStatus = none;
     }
 }
 
-void HardwareControl(char *str_TrancaEletronica)
+void HardwareControl(UserStatus userSta)
 {
-    if(userStatus == EntryAllowed && CardVerifFlag == true && g_bIntFlag == true)
+    if(userSta == EntryAllowed && CardVerifFlag == true && g_bIntFlag == true)
     {
-        LCDAllowed(str_TrancaEletronica, "NOME");
+        LCDAllowed(g_psUserInfo.sReport.name);
         AcionarTrava();
         BuzzerActivate();
         MAP_GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_2, 0x04);
@@ -238,8 +238,9 @@ void HardwareControl(char *str_TrancaEletronica)
         CardVerifFlag = false;
         g_bIntFlag = false;
         userStatus = EntryNotAllowed;
+        userSta = userStatus;
     }
-    else if(userStatus == EntryNotAllowed && CardVerifFlag == true && g_bIntFlag == true)
+    else if(userSta == EntryNotAllowed && CardVerifFlag == true && g_bIntFlag == true)
     {
         g_bIntFlag = false;
         LCDNotAllowed();
@@ -250,10 +251,10 @@ void HardwareControl(char *str_TrancaEletronica)
         CardVerifFlag = false;
         //userStatus = EntryNotAllowed;
     }
-    else if(userStatus == UserNotRegistered && CardVerifFlag == true && g_bIntFlag == true)
+    else if(userSta == UserNotRegistered && CardVerifFlag == true && g_bIntFlag == true)
     {
         g_bIntFlag = false;
-        LCDNotRegister();
+        LCDErroLog();
         BuzzerActivate();
         MAP_TimerLoadSet(TIMER4_BASE, TIMER_A, 1 * g_ui32SysClock);
         MAP_TimerEnable(TIMER4_BASE, TIMER_A);
@@ -261,7 +262,7 @@ void HardwareControl(char *str_TrancaEletronica)
         CardVerifFlag = false;
         //userStatus = UserNotRegistered;
     }
-    else if(userStatus == UserBlocked && CardVerifFlag == true && g_bIntFlag == true)
+    else if(userSta == UserBlocked && CardVerifFlag == true && g_bIntFlag == true)
     {
         g_bIntFlag = false;
         LCDUserBlocked();
@@ -281,20 +282,29 @@ void HardwareControl(char *str_TrancaEletronica)
 
 int hardwareVoiceKey()
 {
-    int cont = 0;
+
     PassWordCount = 0;
     LCDClear();
-    LCDKeyPassword();
-
-    while (keyPass != 0 &&  keyPass != 1 && cont < 10000)
+    LCDVoiceKey();
+    keyPass = 0xFF;
+    int counter = 0;
+    while (PassWordCount == 0)
     {
         keyPass = KeyboardGetKey();
         if (keyPass != 0xFF)
         {
-
-            return keyPass;
+            if(keyPass == 0x0E)
+            {
+                PassWordCount = 1;
+                return VOICE;
+            }
+            else if(keyPass == 0x0F)
+            {
+                PassWordCount = 1;
+                return KEY;
+            }
         }
-        cont++;
+        printf("\n Lendo teclado");
     }
     return -1;
 }

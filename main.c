@@ -93,6 +93,10 @@ int i, tempIndex;
 int conversionEnd;
 int status;
 
+char *str_noConnection = "Sem Conexao";
+char *str_noServer = "Servidor Fora do Ar";
+char *str_UserNotRegistered = "RFID NAO Cadastrado";
+UserStatus uStatus = EntryNotAllowed;
 /*
  * ISRs
  */
@@ -361,23 +365,20 @@ void principalLoop()
     {
         if (g_psUserInfo.sReport.status == 400)
         {
-            strcpy(g_psUserInfo.sReport.log, "Erro 400: Usuário não encontrado");
-            //Senha da placa errada Display
-            //imprimir erro de log
+            strcpy(g_psUserInfo.sReport.log, str_noConnection);
+            LCDErroLog();
             principalLoop();
         }
         else if (g_psUserInfo.sReport.status == 404)
         {
-            strcpy(g_psUserInfo.sReport.log, "Erro 404: Sem conexão");
-            //Erro de conexão Display
-            //imprimir erro de log
+            strcpy(g_psUserInfo.sReport.log, str_noServer);
+            LCDErroLog();
             principalLoop();
         }
         else
         {
-            strcpy(g_psUserInfo.sReport.log, "Erro");
-            //erro Display
-            //imprimir erro de log
+            strcpy(g_psUserInfo.sReport.log, str_noConnection);
+            LCDErroLog();
             principalLoop();
         }
     }
@@ -389,12 +390,25 @@ void principalLoop()
     //Display: Digite 0 para voz e 1 para senha
     //Leitura do teclado
 
-    int status;
-    status = VOICE;
+    int status = NONE;
+    printf("\n %c", status);
+    //status = hardwareVoiceKey();
+    status = KEY;
+    HardwarePassWordControl(status);
     if (CommunicationSending(status) == ERROR){
-        strcpy(g_psUserInfo.sReport.log, "Erro: RFID não cadastrado");
+        //strcpy(g_psUserInfo.sReport.log, str_UserNotRegistered);
+        uStatus = EntryNotAllowed;
+        HardwareControl(uStatus);
         principalLoop();
         //imprimir erro de log
+    }
+    else
+    {
+        uStatus = EntryAllowed;
+        HardwareControl(uStatus);
+
+        //Tudo certo
+
     }
 
 

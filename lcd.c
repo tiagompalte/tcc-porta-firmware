@@ -19,7 +19,7 @@
 #include "driverlib/lcd.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/rom_map.h"
-
+#include "communication.h"
 #define ui32SysClock 120000000
 
 uint8_t LCDRow = 0;
@@ -34,10 +34,10 @@ char *str_PassRFID = " Passe o cartao RFID";
 char *str_TrancaEletronica = " TRANCA ELETRONICA";
 char *str_PortaEletronica = " PORTA ELETRONICA";
 char *str_PortaTrancada = " Porta Fechada";
-char *str_voice = " Senha de voz";
 char *str_voice1 = " Gravacao comeca em";
 char *str_voice2 = " segundos";
 char *str_semCadastro = "RFID NAO Cadastrado";
+
 char *str_CadastreRFID = " Cadastre o RFID";
 char *str_entrada = " ENTRADA";
 char *str_nao = " NAO";
@@ -52,7 +52,9 @@ char *str_apaga = "                    ";
 char *str_Aguarde = "Aguarde...";
 char *str_TypePassWord = "Digite a Senha:";
 char *str_serBlocked = "Usuario Bloqueado";
-
+char *str_VoiceKey = "Digite: ";
+char *str_Voice = " * -> VOZ";
+char *str_Key = " # -> TECLADO";
 // Inicializa display
 void LCDInit()
 {
@@ -279,7 +281,7 @@ void LCDPassword()
     LCDWriteString(str_TrancaEletronica);
 
     LCDMoveCursorToXY(2,3);
-    LCDWriteString(str_voice);
+    LCDWriteString(str_Voice);
 
     LCDMoveCursorToXY(3,1);
     LCDWriteString(str_voice1);
@@ -360,7 +362,7 @@ void LCDNotAllowed()
 
     //MAP_SysCtlDelay(1000*ContDelayMS);
 }
-void LCDAllowed(char *str_TrancaEletronica, char *UserName)
+void LCDAllowed(char *UserName)
 {
     LCDClear();
     LCDWriteString(str_TrancaEletronica);
@@ -454,4 +456,25 @@ void LCDRecordingSound()
     LCDMoveCursorToXY(3,5);
 }
 
+int LCDVoiceKey()
+{
+    LCDClear();
+    LCDWriteString(str_TrancaEletronica);
+    LCDMoveCursorToXY(2,1);
+    LCDWriteString(str_VoiceKey);
+    LCDMoveCursorToXY(3,1);
+    LCDWriteString(str_Voice);
+    LCDMoveCursorToXY(4,1);
+    LCDWriteString(str_Key);
+}
 
+int LCDErroLog()
+{
+    LCDClear();
+    LCDWriteString(str_TrancaEletronica);
+    LCDMoveCursorToXY(2,1);
+    LCDWriteString("ERRO:");
+    LCDMoveCursorToXY(3,1);
+    LCDWriteString(g_psUserInfo.sReport.log);
+    MAP_SysCtlDelay(1000*ContDelayMS);
+}

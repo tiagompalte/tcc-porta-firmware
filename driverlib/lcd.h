@@ -168,7 +168,7 @@ extern void LCDPassword();
 extern void LCDKeyPassword();
 extern void LCDShowKeyPassword(uint8_t count);
 extern void LCDNotAllowed();
-extern void LCDAllowed(char *str_TrancaEletronica, char *UserName);
+extern void LCDAllowed(char *UserName);
 extern void LCDALoading();
 extern void LCDPassRFID();
 extern void LCDUserBlocked();
@@ -177,4 +177,6 @@ extern void LCDBlinkDisplay(uint16_t time);
 extern uint8_t getAddress();
 extern void LCDNotRegister();
 extern void LCDRecordingSound();
+int LCDVoiceKey();
+int LCDErroLog();
 #endif /* LCD_H_ */
