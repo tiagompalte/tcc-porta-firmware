@@ -453,7 +453,7 @@ main(void)
 
 	strcpy(g_psUserInfo.sReport.idBoard, IDBOARD);
 	strcpy(g_psUserInfo.sReport.keyBoard, KEYBOARD);
-	//strcpy(g_psUserInfo.sReport.rfid, "1234");
+	//strcpy(g_psUserInfo.sReport.rfid, "C9 42 6A 7B");
 
 
 	strcpy(g_psUserInfo.sReport.userKey, "1234");

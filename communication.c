@@ -433,11 +433,7 @@ int CommunicationSending(int type)
     {
         if (type == VOICE)
         {
-<<<<<<< Updated upstream
             Communication(PostSendAudio, "22040");//29 + sizeof rfid + sizeof audio
-=======
-            Communication(PostSendAudio, "1040");//29 + sizeof rfid + sizeof audio
->>>>>>> Stashed changes
         }
         else if (type == KEY)
         {
