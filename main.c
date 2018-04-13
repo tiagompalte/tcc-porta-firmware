@@ -410,30 +410,6 @@ void principalLoop()
         //Tudo certo
 
     }
-
-
-    // }
-
-    // AGUARDA VERIFICACAO DO RFID
-    //MAP_TimerEnable(TIMER2_BASE, TIMER_A); // Timer 10s
-    // tem 10 segundos pra enviar o cÃ›digo RFID e comeÃ�ar a receber os dados
-    // Se o RFID deu ok, liberar timer pra comecar a receber a voz, mostrar msgs etc...
-    // verificar se o usuario quer usar o teclado ao inves da voz...
-
-    if (conversionEnd == 1)
-    { // Quando terminar de fazer a conversâ€žo
-        if (true)
-        { // Verificar a senha
-            // ABRIR A PORTA
-            //MAP_TimerEnable(TIMER1_BASE, TIMER_A); // Timer 5s
-            // 5s pra abrir a porta, se passar o tempo tranca de novo...
-        }
-        else
-        {
-            // MENSAGEM DE ERRO
-        }
-        conversionEnd = 0;
-    }
 }
 
 
@@ -484,17 +460,11 @@ main(void)
 
 	strcpy(g_psUserInfo.sReport.userKey, "1234");
 
-    MAP_TimerEnable(TIMER0_BASE, TIMER_A); // Timer ADC
-
     //Ligando o equipamento, inicia o display
 
     LCDInicio();
     while (1) {
-        principalLoop();
-
-
-
-
+       principalLoop();
 
     }
 

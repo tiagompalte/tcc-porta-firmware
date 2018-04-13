@@ -208,14 +208,17 @@ void HardwarePassWordControl(int status)
         LCDWriteData('|');
         LCDMoveCursorToXY(3,5);
         LCDWriteData('|');
+
+        MAP_TimerEnable(TIMER0_BASE, TIMER_A); // Habilita Interrupcao do ADC
+
         while(t < 8)
         {
             MAP_SysCtlDelay(250*ulDelayms);
             LCDWriteData(176);
             t++;
         }
-        //Leitura da voz
-        MAP_SysCtlDelay(1000*ulDelayms);
+
+//        MAP_SysCtlDelay(1000*ulDelayms);
     }
     else if(status == NONE)
     {
