@@ -55,7 +55,7 @@ UserStatus userStatus = EntryNotAllowed;
 UserOptionsStatus userOptionsStatus = none;
 static volatile bool g_bIntFlag = true;
 static volatile bool TestFlag = false;
-static volatile bool ExternIntFlag = false;
+static volatile bool KeyBoardIntFlag = false;
 static volatile bool CardVerifFlag = false;
 
 void HardwareInit()
@@ -75,6 +75,7 @@ void HardwareInit()
     DesacionarTrava();
     BuzzerDeactivate();
     g_bIntFlag = true;
+    KeyBoardIntFlag = false;
     cardStatus = CardNotDetected;
 }
 
@@ -86,7 +87,7 @@ void LCDIntHandler(void)
   DesacionarTrava();
   MAP_GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_1|GPIO_PIN_0, 2);
   MAP_GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_2, 0x00);
-
+  KeyBoardIntFlag = true;
   g_bIntFlag = true;
   cardStatus = CardNotDetected;
 }
@@ -177,8 +178,8 @@ void HardwarePassWordControl(int status)
         PassWordCount = 0;
         LCDClear();
         LCDKeyPassword();
-
-        while(PassWordCount < 8)
+        MAP_TimerEnable(TIMER3_BASE, TIMER_A);
+        while(PassWordCount < 4)
         {
             keyPass = KeyboardGetKey();
             if(keyPass != 0xFF)
@@ -285,29 +286,23 @@ void HardwareControl(UserStatus userSta)
 
 int hardwareVoiceKey()
 {
-
-    PassWordCount = 0;
     LCDClear();
     LCDVoiceKey();
     keyPass = 0xFF;
-    int counter = 0;
-    while (PassWordCount == 0)
+    MAP_TimerEnable(TIMER3_BASE, TIMER_A);
+    while (keyPass != '*' && keyPass != '#' && KeyBoardIntFlag == false)
     {
         keyPass = KeyboardGetKey();
-        if (keyPass != 0xFF)
-        {
-            if(keyPass == 0x0E)
-            {
-                PassWordCount = 1;
-                return VOICE;
-            }
-            else if(keyPass == 0x0F)
-            {
-                PassWordCount = 1;
-                return KEY;
-            }
-        }
         printf("\n Lendo teclado");
     }
+    if(keyPass == 0x0E)
+    {
+        return VOICE;
+    }
+    else if(keyPass == 0x0F)
+    {
+        return KEY;
+    }
+    KeyBoardIntFlag = true;
     return -1;
 }

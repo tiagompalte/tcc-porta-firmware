@@ -71,11 +71,11 @@ uint8_t KeyboardGetKey()
         case 0xDE:
             return 0x0C;
         case 0xE7:
-            return 0x0E;
+            return '*';
         case 0xEB:
             return 0x00;
         case 0xED:
-            return 0x0F;
+            return '#';
         case 0xEE:
             return 0x0D;
         default:
