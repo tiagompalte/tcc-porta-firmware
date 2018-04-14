@@ -393,7 +393,7 @@ void principalLoop()
     int status = NONE;
     printf("\n %c", status);
     //status = hardwareVoiceKey();
-    status = KEY;
+    status = VOICE;
     HardwarePassWordControl(status);
     if (CommunicationSending(status) == ERROR){
         //strcpy(g_psUserInfo.sReport.log, str_UserNotRegistered);

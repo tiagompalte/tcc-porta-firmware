@@ -437,7 +437,7 @@ int CommunicationSending(int type)
         }
         else if (type == KEY)
         {
-            Communication(POSTKEY, "42");
+            Communication(POSTKEY, "50");
         }
         g_psUserInfo.t_error[1][try] = g_psUserInfo.sReport.status;
         try++;
