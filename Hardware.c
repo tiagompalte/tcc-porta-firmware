@@ -15,30 +15,34 @@
  * v1.0
  * 2017
  * ************************************************************** */
-#include "stdlib.h"
-#include "driverlib/Hardware.h"
-#include "string.h"
-#include "driverlib/MyString.h"
-#include "inc/hw_memmap.h"
-#include "inc/hw_types.h"
-#include "driverlib/gpio.h"
-#include "driverlib/sysctl.h"
-#include"driverlib/pin_map.h"
-#include "driverlib/rom_map.h"
-#include "driverlib/interrupt.h"
-#include "driverlib/timer.h"
-#include "driverlib/uart.h"
-#include "utils/uartstdio.h"
-#include "inc/hw_ssi.h"
-#include "driverlib/ssi.h"
-#include "driverlib/spi.h"
-#include "driverlib/rfid.h"
-#include "driverlib/lcd.h"
-#include "driverlib/buzzer.h"
-#include "driverlib/MyString.h"
-#include "driverlib/trava_eletrica.h"
-#include "driverlib/keyboard.h"
+
 #include "communication.h"
+#include "stdlib.h"
+#include "string.h"
+
+#include "driverlib/audioSample.h"
+#include "driverlib/buzzer.h"
+#include "driverlib/gpio.h"
+#include "driverlib/Hardware.h"
+#include "driverlib/interrupt.h"
+#include "driverlib/keyboard.h"
+#include "driverlib/lcd.h"
+#include "driverlib/MyString.h"
+#include "driverlib/pin_map.h"
+#include "driverlib/rfid.h"
+#include "driverlib/rom_map.h"
+#include "driverlib/spi.h"
+#include "driverlib/ssi.h"
+#include "driverlib/sysctl.h"
+#include "driverlib/timer.h"
+#include "driverlib/trava_eletrica.h"
+#include "driverlib/uart.h"
+
+#include "utils/uartstdio.h"
+
+#include "inc/hw_memmap.h"
+#include "inc/hw_ssi.h"
+#include "inc/hw_types.h"
 
 unsigned char RFIDCardPassWord[5];
 unsigned char LastRFIDCardPassWord[5];
@@ -217,6 +221,11 @@ void HardwarePassWordControl(int status)
             MAP_SysCtlDelay(250*ulDelayms);
             LCDWriteData(176);
             t++;
+        }
+
+        if(conversionEnd == 1) {
+        	conversionEnd == 0;
+        	FIR(bufferConversao);
         }
 
 //        MAP_SysCtlDelay(1000*ulDelayms);

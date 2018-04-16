@@ -15,9 +15,8 @@
  * ************************************************************** */
 #include <stdint.h>
 
-#define ORDEM 6
+#define ORDEM 30
 
 uint8_t bufferFiltro[ORDEM + 1];
-float coefFiltro[] = {0.06523, 0.149367, 0.21529, 0.240211, 0.21529, 0.149367, 0.06523};
 
-void FIR(uint8_t sinal);
+void FIR(uint8_t sinal[]);

@@ -14,43 +14,15 @@
  * main.c
  * ************************************************************** */
 
-#include <driverlib/audioSample.h>
 #include <enet.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <math.h>
 #include <string.h>
 
-#include "inc/hw_types.h"
-#include "inc/hw_ints.h"
-#include "inc/hw_memmap.h"
-#include "inc/hw_nvic.h"
-#include "inc/hw_gpio.h"
-//#include "driverlib/fir.h"
-#include "driverlib/flash.h"
-#include "driverlib/gpio.h"
-#include "driverlib/interrupt.h"
-#include "driverlib/pin_map.h"
-#include "driverlib/rom.h"
-#include "driverlib/rom_map.h"
-#include "driverlib/sysctl.h"
-#include "driverlib/systick.h"
-#include "driverlib/emac.h"
-#include "drivers/pinout.h"
-#include "utils/cmdline.h"
-#include "utils/locator.h"
-#include "utils/flash_pb.h"
-#include "utils/lwiplib.h"
-#include "utils/uartstdio.h"
-#include "utils/ustdlib.h"
 #include "eth_client.h"
 #include "json.h"
 #include "communication.h"
-#include "driverlib/Hardware.h"
-
-#include <stdint.h>
-#include <stdbool.h>
-#include <math.h>
 
 #include "inc/hw_adc.h"
 #include "inc/hw_gpio.h"
@@ -62,17 +34,31 @@
 #include "inc/hw_types.h"
 
 #include "driverlib/adc.h"
-#include "driverlib/pin_map.h"
+#include "driverlib/audioSample.h"
+#include "driverlib/emac.h"
+#include "driverlib/fir.h"
+#include "driverlib/flash.h"
 #include "driverlib/gpio.h"
 #include "driverlib/Hardware.h"
 #include "driverlib/interrupt.h"
 #include "driverlib/lcd.h"
+#include "driverlib/pin_map.h"
 #include "driverlib/rfid.h"
 #include "driverlib/rom.h"
 #include "driverlib/rom_map.h"
 #include "driverlib/sysctl.h"
+#include "driverlib/systick.h"
 #include "driverlib/timer.h"
 #include "driverlib/ssi.h"
+
+#include "drivers/pinout.h"
+
+#include "utils/cmdline.h"
+#include "utils/locator.h"
+#include "utils/flash_pb.h"
+#include "utils/lwiplib.h"
+#include "utils/uartstdio.h"
+#include "utils/ustdlib.h"
 
 #define GET                     0
 #define POST                    1
@@ -89,7 +75,6 @@
 
 int led3s, ledConv;
 int i, tempIndex;
-int conversionEnd;
 int status;
 
 char *str_noConnection = "Sem Conexao";
@@ -126,7 +111,6 @@ void ISR_ADC0()
 
     if (indiceAmostra <= NUM_AMOSTRAS - 1)
     {
-        //bufferConversao[indiceAmostra] = scaleSample(bufferCapture[0]);
         bufferConversao[indiceAmostra] = bufferCapture[0];
         indiceAmostra++;
     }
@@ -310,15 +294,6 @@ void timerInit()
     MAP_TimerClockSourceSet(TIMER1_BASE, TIMER_CLOCK_PIOSC);
     MAP_TimerLoadSet(TIMER1_BASE, TIMER_A, 48484848);
 
-    /*    while (!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER2)) {
-
-     }
-
-     MAP_TimerConfigure(TIMER2_BASE, TIMER_CFG_PERIODIC_UP);
-     TimerUpdateMode(TIMER2_BASE, TIMER_BOTH, TIMER_UP_LOAD_IMMEDIATE);
-     MAP_TimerClockSourceSet(TIMER2_BASE, TIMER_CLOCK_PIOSC);
-     MAP_TimerLoadSet(TIMER2_BASE, TIMER_A, 145454544);*/
-
     MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER4);
     while (!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER4))
         ;
@@ -498,6 +473,7 @@ int main(void)
     strcpy(g_psUserInfo.sReport.userKey, "1234");
 
     //Ligando o equipamento, inicia o display
+    MAP_TimerEnable(TIMER0_BASE, TIMER_A);
 
     LCDInicio();
     while (1)

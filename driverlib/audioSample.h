@@ -11,7 +11,7 @@
  * Tiago Henrique Faxina
  * Tiago Mariani Palte
  * ************************************************************** *
- * Header Sketch Amostrador de Audio
+ * Header para Parametros de Audio e Variaveis
  * ************************************************************** */
 
 #ifndef DRIVERLIB_AUDIOSAMPLE_H_
@@ -23,10 +23,9 @@
 #include <stdbool.h>
 
 // Vari�veis
+int conversionEnd;
 uint16_t indiceAmostra;
 uint32_t bufferCapture[1];
 uint8_t bufferConversao[NUM_AMOSTRAS];
-
-extern uint8_t scaleSample(uint32_t sample);
 
 #endif /* ALGORITHM_ALGORITHM_H_ */
