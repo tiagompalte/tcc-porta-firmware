@@ -1,4 +1,4 @@
-/* ************************************************************** *
+﻿/* ************************************************************** *
  * UTFPR - Universidade Tecnologica Federal do ParanÃ¡
  * Engenharia Eletronica
  * Trabalho de Conclusao de Curso
@@ -473,7 +473,6 @@ int main(void)
     strcpy(g_psUserInfo.sReport.userKey, "1234");
 
     //Ligando o equipamento, inicia o display
-    MAP_TimerEnable(TIMER0_BASE, TIMER_A);
 
     LCDInicio();
     while (1)
