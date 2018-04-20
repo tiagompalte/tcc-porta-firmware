@@ -26,10 +26,8 @@
 #include "inc/hw_sysctl.h"
 #include "driverlib/gpio.h"
 #include "driverlib/sysctl.h"
-//#include "delay.h"
+#include "driverlib/hardware.h"
 bool IsPressed = 0;
-uint8_t column = 0xFF;
-uint8_t row = 0xFF;
 uint8_t key = 0xFF;
 uint8_t lastKey = 0xFF;
 uint32_t DebouncerDelay = 500;
@@ -37,54 +35,50 @@ uint32_t DebouncerDelayCount = 0;
 
 uint8_t KeyboardGetKey()
 {
+    key = KeyboardScan();
+   //if(KeyboardIsPressed()){
 
-    column = MAP_GPIOPinRead(GPIO_PORTE_BASE, GPIO_PIN_3|GPIO_PIN_2|GPIO_PIN_1|GPIO_PIN_0);
-    row = MAP_GPIOPinRead(GPIO_PORTL_BASE, GPIO_PIN_3|GPIO_PIN_2|GPIO_PIN_1|GPIO_PIN_0)<<4;
-    key = row|column;
-
-    if(KeyboardIsPressed()){
-
-    switch(key)
-    {
-        case 0x77:
-            return 0x01;
-        case 0x7B:
-            return 0x02;
-        case 0x7D:
-            return 0x03;
-        case 0x7E:
-            return 0x0A;
-        case 0xB7:
-            return 0x04;
-        case 0xBB:
-            return 0x05;
-        case 0xBD:
-            return 0x06;
-        case 0xBE:
-            return 0x0B;
-        case 0xD7:
-            return 0x07;
-        case 0xDB:
-            return 0x08;
-        case 0xDD:
-            return 0x09;
-        case 0xDE:
-            return 0x0C;
-        case 0xE7:
-            return '*';
-        case 0xEB:
-            return 0x00;
-        case 0xED:
-            return '#';
-        case 0xEE:
-            return 0x0D;
-        default:
-            return 0xFF;
-    }
-    }
-    else{
-        return 0xFF;
-    }
+        switch(key)
+        {
+            case 0xEE:
+                return 0x01;
+            case 0xED:
+                return 0x02;
+            case 0xEB:
+                return 0x03;
+            case 0xE7:
+                return 0x0A;
+            case 0xDE:
+                return 0x04;
+            case 0xDD:
+                return 0x05;
+            case 0xDB:
+                return 0x06;
+            case 0xD7:
+                return 0x0B;
+            case 0xBE:
+                return 0x07;
+            case 0xBD:
+                return 0x08;
+            case 0xBB:
+                return 0x09;
+            case 0xB7:
+                return 0x0C;
+            case 0x7E:
+                return '*';
+            case 0x7D:
+                return 0x00;
+            case 0x7B:
+                return '#';
+            case 0x77:
+                return 0x0D;
+            default:
+                return 0xFF;
+       // }
+   }
+   // else{
+   //     return 0xFF;
+    //}
 }
 
 bool KeyboardIsPressed()
@@ -103,4 +97,40 @@ bool KeyboardIsPressed()
         {
             return 0;
         }
+}
+
+uint8_t KeyboardColumnsScan(int r)
+{
+
+    uint8_t column = 0x00;
+    uint8_t keypadValue = 0x00;
+    column = MAP_GPIOPinRead(GPIO_PORTE_BASE, GPIO_PIN_3|GPIO_PIN_2|GPIO_PIN_1|GPIO_PIN_0);
+    //printf("row: %x", r);
+    //printf("column: %x", column);
+    keypadValue = ((column == 0x07) ||
+                   (column == 0x0B) ||
+                   (column == 0x0D) ||
+                   (column == 0x0E))?(((r & 0x0F) << 4)| (column & 0x0F)) : 0x00;
+    return keypadValue;
+}
+
+uint8_t KeyboardScan()
+{
+    uint8_t readStatus = 0x00;
+    uint8_t i = 0;
+    uint8_t rows[4] = {0x07, 0x0B, 0x0D, 0x0E};
+    //while(readStatus == 0x00)
+    while(1)
+    {
+        MAP_GPIOPinWrite(GPIO_PORTL_BASE, GPIO_PIN_3|GPIO_PIN_2|GPIO_PIN_1|GPIO_PIN_0, rows[i]);
+        readStatus = KeyboardColumnsScan(rows[i]);
+        i = ((i + 1) % 4);
+        if(readStatus != 0x00 || KeyBoardIntFlag == true)
+        {
+            break;
+        }
+        SysCtlDelay(15*40000);
+
+    };
+    return readStatus;
 }

@@ -149,6 +149,6 @@ void MFRC522CalculateCRC(unsigned char *pIndata, unsigned char len, unsigned cha
 unsigned char MFRC522Request(unsigned char reqMode, unsigned char *TagType);
 unsigned char MFRC522ToCard(unsigned char command, unsigned char *sendData, unsigned char sendLen, unsigned char *backData, unsigned int *backLen);
 unsigned char MFRC522Anticoll(unsigned char *serNum);
-void MFRC522Halt();
+unsigned char MFRC522Halt();
 
 #endif /* RFID_H_ */

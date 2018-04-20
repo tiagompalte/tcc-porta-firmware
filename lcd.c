@@ -55,6 +55,7 @@ char *str_serBlocked = "Usuario Bloqueado";
 char *str_VoiceKey = "Digite: ";
 char *str_Voice = " * -> VOZ";
 char *str_Key = " # -> TECLADO";
+char *str_sendingData = "Enviando Dados";
 // Inicializa display
 void LCDInit()
 {
@@ -252,6 +253,7 @@ void LCDInicio()
 void LCDPassRFID()
  {
 
+    LCDClear();
     LCDMoveCursorToXY(1,2);
     LCDMoveCursorLeft();
     LCDMoveCursorLeft();
@@ -375,9 +377,9 @@ void LCDAllowed(char *UserName)
     MAP_SysCtlDelay(1000*ContDelayMS);
     LCDClear();
     LCDWriteString(str_TrancaEletronica);
-    LCDMoveCursorToXY(3,3);
+    LCDMoveCursorToXY(2,3);
     LCDWriteString(str_BemVindo);
-    LCDMoveCursorToXY(4,4);
+    LCDMoveCursorToXY(4,1);
     LCDWriteString(UserName);
 }
 
@@ -468,6 +470,15 @@ int LCDVoiceKey()
     LCDWriteString(str_Key);
 }
 
+int LCDSendingData()
+{
+    LCDClear();
+    LCDWriteString(str_TrancaEletronica);
+    LCDMoveCursorToXY(3,2);
+    LCDWriteString(str_sendingData);
+
+}
+
 int LCDErroLog()
 {
     LCDClear();
@@ -476,5 +487,4 @@ int LCDErroLog()
     LCDWriteString("ERRO:");
     LCDMoveCursorToXY(3,1);
     LCDWriteString(g_psUserInfo.sReport.log);
-    MAP_SysCtlDelay(1000*ContDelayMS);
 }

@@ -43,7 +43,7 @@ typedef enum UserOptionsStatus
 
 #include <stdint.h>
 #include <stdbool.h>
-
+bool KeyBoardIntFlag;
 uint32_t ui32SysClock;
 uint32_t ulDelayms;
 extern void HardwareInit();

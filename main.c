@@ -148,6 +148,8 @@ void systemInit()
 
     MAP_SysCtlPeripheralPowerOn(SYSCTL_PERIPH_TIMER0);
     MAP_SysCtlPeripheralPowerOn(SYSCTL_PERIPH_TIMER1);
+    MAP_SysCtlPeripheralPowerOn(SYSCTL_PERIPH_TIMER2);
+    MAP_SysCtlPeripheralPowerOn(SYSCTL_PERIPH_TIMER3);
     MAP_SysCtlPeripheralPowerOn(SYSCTL_PERIPH_ADC0);
     MAP_SysCtlPeripheralPowerOn(SYSCTL_PERIPH_SSI2);
 }
@@ -197,6 +199,8 @@ void GPIOInit()
     MAP_GPIOPinConfigure(GPIO_PD0_SSI2XDAT1);
     MAP_GPIOPinConfigure(GPIO_PD1_SSI2XDAT0); //MOSI
 
+    //GPIOPinConfigure(GPIO_PA2_T1CCP0);
+
     MAP_GPIOPinTypeSSI(GPIO_PORTD_BASE, GPIO_PIN_1 | GPIO_PIN_0 | GPIO_PIN_3);
 
     MAP_GPIOPinTypeGPIOOutput(GPIO_PORTB_BASE, GPIO_PIN_3 | GPIO_PIN_2);
@@ -214,7 +218,11 @@ void GPIOInit()
 
     MAP_GPIOPinTypeGPIOInput(GPIO_PORTE_BASE,
                              GPIO_PIN_3 | GPIO_PIN_2 | GPIO_PIN_1 | GPIO_PIN_0);
-    MAP_GPIOPinTypeGPIOInput(GPIO_PORTL_BASE,
+    MAP_GPIOPadConfigSet(GPIO_PORTE_BASE,
+                         GPIO_PIN_3 | GPIO_PIN_2 | GPIO_PIN_1 | GPIO_PIN_0,
+                         GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD_WPU);
+
+    MAP_GPIOPinTypeGPIOOutput(GPIO_PORTL_BASE,
                              GPIO_PIN_3 | GPIO_PIN_2 | GPIO_PIN_1 | GPIO_PIN_0);
     MAP_GPIOPinTypeGPIOInput(GPIO_PORTJ_BASE, GPIO_PIN_1 | GPIO_PIN_0);
 
@@ -248,20 +256,18 @@ void interruptInit()
     MAP_ADCIntEnable(ADC0_BASE, 3);
     MAP_ADCIntEnableEx(ADC0_BASE, ADC_INT_SS3);
 
-    TimerIntRegister(TIMER1_BASE, TIMER_A, ISR_Timer1A);
+    TimerIntRegister(TIMER1_BASE, TIMER_A, &LCDIntHandler);
     MAP_TimerIntEnable(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
+    MAP_IntEnable(INT_TIMER1A);
 
-    TimerIntRegister(TIMER4_BASE, TIMER_A, &BuzzerIntHandler);
-    MAP_TimerIntEnable(TIMER4_BASE, TIMER_TIMA_TIMEOUT);
-    MAP_IntEnable(INT_TIMER4A);
 
-    TimerIntRegister(TIMER3_BASE, TIMER_A, &LCDIntHandler);
+    TimerIntRegister(TIMER2_BASE, TIMER_A, &PasswordIntHandler);
+    MAP_TimerIntEnable(TIMER2_BASE, TIMER_TIMA_TIMEOUT);
+    MAP_IntEnable(INT_TIMER2A);
+
+    TimerIntRegister(TIMER3_BASE, TIMER_A, &BuzzerIntHandler);
     MAP_TimerIntEnable(TIMER3_BASE, TIMER_TIMA_TIMEOUT);
     MAP_IntEnable(INT_TIMER3A);
-
-    TimerIntRegister(TIMER5_BASE, TIMER_A, &PasswordIntHandler);
-    MAP_TimerIntEnable(TIMER5_BASE, TIMER_TIMA_TIMEOUT);
-    MAP_IntEnable(INT_TIMER5A);
 
     MAP_IntMasterEnable();
 }
@@ -289,27 +295,24 @@ void timerInit()
 
     }
 
-    MAP_TimerConfigure(TIMER1_BASE, TIMER_CFG_PERIODIC_UP);
-    TimerUpdateMode(TIMER1_BASE, TIMER_BOTH, TIMER_UP_LOAD_IMMEDIATE);
-    MAP_TimerClockSourceSet(TIMER1_BASE, TIMER_CLOCK_PIOSC);
-    MAP_TimerLoadSet(TIMER1_BASE, TIMER_A, 48484848);
+    MAP_TimerConfigure(TIMER1_BASE, TIMER_CFG_A_ONE_SHOT);
+    MAP_TimerClockSourceSet(TIMER1_BASE, TIMER_CLOCK_SYSTEM);
 
-    MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER4);
-    while (!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER4))
-        ;
-    MAP_TimerConfigure(TIMER4_BASE, TIMER_CFG_A_ONE_SHOT);
+    MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER2);
+    while (!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER2))
+    {
+
+    }
+    MAP_TimerConfigure(TIMER2_BASE, TIMER_CFG_A_ONE_SHOT);
+    MAP_TimerClockSourceSet(TIMER2_BASE, TIMER_CLOCK_SYSTEM);
+
     MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER3);
     while (!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER3))
-        ;
+    {
+
+    }
     MAP_TimerConfigure(TIMER3_BASE, TIMER_CFG_A_ONE_SHOT);
-    MAP_TimerLoadSet(TIMER3_BASE, TIMER_A, 3 * g_ui32SysClock);
-
-    MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER5);
-    while (!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER5))
-        ;
-
-    MAP_TimerConfigure(TIMER5_BASE, TIMER_CFG_A_ONE_SHOT);
-    MAP_TimerLoadSet(TIMER5_BASE, TIMER_A, 10 * ui32SysClock);
+    MAP_TimerClockSourceSet(TIMER3_BASE, TIMER_CLOCK_SYSTEM);
 
 }
 
@@ -376,19 +379,25 @@ void principalLoop()
         {
             strcpy(g_psUserInfo.sReport.log, str_noConnection);
             LCDErroLog();
-            principalLoop();
+            MAP_SysCtlDelay(3000*ulDelayms);
+            //LCDNotAllowed();
+            return;
         }
         else if (g_psUserInfo.sReport.status == 404)
         {
             strcpy(g_psUserInfo.sReport.log, str_noServer);
             LCDErroLog();
-            principalLoop();
+            MAP_SysCtlDelay(3000*ulDelayms);
+            //LCDNotAllowed();
+            return;
         }
         else
         {
             strcpy(g_psUserInfo.sReport.log, str_noConnection);
             LCDErroLog();
-            principalLoop();
+            MAP_SysCtlDelay(3000*ulDelayms);
+            //LCDNotAllowed();
+            return;
         }
     }
     else
@@ -401,11 +410,11 @@ void principalLoop()
 
     int status = NONE;
     status = hardwareVoiceKey();
-    printf("\n %c", status);
+    //printf("\n %c", status);
     //status = VOICE;
     if (status == ERROR)
     {
-        principalLoop();    //Opção não digitada
+        return;    //Opção não digitada
     }
     else
     {
@@ -417,7 +426,7 @@ void principalLoop()
         //strcpy(g_psUserInfo.sReport.log, str_UserNotRegistered);
         uStatus = EntryNotAllowed;
         HardwareControl(uStatus);
-        principalLoop();
+        return;
         //imprimir erro de log
     }
     else
@@ -471,13 +480,13 @@ int main(void)
     //strcpy(g_psUserInfo.sReport.rfid, "C9 42 6A 7B");
 
     strcpy(g_psUserInfo.sReport.userKey, "1234");
-
+    //printf("\n Lendo teclado %d",g_ui32SysClock);
     //Ligando o equipamento, inicia o display
-
     LCDInicio();
     while (1)
     {
         principalLoop();
+        LCDPassRFID();
 
     }
 

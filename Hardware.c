@@ -43,7 +43,7 @@
 #include "inc/hw_memmap.h"
 #include "inc/hw_ssi.h"
 #include "inc/hw_types.h"
-
+#define ERROR                  -1
 unsigned char RFIDCardPassWord[5];
 unsigned char LastRFIDCardPassWord[5];
 unsigned char RFIDCardPassWord1[] = {3, 67, 147, 229, 54};
@@ -59,14 +59,12 @@ UserStatus userStatus = EntryNotAllowed;
 UserOptionsStatus userOptionsStatus = none;
 static volatile bool g_bIntFlag = true;
 static volatile bool TestFlag = false;
-static volatile bool KeyBoardIntFlag = false;
 static volatile bool CardVerifFlag = false;
 
 void HardwareInit()
 {
 
     ulDelayms = (40000);
-    uint32_t initialData = 0;
 
     MAP_GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_2, 0x00);
     MAP_GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0x04);
@@ -85,9 +83,9 @@ void HardwareInit()
 
 void LCDIntHandler(void)
 {
-  MAP_TimerIntClear(TIMER3_BASE, TIMER_TIMA_TIMEOUT);
+  MAP_TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
   LCDClear();
-  LCDInicio();
+  LCDPassRFID();
   DesacionarTrava();
   MAP_GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_1|GPIO_PIN_0, 2);
   MAP_GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_2, 0x00);
@@ -98,14 +96,14 @@ void LCDIntHandler(void)
 
 void BuzzerIntHandler(void)
 {
-  MAP_TimerIntClear(TIMER4_BASE, TIMER_TIMA_TIMEOUT);
+  MAP_TimerIntClear(TIMER3_BASE, TIMER_TIMA_TIMEOUT);
   BuzzerDeactivate();
 
 }
 
 void PasswordIntHandler(void)
 {
-    MAP_TimerIntClear(TIMER5_BASE, TIMER_TIMA_TIMEOUT);
+    MAP_TimerIntClear(TIMER2_BASE, TIMER_TIMA_TIMEOUT);
     PassWordCount = 5;
     unsigned char PassWordDefaut[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, '\0'};
     memcpy(PassWord,PassWordDefaut, 5);
@@ -121,7 +119,7 @@ uint8_t HardwareLoop()
     unsigned char str_UIDFinal[12];
     str_UIDExt[8] = '\0';
     str_UIDFinal[11] = '\0';
-    int i = 0;
+
     cardStatus = CardNotDetected;
     while(1)
     {
@@ -142,7 +140,8 @@ uint8_t HardwareLoop()
         printf("\n RFID nao detectado");
         if (cardStatus == CardDetected && RFIDstatus == MI_OK)
         {
-            return str;
+            LCDSendingData();
+            return 1;
         }
         /*VerificaTentativas();
         HardwarePassWordControl();
@@ -179,10 +178,14 @@ void HardwarePassWordControl(int status)
 {
     if(status == KEY && userStatus != UserBlocked)
     {
+        MAP_SysCtlDelay(500*ulDelayms);
         PassWordCount = 0;
         LCDClear();
         LCDKeyPassword();
-        MAP_TimerEnable(TIMER3_BASE, TIMER_A);
+        MAP_TimerLoadSet(TIMER1_BASE, TIMER_A, 11 * g_ui32SysClock);
+        MAP_TimerLoadSet(TIMER2_BASE, TIMER_A, 10 * g_ui32SysClock);
+        MAP_TimerEnable(TIMER2_BASE, TIMER_A);
+        MAP_TimerEnable(TIMER1_BASE, TIMER_A);
         while(PassWordCount < 4)
         {
             keyPass = KeyboardGetKey();
@@ -195,11 +198,10 @@ void HardwarePassWordControl(int status)
                 MAP_SysCtlDelay(500*ulDelayms);
             }
         }
-        //PasswordValidate();
         keyPass = 0x00;
         CardVerifFlag = true;
         userOptionsStatus = none;
-        strcpy(g_psUserInfo.sReport.userKey,PassWord);
+        memcpy(g_psUserInfo.sReport.userKey,PassWord, 4);
     }
     else if(status == VOICE && userStatus != UserBlocked)
     {
@@ -207,9 +209,7 @@ void HardwarePassWordControl(int status)
         LCDRecordingSound();
         CardVerifFlag = true;
         userOptionsStatus = none;
-        //userStatus = EntryAllowed;
         LCDMoveCursorToXY(3,14);
-        //LCDWriteData(t+48);
         LCDWriteData('|');
         LCDMoveCursorToXY(3,5);
         LCDWriteData('|');
@@ -235,6 +235,9 @@ void HardwarePassWordControl(int status)
         CardVerifFlag = true;
         //userOptionsStatus = none;
     }
+    MAP_TimerDisable(TIMER1_BASE, TIMER_A);
+    MAP_TimerDisable(TIMER2_BASE, TIMER_A);
+    LCDSendingData();
 }
 
 void HardwareControl(UserStatus userSta)
@@ -242,11 +245,15 @@ void HardwareControl(UserStatus userSta)
     if(userSta == EntryAllowed && CardVerifFlag == true && g_bIntFlag == true)
     {
         LCDAllowed(g_psUserInfo.sReport.name);
-        AcionarTrava();
-        BuzzerActivate();
+        MAP_TimerLoadSet(TIMER1_BASE, TIMER_A, 4 * g_ui32SysClock);
         MAP_GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_2, 0x04);
-        MAP_TimerLoadSet(TIMER4_BASE, TIMER_A, 0.5 * g_ui32SysClock);
-        MAP_TimerEnable(TIMER4_BASE, TIMER_A);
+        MAP_TimerEnable(TIMER1_BASE, TIMER_A);
+        AcionarTrava();
+
+        BuzzerActivate();
+
+        MAP_TimerLoadSet(TIMER3_BASE, TIMER_A, g_ui32SysClock/2);
+
         MAP_TimerEnable(TIMER3_BASE, TIMER_A);
         CardVerifFlag = false;
         g_bIntFlag = false;
@@ -258,8 +265,9 @@ void HardwareControl(UserStatus userSta)
         g_bIntFlag = false;
         LCDNotAllowed();
         BuzzerActivate();
-        MAP_TimerLoadSet(TIMER4_BASE, TIMER_A, 1 * g_ui32SysClock);
-        MAP_TimerEnable(TIMER4_BASE, TIMER_A);
+        MAP_TimerLoadSet(TIMER1_BASE, TIMER_A, 4 * g_ui32SysClock);
+        MAP_TimerLoadSet(TIMER3_BASE, TIMER_A, 2 * g_ui32SysClock);
+        MAP_TimerEnable(TIMER1_BASE, TIMER_A);
         MAP_TimerEnable(TIMER3_BASE, TIMER_A);
         CardVerifFlag = false;
         //userStatus = EntryNotAllowed;
@@ -269,8 +277,9 @@ void HardwareControl(UserStatus userSta)
         g_bIntFlag = false;
         LCDErroLog();
         BuzzerActivate();
-        MAP_TimerLoadSet(TIMER4_BASE, TIMER_A, 1 * g_ui32SysClock);
-        MAP_TimerEnable(TIMER4_BASE, TIMER_A);
+        MAP_TimerLoadSet(TIMER1_BASE, TIMER_A, 4 * g_ui32SysClock);
+        MAP_TimerLoadSet(TIMER3_BASE, TIMER_A, 2 * g_ui32SysClock);
+        MAP_TimerEnable(TIMER1_BASE, TIMER_A);
         MAP_TimerEnable(TIMER3_BASE, TIMER_A);
         CardVerifFlag = false;
         //userStatus = UserNotRegistered;
@@ -280,8 +289,9 @@ void HardwareControl(UserStatus userSta)
         g_bIntFlag = false;
         LCDUserBlocked();
         BuzzerActivate();
-        MAP_TimerLoadSet(TIMER4_BASE, TIMER_A, 1 * g_ui32SysClock);
-        MAP_TimerEnable(TIMER4_BASE, TIMER_A);
+        MAP_TimerLoadSet(TIMER1_BASE, TIMER_A, 4 * g_ui32SysClock);
+        MAP_TimerLoadSet(TIMER3_BASE, TIMER_A, 2 * g_ui32SysClock);
+        MAP_TimerEnable(TIMER1_BASE, TIMER_A);
         MAP_TimerEnable(TIMER3_BASE, TIMER_A);
         CardVerifFlag = false;
     }
@@ -290,6 +300,7 @@ void HardwareControl(UserStatus userSta)
         CardVerifFlag = false;
         //userStatus = EntryNotAllowed;
     }
+    MAP_SysCtlDelay(5000*ulDelayms);
     //cardStatus = CardNotDetected;
 }
 
@@ -297,21 +308,25 @@ int hardwareVoiceKey()
 {
     LCDClear();
     LCDVoiceKey();
-    keyPass = 0xFF;
-    MAP_TimerEnable(TIMER3_BASE, TIMER_A);
-    while (keyPass != '*' && keyPass != '#' && KeyBoardIntFlag == false)
+    uint8_t keySelect = 0xFF;
+    MAP_TimerLoadSet(TIMER1_BASE, TIMER_A, 5 * g_ui32SysClock);
+    MAP_TimerEnable(TIMER1_BASE, TIMER_A);
+    KeyBoardIntFlag = false;
+    while (keySelect != '*' && keySelect != '#' && KeyBoardIntFlag == false)
     {
-        keyPass = KeyboardGetKey();
-        printf("\n Lendo teclado");
+        keySelect = 0xFF;
+        keySelect = KeyboardGetKey();
     }
-    if(keyPass == 0x0E)
+
+    if(keySelect == '*')
     {
+        MAP_TimerDisable(TIMER1_BASE, TIMER_A);
         return VOICE;
     }
-    else if(keyPass == 0x0F)
+    if(keySelect == '#')
     {
+        MAP_TimerDisable(TIMER1_BASE, TIMER_A);
         return KEY;
     }
-    KeyBoardIntFlag = true;
-    return -1;
+    return ERROR;
 }

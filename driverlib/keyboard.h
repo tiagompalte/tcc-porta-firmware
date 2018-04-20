@@ -23,6 +23,6 @@
 
 extern uint8_t KeyboardGetKey();
 extern bool KeyboardIsPressed();
-extern void testeTeclado();
-
+extern uint8_t KeyboardColumnsScan(int row);
+extern uint8_t KeyboardScan();
 #endif /* KEYBOARD_H_ */

@@ -376,7 +376,7 @@ unsigned char MFRC522Anticoll(unsigned char *serNum)
 /*
  * Envia comando para os cartões en estado ATIVO entrarem em modo de suspensão (HALT)
  */
-void MFRC522Halt()
+unsigned char MFRC522Halt()
 {
     unsigned char status;
     unsigned int unLen;
@@ -387,4 +387,5 @@ void MFRC522Halt()
     MFRC522CalculateCRC(buff, 2, &buff[2]);
 
     status = MFRC522ToCard(PCD_TRANSCEIVE, buff, 4, buff,&unLen);
+    return status;
 }

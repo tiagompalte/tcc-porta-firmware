@@ -178,5 +178,6 @@ extern uint8_t getAddress();
 extern void LCDNotRegister();
 extern void LCDRecordingSound();
 int LCDVoiceKey();
+int LCDSendingData();
 int LCDErroLog();
 #endif /* LCD_H_ */
