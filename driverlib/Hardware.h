@@ -46,7 +46,7 @@ typedef enum UserOptionsStatus
 bool KeyBoardIntFlag;
 uint32_t ui32SysClock;
 uint32_t ulDelayms;
-extern void HardwareInit();
+extern void HardwareInit(char* Porta);
 extern uint8_t HardwareLoop();
 extern void HardwareRFID();
 extern void HardwareControl(UserStatus userStatus);

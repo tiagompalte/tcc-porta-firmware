@@ -163,7 +163,6 @@ extern void LCDClear();
 extern void LCDWriteString(char *str);
 extern void LCDInicio();
 extern void LCDPassRFID();
-extern void LCDAnimation(char *str);
 extern void LCDPassword();
 extern void LCDKeyPassword();
 extern void LCDShowKeyPassword(uint8_t count);

@@ -454,7 +454,7 @@ int main(void)
     ADCInit();
     timerInit();
     interruptInit();
-    HardwareInit();
+    HardwareInit(IDBOARD);
     PinoutSet(true, false);
 
     SysTickPeriodSet((g_ui32SysClock / 1000) * SYSTEM_TICK_MMS);

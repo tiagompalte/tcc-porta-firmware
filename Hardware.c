@@ -37,7 +37,7 @@
 #include "driverlib/timer.h"
 #include "driverlib/trava_eletrica.h"
 #include "driverlib/uart.h"
-
+#include "driverlib/fir.h"
 #include "utils/uartstdio.h"
 
 #include "inc/hw_memmap.h"
@@ -61,9 +61,8 @@ static volatile bool g_bIntFlag = true;
 static volatile bool TestFlag = false;
 static volatile bool CardVerifFlag = false;
 
-void HardwareInit()
+void HardwareInit(char* porta)
 {
-
     ulDelayms = (40000);
 
     MAP_GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_2, 0x00);
@@ -72,7 +71,7 @@ void HardwareInit()
     MAP_GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_1|GPIO_PIN_0, 2);
     MAP_SysCtlDelay(50*ulDelayms);
 
-    LCDInit();
+    LCDInit(porta);
     MFRC522Init();
     DesacionarTrava();
     BuzzerDeactivate();
@@ -201,7 +200,8 @@ void HardwarePassWordControl(int status)
         keyPass = 0x00;
         CardVerifFlag = true;
         userOptionsStatus = none;
-        memcpy(g_psUserInfo.sReport.userKey,PassWord, 4);
+        //memcpy(g_psUserInfo.sReport.userKey,PassWord, 4);
+        strcpy(g_psUserInfo.sReport.userKey,"1111");
     }
     else if(status == VOICE && userStatus != UserBlocked)
     {
@@ -209,9 +209,9 @@ void HardwarePassWordControl(int status)
         LCDRecordingSound();
         CardVerifFlag = true;
         userOptionsStatus = none;
-        LCDMoveCursorToXY(3,14);
+        LCDMoveCursorToXY(3,13);
         LCDWriteData('|');
-        LCDMoveCursorToXY(3,5);
+        LCDMoveCursorToXY(3,4);
         LCDWriteData('|');
 
         MAP_TimerEnable(TIMER0_BASE, TIMER_A); // Habilita Interrupcao do ADC
@@ -242,25 +242,25 @@ void HardwarePassWordControl(int status)
 
 void HardwareControl(UserStatus userSta)
 {
-    if(userSta == EntryAllowed && CardVerifFlag == true && g_bIntFlag == true)
+    if(userSta == EntryAllowed)
     {
-        LCDAllowed(g_psUserInfo.sReport.name);
-        MAP_TimerLoadSet(TIMER1_BASE, TIMER_A, 4 * g_ui32SysClock);
-        MAP_GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_2, 0x04);
-        MAP_TimerEnable(TIMER1_BASE, TIMER_A);
         AcionarTrava();
-
         BuzzerActivate();
-
         MAP_TimerLoadSet(TIMER3_BASE, TIMER_A, g_ui32SysClock/2);
 
         MAP_TimerEnable(TIMER3_BASE, TIMER_A);
+        LCDAllowed(g_psUserInfo.sReport.name);
+        //LCDAllowed("Joao Paulo SIlva Santos Pedroni Machado");
+        MAP_TimerLoadSet(TIMER1_BASE, TIMER_A, 4 * g_ui32SysClock);
+        MAP_GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_2, 0x04);
+        MAP_TimerEnable(TIMER1_BASE, TIMER_A);
+
         CardVerifFlag = false;
         g_bIntFlag = false;
         userStatus = EntryNotAllowed;
         userSta = userStatus;
     }
-    else if(userSta == EntryNotAllowed && CardVerifFlag == true && g_bIntFlag == true)
+    else if(userSta == EntryNotAllowed)
     {
         g_bIntFlag = false;
         LCDNotAllowed();
@@ -272,7 +272,7 @@ void HardwareControl(UserStatus userSta)
         CardVerifFlag = false;
         //userStatus = EntryNotAllowed;
     }
-    else if(userSta == UserNotRegistered && CardVerifFlag == true && g_bIntFlag == true)
+    else if(userSta == UserNotRegistered)
     {
         g_bIntFlag = false;
         LCDErroLog();
@@ -284,7 +284,7 @@ void HardwareControl(UserStatus userSta)
         CardVerifFlag = false;
         //userStatus = UserNotRegistered;
     }
-    else if(userSta == UserBlocked && CardVerifFlag == true && g_bIntFlag == true)
+    else if(userSta == UserBlocked)
     {
         g_bIntFlag = false;
         LCDUserBlocked();
@@ -295,13 +295,9 @@ void HardwareControl(UserStatus userSta)
         MAP_TimerEnable(TIMER3_BASE, TIMER_A);
         CardVerifFlag = false;
     }
-    else if(CardVerifFlag == true && g_bIntFlag == true)
-    {
-        CardVerifFlag = false;
-        //userStatus = EntryNotAllowed;
-    }
+
     MAP_SysCtlDelay(5000*ulDelayms);
-    //cardStatus = CardNotDetected;
+    // && CardVerifFlag == true && g_bIntFlag == true
 }
 
 int hardwareVoiceKey()
@@ -312,21 +308,19 @@ int hardwareVoiceKey()
     MAP_TimerLoadSet(TIMER1_BASE, TIMER_A, 5 * g_ui32SysClock);
     MAP_TimerEnable(TIMER1_BASE, TIMER_A);
     KeyBoardIntFlag = false;
-    while (keySelect != '*' && keySelect != '#' && KeyBoardIntFlag == false)
+    while ((keySelect != '*') && (keySelect != '#') && (KeyBoardIntFlag == false))
     {
         keySelect = 0xFF;
         keySelect = KeyboardGetKey();
     }
-
-    if(keySelect == '*')
-    {
-        MAP_TimerDisable(TIMER1_BASE, TIMER_A);
-        return VOICE;
-    }
+    MAP_TimerDisable(TIMER1_BASE, TIMER_A);
     if(keySelect == '#')
     {
-        MAP_TimerDisable(TIMER1_BASE, TIMER_A);
         return KEY;
+    }
+    if(keySelect == '*')
+    {
+        return VOICE;
     }
     return ERROR;
 }
