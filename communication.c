@@ -348,7 +348,7 @@ int Communication(int request, char* size)
             //
             // 10ms * 10 is a 1 second delay between updates.
             //
-            g_ui32Delay = SYSTEM_TICK_MS * 1;
+            g_ui32Delay = SYSTEM_TICK_MS * 10;
         }
         else if (g_iState == STATE_WAIT_NICE)
         {
@@ -426,7 +426,7 @@ int CommunicationConnecting()
 
 int CommunicationSending(int type)
     {
-    g_ui32Delay = 200;
+    g_ui32Delay = 1000;
     int try = ResetStatus();
 
     while ((g_psUserInfo.sReport.status != OK) && (try < 3))
@@ -437,7 +437,7 @@ int CommunicationSending(int type)
         }
         else if (type == KEY)
         {
-            Communication(POSTKEY, "50");
+            Communication(POSTKEY, "47");
         }
         g_psUserInfo.t_error[1][try] = g_psUserInfo.sReport.status;
         try++;
