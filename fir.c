@@ -38,7 +38,13 @@ void FIR(uint8_t sinal[]) {
 			bufferFiltro[ORDEM - j] = bufferFiltro[ORDEM - j - 1];
 		}
 		bufferFiltro[0] = bufferConversao[ORDEM + i];
-		bufferConversao[i] = y;
+
+		// caso gere " ' \ / ou espaço intermediário, repor com o caracter anterior
+		if (y == 34 || y == 37 || y ==  47 || y == 92 || y == 240) {
+			bufferConversao[i] = y - 1;
+		} else {
+			bufferConversao[i] = y;
+		}
 	}
 
 	return;
