@@ -457,7 +457,7 @@ int main(void)
     HardwareInit(IDBOARD);
     PinoutSet(true, false);
 
-    SysTickPeriodSet((g_ui32SysClock / 1000) * SYSTEM_TICK_MMS);
+    SysTickPeriodSet((g_ui32SysClock / 1000) * SYSTEM_TICK_MS);
     SysTickEnable();
     SysTickIntEnable();
     FlashPBInit(FLASH_PB_START, FLASH_PB_END, 256);
