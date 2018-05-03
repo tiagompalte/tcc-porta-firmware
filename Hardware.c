@@ -200,8 +200,8 @@ void HardwarePassWordControl(int status)
         keyPass = 0x00;
         CardVerifFlag = true;
         userOptionsStatus = none;
-        //memcpy(g_psUserInfo.sReport.userKey,PassWord, 4);
-        strcpy(g_psUserInfo.sReport.userKey,"1111");
+        memcpy(g_psUserInfo.sReport.userKey,PassWord, 4);
+        //strcpy(g_psUserInfo.sReport.userKey,"1111");
     }
     else if(status == VOICE && userStatus != UserBlocked)
     {

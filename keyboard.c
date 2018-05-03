@@ -41,37 +41,37 @@ uint8_t KeyboardGetKey()
         switch(key)
         {
             case 0xEE:
-                return 0x01;
+                return '1';
             case 0xED:
-                return 0x02;
+                return '2';
             case 0xEB:
-                return 0x03;
+                return '3';
             case 0xE7:
-                return 0x0A;
+                return 'A';
             case 0xDE:
-                return 0x04;
+                return '4';
             case 0xDD:
-                return 0x05;
+                return '5';
             case 0xDB:
-                return 0x06;
+                return '6';
             case 0xD7:
-                return 0x0B;
+                return 'B';
             case 0xBE:
-                return 0x07;
+                return '7';
             case 0xBD:
-                return 0x08;
+                return '8';
             case 0xBB:
-                return 0x09;
+                return '9';
             case 0xB7:
-                return 0x0C;
+                return 'C';
             case 0x7E:
                 return '*';
             case 0x7D:
-                return 0x00;
+                return '0';
             case 0x7B:
                 return '#';
             case 0x77:
-                return 0x0D;
+                return 'D';
             default:
                 return 0xFF;
        // }
