@@ -136,7 +136,7 @@ static const char getRequest[] = "GET /api/usuarios/rfid/"; //rfid/codigo do usu
 
 static const char postRequestSendAudio[] = "POST /api/usuarios/audio";
 
-static const char postRequest[] = "POST /token";
+static const char postRequest[] = "POST /token/porta";
 //static const char postRequest[] = "POST porta-api/token";
 
 static const char postRequestAcess[] = "POST /api/usuarios/confirmacaoAcesso/";
@@ -2110,11 +2110,11 @@ int32_t requestPostSendAudio(const char *pcQuery, tUserReport *psUserReport,
 
     //20k amostras
     int j;
-    for (j = 0; j < NUM_AMOSTRAS; j++)
+/*    for (j = 0; j < NUM_AMOSTRAS; j++)
     {
         bufferConversao[j] = '1';
     }
-
+*/
     //
     // Append the audio streaming string .
     //
