@@ -53,6 +53,7 @@ extern void HardwareControl(UserStatus userStatus);
 extern void HardwarePassWordControl(int status);
 extern uint8_t VerificaTentativas();
 void LCDIntHandler(void);
+void intHandlerTimer4(void);
 void BuzzerIntHandler(void);
 void KeyBoardIntHandler(void);
 void PasswordIntHandler(void);

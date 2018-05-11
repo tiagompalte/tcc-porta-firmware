@@ -150,6 +150,7 @@ void systemInit()
     MAP_SysCtlPeripheralPowerOn(SYSCTL_PERIPH_TIMER1);
     MAP_SysCtlPeripheralPowerOn(SYSCTL_PERIPH_TIMER2);
     MAP_SysCtlPeripheralPowerOn(SYSCTL_PERIPH_TIMER3);
+    MAP_SysCtlPeripheralPowerOn(SYSCTL_PERIPH_TIMER4);
     MAP_SysCtlPeripheralPowerOn(SYSCTL_PERIPH_ADC0);
     MAP_SysCtlPeripheralPowerOn(SYSCTL_PERIPH_SSI2);
 }
@@ -269,6 +270,10 @@ void interruptInit()
     MAP_TimerIntEnable(TIMER3_BASE, TIMER_TIMA_TIMEOUT);
     MAP_IntEnable(INT_TIMER3A);
 
+    TimerIntRegister(TIMER4_BASE, TIMER_A, &intHandlerTimer4);
+    MAP_TimerIntEnable(TIMER4_BASE, TIMER_TIMA_TIMEOUT);
+    MAP_IntEnable(INT_TIMER4A);
+
     MAP_IntMasterEnable();
 }
 
@@ -313,6 +318,15 @@ void timerInit()
     }
     MAP_TimerConfigure(TIMER3_BASE, TIMER_CFG_A_ONE_SHOT);
     MAP_TimerClockSourceSet(TIMER3_BASE, TIMER_CLOCK_SYSTEM);
+
+    MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER4);
+    while (!MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER4))
+    {
+
+    }
+    MAP_TimerConfigure(TIMER4_BASE, TIMER_CFG_A_PERIODIC);
+    MAP_TimerLoadSet(TIMER4_BASE, TIMER_A, 1 * g_ui32SysClock);
+    MAP_TimerClockSourceSet(TIMER4_BASE, TIMER_CLOCK_SYSTEM);
 
 }
 

@@ -52,14 +52,18 @@ unsigned char RFIDCardPassWord3[] = {201, 66, 106, 123, 54};
 unsigned char RFIDCardPassWord4[] = {3, 67, 147, 229, 54}; //Não autorizado
 unsigned char PassWord[] = {0,0,0,0,0,'\0'};
 unsigned char PassWord1[] = {1,1,1,1,1,'\0'};
-uint8_t PassWordCount = 0;
-uint8_t NumTentativas = 0;
-CardStatus cardStatus = CardNotDetected;
-UserStatus userStatus = EntryNotAllowed;
-UserOptionsStatus userOptionsStatus = none;
+
 static volatile bool g_bIntFlag = true;
 static volatile bool TestFlag = false;
 static volatile bool CardVerifFlag = false;
+static volatile bool okRecord = false;
+
+uint8_t PassWordCount = 0;
+uint8_t NumTentativas = 0;
+unsigned char count = 0x33;
+CardStatus cardStatus = CardNotDetected;
+UserStatus userStatus = EntryNotAllowed;
+UserOptionsStatus userOptionsStatus = none;
 
 void HardwareInit(char* porta)
 {
@@ -108,6 +112,12 @@ void PasswordIntHandler(void)
     memcpy(PassWord,PassWordDefaut, 5);
 }
 
+void intHandlerTimer4(void)
+{
+    MAP_TimerIntClear(TIMER4_BASE, TIMER_TIMA_TIMEOUT);
+    count--;
+}
+
 uint8_t HardwareLoop()
 {
     unsigned char RFIDstatus;
@@ -142,9 +152,6 @@ uint8_t HardwareLoop()
             LCDSendingData();
             return 1;
         }
-        /*VerificaTentativas();
-        HardwarePassWordControl();
-        HardwareControl();*/
         MFRC522Halt();
     }
     strcpy(g_psUserInfo.sReport.log, "Erro: RFID não cadastrado");
@@ -164,12 +171,6 @@ uint8_t VerificaTentativas()
         NumTentativas++;
     }
 
-   /* if(NumTentativas > 3)
-    {
-        userStatus = UserBlocked;
-        userOptionsStatus = none;
-    }
-    */
     return NumTentativas;
 }
 uint8_t keyPass = 0x00;
@@ -206,6 +207,19 @@ void HardwarePassWordControl(int status)
     else if(status == VOICE && userStatus != UserBlocked)
     {
         uint8_t t = 0;
+        count = 0x33;
+        LCDRecordingSound();
+
+        MAP_TimerEnable(TIMER4_BASE, TIMER_A);
+        LCDMoveCursorToXY(3,5);
+        LCDWriteString("EM ");
+        while(count > 0x30)
+        {
+            LCDMoveCursorToXY(3,8);
+            LCDWriteData(count);
+        }
+
+        MAP_TimerDisable(TIMER1_BASE, TIMER_A);
         LCDRecordingSound();
         CardVerifFlag = true;
         userOptionsStatus = none;
@@ -222,6 +236,7 @@ void HardwarePassWordControl(int status)
             LCDWriteData(176);
             t++;
         }
+
 
         if(conversionEnd == 1) {
         	conversionEnd == 0;
