@@ -111,7 +111,7 @@ void ISR_ADC0()
 
     if (indiceAmostra <= NUM_AMOSTRAS - 1)
     {
-        bufferConversao[indiceAmostra] = bufferCapture[0];
+        bufferConversao[2*indiceAmostra] = bufferCapture[0];
         indiceAmostra++;
     }
     else

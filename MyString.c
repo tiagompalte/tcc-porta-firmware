@@ -64,17 +64,28 @@ int strSep(unsigned char* strIn, unsigned char* strOut)
     unsigned char byte1;
     unsigned char byte2;
     int i = 0;
-    int j = 0;
     for(i = 0; i < strlen(strIn); i++)
     {
-        byte1 = (strIn[i]>>4)&0x0F;
-        byte2 = (strIn[i])&0x0F;
-        strOut[2*i] = byte1;
-        strOut[2*i + 1] = byte2;
-        /*strOut[2*i + j] = byte1;
-        strOut[2*i + j + 1] = byte2;
-        strOut[2*i + j + 2] = " ";
-        j++;*/
+       byte1 = (strIn[i]>>4)&0x0F;
+       byte2 = (strIn[i])&0x0F;
+       strOut[2*i] = byte1;
+       strOut[2*i + 1] = byte2;
+    }
+
+    return 1;
+}
+
+int strSep2(unsigned char* strIn, unsigned char* strOut)
+{
+    unsigned char nibbleL;
+    unsigned char nibbleM;
+    int i = 0;
+    for(i = 0; i < 22000; i++)
+    {
+    	nibbleM = (strIn[2*i]>>4)&0x0F;
+    	nibbleL = (strIn[2*i])&0x0F;
+    	strOut[2*i] = nibbleM;
+    	strOut[2*i + 1] = nibbleL;
     }
 
     return 1;
@@ -85,6 +96,18 @@ int hex2str(unsigned char* strIn, unsigned char* strOut)
     int i = 0;
     unsigned char c;
     for(i = 0; i < 8; i++)
+    {
+        c = strIn[i];
+        strOut[i] = (c < 10) ? (c+48) : (c+55);
+
+    }
+}
+
+int hex2str2(unsigned char* strIn, unsigned char* strOut)
+{
+    int i = 0;
+    unsigned char c;
+    for(i = 0; i < 44000; i++)
     {
         c = strIn[i];
         strOut[i] = (c < 10) ? (c+48) : (c+55);

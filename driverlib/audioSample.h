@@ -26,6 +26,6 @@
 int conversionEnd;
 uint16_t indiceAmostra;
 uint32_t bufferCapture[1];
-uint8_t bufferConversao[NUM_AMOSTRAS];
+uint8_t bufferConversao[2*NUM_AMOSTRAS];
 
 #endif /* ALGORITHM_ALGORITHM_H_ */

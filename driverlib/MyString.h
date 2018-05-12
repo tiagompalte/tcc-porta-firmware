@@ -27,4 +27,8 @@ int printString(unsigned char* str);
 int strSep(unsigned char* strIn, unsigned char* strOut);
 int hex2str(unsigned char* strIn, unsigned char* strOut);
 int strInsertSpace(unsigned char* strIn, unsigned char* strOut);
+
+int strSep2(unsigned char* strIn, unsigned char* strOut);
+int hex2str2(unsigned char* strIn, unsigned char* strOut);
+
 #endif /* MYSTRING_H_ */
