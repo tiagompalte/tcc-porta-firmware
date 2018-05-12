@@ -11,7 +11,7 @@
  * Tiago Henrique Faxina
  * Tiago Mariani Palte
  * ************************************************************** *
- * communication.c - Prototypes for the driver for the communication.
+ * communication.c - Prototypes for the driver to the communication.
  * ************************************************************** */
 
 #include "communication.h"
