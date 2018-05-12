@@ -121,7 +121,7 @@ struct
 // Maximum size of an weather request.
 //
 //*****************************************************************************
-#define MAX_REQUEST             28000
+#define MAX_REQUEST             23000
 
 extern uint32_t g_ui32SysClock;
 
