@@ -27,6 +27,7 @@
 #include "lwip/dns.h"
 #include "eth_client.h"
 #include "json.h"
+#include "driverlib/MyString.h"
 
 //*****************************************************************************
 //
@@ -2062,8 +2063,13 @@ int32_t requestPostSendAudio(const char *pcQuery, tUserReport *psUserReport,
     //
     // Append the size of the string.
     //
+    int num = sizeof(bufferConversao) + 40;
+    char _size[5];
 
-    i32Idx = MergeRequest(i32Idx, size, sizeof(size)+1, false);
+    // convert 123 to string [buf]
+    itoa(num, _size, 10);
+
+    i32Idx = MergeRequest(i32Idx, _size, sizeof(_size), false);
 
     //
     // Append the break line.
@@ -2145,4 +2151,3 @@ int32_t requestPostSendAudio(const char *pcQuery, tUserReport *psUserReport,
 
     return (0);
 }
-

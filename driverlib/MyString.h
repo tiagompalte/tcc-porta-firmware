@@ -30,5 +30,6 @@ int strInsertSpace(unsigned char* strIn, unsigned char* strOut);
 
 int strSep2(unsigned char* strIn, unsigned char* strOut);
 int hex2str2(unsigned char* strIn, unsigned char* strOut);
+extern char * itoa (int value, char *result, int base);
 
 #endif /* MYSTRING_H_ */
