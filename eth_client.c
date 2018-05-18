@@ -2063,7 +2063,7 @@ int32_t requestPostSendAudio(const char *pcQuery, tUserReport *psUserReport,
     //
     // Append the size of the string.
     //
-    int num = sizeof(bufferConversao) + 40;
+    int num = bufferComprimido.used + 40;
     char _size[5];
 
     // convert 123 to string [buf]
