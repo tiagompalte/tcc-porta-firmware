@@ -16,7 +16,6 @@
 
 #include "driverlib/fir.h"
 #include <driverlib/audioSample.h>
-#include <driverlib/MyString.h>
 #include <math.h>
 
 // Sobrescreve o vetor de conversao com os valores filtrados
@@ -34,32 +33,28 @@ void FIR(uint8_t sinal[]) {
 
 	for (i = 0; i < NUM_AMOSTRAS; i++) {
 		y = 0;
-		int y2 = 0;
+		//int y2 = 0;
 		for (j = 0; j <= ORDEM; j++) {
 			y += bufferFiltro[j]*coefs[j];
 			bufferFiltro[ORDEM - j] = bufferFiltro[ORDEM - j - 1];
 		}
 		bufferFiltro[0] = bufferConversao[ORDEM + 2*i];
 
-		y2 = (int)y/2;
+		//y2 = (int)y/2;
 
 		// caso gere " ' \ / ou espaço intermediário, repor com o caracter anterior
-		/* if (y2 <= 32) {
-			bufferConversao[i] = 33;
+		/*if (y2 <= 32) {
+			bufferConversao[2*i] = 33;
 		} else if (y2 == 34 || y2 == 47 || y2 == 92 || y2 == 127) {
-		    bufferConversao[i] = (y2 - 1);
+		    bufferConversao[2*i] = (y2 - 1);
 		} else if (y2 == 128) {
-			bufferConversao[i] = (y2 - 2);
+			bufferConversao[2*i] = (y2 - 2);
 		} else {
-			bufferConversao[i] = y2;
+			bufferConversao[2*i] = y2;
 		} */
 
-		bufferConversao[2*i] = y;
+		bufferConversao[2*i] = (uint8_t)y;
 	}
-
-	strSep2(bufferConversao, bufferConversao);
-	hex2str2(bufferConversao, bufferConversao);
-
 	return;
 }
 

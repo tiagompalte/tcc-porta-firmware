@@ -11,25 +11,14 @@
  * Tiago Henrique Faxina
  * Tiago Mariani Palte
  * ************************************************************** *
- * Header para Parametros de Audio e Variaveis
+ * Funcoes de Audio
  * ************************************************************** */
 
-#ifndef DRIVERLIB_AUDIOSAMPLE_H_
-#define DRIVERLIB_AUDIOSAMPLE_H_
+#include <driverlib/audioSample.h>
+#include <driverlib/MyString.h>
 
-#define NUM_AMOSTRAS 22000
-
-#include <stdint.h>
-#include <stdbool.h>
-#include "array.h"
-
-// Vari�veis
-int conversionEnd;
-uint16_t indiceAmostra;
-uint32_t bufferCapture[1];
-uint8_t bufferConversao[2*NUM_AMOSTRAS];
-Array bufferComprimido;
-
-extern void convertAudioToHex();
-
-#endif /* ALGORITHM_ALGORITHM_H_ */
+void convertAudioToHex() {
+	strSep2(bufferConversao, bufferConversao);
+	hex2str2(bufferConversao, bufferConversao);
+	return;
+}

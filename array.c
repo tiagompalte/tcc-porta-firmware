@@ -19,18 +19,24 @@
 #include <string.h>
 #include "array.h"
 
-DictElement dictionaryArray[4095];
-
-// add prefix + character to the dictionary
-void dictionaryArrayAdd(int prefix, int character, int value) {
-    dictionaryArray[value].prefix = prefix;
-    dictionaryArray[value].character = character;
+void initArray(Array *a, size_t initialSize) {
+  a->array = (char *)malloc(initialSize * sizeof(char));
+  a->used = 0;
+  a->size = initialSize;
 }
 
-int dictionaryArrayPrefix(int value) {
-    return dictionaryArray[value].prefix;
+void insertArray(Array *a, char element) {
+  // a->used is the number of used entries, because a->array[a->used++] updates a->used only *after* the array has been accessed.
+  // Therefore a->used can go up to a->size
+  if (a->used == a->size) {
+    a->size *= 2;
+    a->array = (char *)realloc(a->array, a->size * sizeof(char));
+  }
+  a->array[a->used++] = element;
 }
 
-int dictionaryArrayCharacter(int value) {
-    return dictionaryArray[value].character;
+void freeArray(Array *a) {
+  free(a->array);
+  a->array = NULL;
+  a->used = a->size = 0;
 }

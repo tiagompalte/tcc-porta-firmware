@@ -17,13 +17,18 @@
 #ifndef ARRAY_H_
 #define ARRAY_H_
 
-typedef struct{
-    int prefix; // prefix for byte > 255
-    int character; // the last byte of the string
-} DictElement;
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-extern void dictionaryArrayAdd(int prefix, int character, int value);
-extern int dictionaryArrayPrefix(int value);
-extern int dictionaryArrayCharacter(int value);
+typedef struct {
+  char *array;
+  size_t used;
+  size_t size;
+} Array;
+
+extern void initArray(Array *a, size_t initialSize);
+extern void insertArray(Array *a, char element);
+extern void freeArray(Array *a);
 
 #endif /* ARRAY_H_ */

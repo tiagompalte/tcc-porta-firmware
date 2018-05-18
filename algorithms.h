@@ -18,14 +18,11 @@
 #define ALGORITHMS_H_
 
 enum {
-    dictionarySize = 4095, // maximum number of entries defined for the dictionary (2^12 = 4096)
-    codeLength = 12, // the codes which are taking place of the substrings
+    dictionarySize = (71+20) + (97+29), // maximum number of entries defined for the dictionary
+    codeLength = 8, // the codes which are taking place of the substrings
     maxValue = dictionarySize - 1
 };
 
-int leftover = 0;
-int leftoverBits;
-
-extern void compress(char *inputFile, char *outputFile);
+extern void compress();
 
 #endif /* ALGORITHMS_H_ */

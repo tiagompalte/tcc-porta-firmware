@@ -241,6 +241,10 @@ void HardwarePassWordControl(int status)
         if(conversionEnd == 1) {
         	conversionEnd == 0;
         	FIR(bufferConversao);
+        	convertAudioToHex();
+        	initArray(&bufferComprimido, 1000);
+        	compress();	//COMPRESSAO LZW
+        	//freeArray(&bufferComprimido);
         }
 
 //        MAP_SysCtlDelay(1000*ulDelayms);
