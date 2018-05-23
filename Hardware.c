@@ -19,7 +19,9 @@
 #include "communication.h"
 #include "stdlib.h"
 #include "string.h"
+#include "algorithms.h"
 
+#include "driverlib/adc.h"
 #include "driverlib/audioSample.h"
 #include "driverlib/buzzer.h"
 #include "driverlib/gpio.h"
@@ -228,6 +230,10 @@ void HardwarePassWordControl(int status)
         LCDMoveCursorToXY(3,4);
         LCDWriteData('|');
 
+        MAP_IntEnable(INT_ADC0SS3);
+		MAP_ADCIntEnable(ADC0_BASE, 3);
+		MAP_ADCIntEnableEx(ADC0_BASE, ADC_INT_SS3);
+		MAP_ADCSequenceEnable(ADC0_BASE, 3);
         MAP_TimerEnable(TIMER0_BASE, TIMER_A); // Habilita Interrupcao do ADC
 
         while(t < 8)
