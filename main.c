@@ -111,7 +111,7 @@ void ISR_ADC0()
 
     if (indiceAmostra <= NUM_AMOSTRAS - 1)
     {
-        bufferConversao[2*indiceAmostra] = bufferCapture[0];
+    	bufferConversao[2*indiceAmostra] = bufferCapture[0];
         indiceAmostra++;
     }
     else
@@ -289,7 +289,7 @@ void timerInit()
     MAP_TimerConfigure(TIMER0_BASE, TIMER_CFG_A_PERIODIC_UP);
     TimerUpdateMode(TIMER0_BASE, TIMER_A, TIMER_UP_LOAD_IMMEDIATE);
     MAP_TimerClockSourceSet(TIMER0_BASE, TIMER_CLOCK_PIOSC);
-    MAP_TimerLoadSet(TIMER0_BASE, TIMER_A, 1011);
+    MAP_TimerLoadSet(TIMER0_BASE, TIMER_A, 2022); //1011
     MAP_TimerADCEventSet(TIMER0_BASE, TIMER_ADC_TIMEOUT_A);
     MAP_TimerControlTrigger(TIMER0_BASE, TIMER_A, true);
 

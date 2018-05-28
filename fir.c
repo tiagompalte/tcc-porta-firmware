@@ -54,7 +54,22 @@ void FIR(uint8_t sinal[]) {
 		} */
 
 		bufferConversao[2*i] = (uint8_t)y;
+
 	}
+
+	int media = 0;
+
+	for (i = 0; i < NUM_AMOSTRAS; i++) {
+		media += bufferConversao[2*i];
+	}
+	media = media/NUM_AMOSTRAS;
+
+	for (i = 0; i < NUM_AMOSTRAS; i++) {
+		if((bufferConversao[2*i] <= media+26) && (bufferConversao[2*i] >= media-26)) {
+			bufferConversao[2*i] = 0;
+		}
+	}
+
 	return;
 }
 

@@ -16,7 +16,7 @@
  * 2017
  * ************************************************************** */
 
-
+#include "driverlib/audioSample.h"
 #include "driverlib/MyString.h"
 #include <stdio.h>
 #include <stdint.h>
@@ -80,7 +80,7 @@ int strSep2(unsigned char* strIn, unsigned char* strOut)
     unsigned char nibbleL;
     unsigned char nibbleM;
     int i = 0;
-    for(i = 0; i < 22000; i++)
+    for(i = 0; i < NUM_AMOSTRAS; i++)
     {
     	nibbleM = (strIn[2*i]>>4)&0x0F;
     	nibbleL = (strIn[2*i])&0x0F;
@@ -107,7 +107,7 @@ int hex2str2(unsigned char* strIn, unsigned char* strOut)
 {
     int i = 0;
     unsigned char c;
-    for(i = 0; i < 44000; i++)
+    for(i = 0; i < 2*NUM_AMOSTRAS; i++)
     {
         c = strIn[i];
         strOut[i] = (c < 10) ? (c+48) : (c+55);

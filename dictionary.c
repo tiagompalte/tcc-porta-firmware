@@ -21,16 +21,23 @@
 // the dictionary
 struct DictNode *dictionary, *tail;
 
-// initialize the dictionary of ASCII characters @12bits
+// initialize the dictionary
 void dictionaryInit() {
     int i;
     struct DictNode *node;
-    for (i = 0; i < 256; i++) { // ASCII
-        node = (struct DictNode *)malloc(sizeof(struct DictNode));
-        node->prefix = emptyPrefix;
-        node->character = i;
-        appendNode(node);
-    }       
+    for (i = 48; i < 58; i++) { // ASCII
+		node = (struct DictNode *)malloc(sizeof(struct DictNode));
+		node->prefix = emptyPrefix;
+		node->character = i;
+		appendNode(node);
+    }
+
+    for (i = 65; i < 71; i++) {
+		node = (struct DictNode *)malloc(sizeof(struct DictNode));
+		node->prefix = emptyPrefix;
+		node->character = i;
+		appendNode(node);
+    }
 }
 
 // add node to the list

@@ -31,7 +31,6 @@ void compress() {
     nextCode = 71; // next code is the next available string code
 
     dictionaryInit();
-    //initArray(&bufferComprimido, 1000); //alocacao inical
 
     // while (there is still data to be read)
     int i;
@@ -42,6 +41,7 @@ void compress() {
             insertArray(&bufferComprimido, prefix);
             // add prefix+character to dictionary
             if (nextCode < dictionarySize) dictionaryAdd(prefix, bufferConversao[i], nextCode++);
+            //if ((nextCode >= 48 && nextCode < 71) || nextCode == 92) nextCode++; //Evitar barra invertida
             if (nextCode == 92) nextCode++; //Evitar barra invertida
             prefix = bufferConversao[i]; //... output the last string after adding the new one
         }

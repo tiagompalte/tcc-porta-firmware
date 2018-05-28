@@ -18,7 +18,7 @@
 #define ALGORITHMS_H_
 
 enum {
-    dictionarySize = (71+20) + (97+29), // maximum number of entries defined for the dictionary
+    dictionarySize = 126, // maximum number of entries defined for the dictionary
     codeLength = 8, // the codes which are taking place of the substrings
     maxValue = dictionarySize - 1
 };

@@ -291,7 +291,7 @@ void HardwareControl(UserStatus userSta)
         LCDNotAllowed();
         BuzzerActivate();
         MAP_TimerLoadSet(TIMER1_BASE, TIMER_A, 4 * g_ui32SysClock);
-        MAP_TimerLoadSet(TIMER3_BASE, TIMER_A, 2 * g_ui32SysClock);
+        MAP_TimerLoadSet(TIMER3_BASE, TIMER_A, 1 * g_ui32SysClock);
         MAP_TimerEnable(TIMER1_BASE, TIMER_A);
         MAP_TimerEnable(TIMER3_BASE, TIMER_A);
         CardVerifFlag = false;
@@ -303,7 +303,7 @@ void HardwareControl(UserStatus userSta)
         LCDErroLog();
         BuzzerActivate();
         MAP_TimerLoadSet(TIMER1_BASE, TIMER_A, 4 * g_ui32SysClock);
-        MAP_TimerLoadSet(TIMER3_BASE, TIMER_A, 2 * g_ui32SysClock);
+        MAP_TimerLoadSet(TIMER3_BASE, TIMER_A, 1 * g_ui32SysClock);
         MAP_TimerEnable(TIMER1_BASE, TIMER_A);
         MAP_TimerEnable(TIMER3_BASE, TIMER_A);
         CardVerifFlag = false;
@@ -315,7 +315,7 @@ void HardwareControl(UserStatus userSta)
         LCDUserBlocked();
         BuzzerActivate();
         MAP_TimerLoadSet(TIMER1_BASE, TIMER_A, 4 * g_ui32SysClock);
-        MAP_TimerLoadSet(TIMER3_BASE, TIMER_A, 2 * g_ui32SysClock);
+        MAP_TimerLoadSet(TIMER3_BASE, TIMER_A, 1 * g_ui32SysClock);
         MAP_TimerEnable(TIMER1_BASE, TIMER_A);
         MAP_TimerEnable(TIMER3_BASE, TIMER_A);
         CardVerifFlag = false;
