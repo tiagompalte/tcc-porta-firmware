@@ -65,7 +65,8 @@ void FIR(uint8_t sinal[]) {
 	media = media/NUM_AMOSTRAS;
 
 	for (i = 0; i < NUM_AMOSTRAS; i++) {
-		if((bufferConversao[2*i] <= media+26) && (bufferConversao[2*i] >= media-26)) {
+		if(((bufferConversao[2*i] <= media+26) && (bufferConversao[2*i] >= media-26)) || ((bufferConversao[2*i] <= 132) && (bufferConversao[2*i] >= 120))) {
+		//if((bufferConversao[2*i] <= 154) && (bufferConversao[2*i] >= 102)) {
 			bufferConversao[2*i] = 0;
 		}
 	}
